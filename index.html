@@ -4087,6 +4087,8 @@
             });
 
             aps.forEach(ap => {
+                const id = ap.id || '';
+                if (id.startsWith('AP_CT_') || id.startsWith('NT_BP_')) return; // not shown on AP page
                 if (ap.status === 'Unpaid') {
                     const dueDate = new Date(ap.dueDate);
                     if (dueDate <= today) {
@@ -4308,9 +4310,15 @@
                 return t.type==='ລາຍຈ່າຍ';
             }).forEach(t => byCur.LAK.opex += (t.amount||0));
 
-            // AP total LAK
+            // AP total LAK — MUST match the AP ledger filter (approved-calc + manual only).
+            // Exclude auto-generated cost-settlement (AP_CT_*) and budget-proposal (NT_BP_*)
+            // entries, which are hidden from the AP page and would otherwise inflate this total.
             const apUnpaid = aps.filter(a => {
+                const id = a.id || '';
+                if (id.startsWith('AP_CT_')) return false;
+                if (id.startsWith('NT_BP_')) return false;
                 if (a.status==='Paid') return false;
+                if ((a.currency||'LAK') !== 'LAK') return false;
                 if (dashBranch !== 'all' && a.branchId !== dashBranch) return false;
                 if (currentRole !== 'admin' && a.branchId !== currentRole) return false;
                 return true;
@@ -7234,6 +7242,8 @@ Teach accounting concepts, break down numbers, point out risks (like cash defici
             let unpaidApCount = 0;
             let unpaidApVal = 0;
             aps.forEach(ap => {
+                const id = ap.id || '';
+                if (id.startsWith('AP_CT_') || id.startsWith('NT_BP_')) return; // not shown on AP page
                 if (ap.status === 'Unpaid') {
                     unpaidApCount++;
                     unpaidApVal += ap.amount;
