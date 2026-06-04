@@ -1943,7 +1943,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-600 mb-1">ວັນທີ <span class="text-rose-500">*</span></label>
-                            <input type="date" id="bcDate" class="w-full bg-white border border-gray-200 rounded-lg px-2 py-2 text-xs">
+                            <input type="date" id="bcDate" onchange="autoBcNumber()" class="w-full bg-white border border-gray-200 rounded-lg px-2 py-2 text-xs">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-600 mb-1">ປະເພດງົບ <span class="text-rose-500">*</span></label>
@@ -1963,12 +1963,6 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-600 mb-1">ອີງຕາມຂໍ້ຕົກລົງເລກທີ່</label>
                             <input type="text" id="bcRvRef" placeholder="ຕ.ຢ: ສັນຍາ/ຂໍ້ຕົກລົງ ເລກທີ່..." class="w-full bg-white border border-gray-200 rounded-lg px-2 py-2 text-xs">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 mb-1">ເຊື່ອມໃບສະເໜີຂໍງົບປະມານ (ດຶງເລກທີ)</label>
-                            <select id="bcBpRef" class="w-full bg-white border border-gray-200 rounded-lg px-2 py-2 text-xs"><option value="">-- ບໍ່ເຊື່ອມ --</option></select>
                         </div>
                     </div>
                     <!-- Cost line items -->
@@ -2166,7 +2160,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-600 mb-1">ວັນທີ <span class="text-rose-500">*</span></label>
-                            <input type="date" id="bpDate" class="w-full bg-white border border-gray-200 rounded-lg px-2 py-2 text-xs">
+                            <input type="date" id="bpDate" onchange="autoBpNumber()" class="w-full bg-white border border-gray-200 rounded-lg px-2 py-2 text-xs">
                         </div>
                     </div>
                     <div>
@@ -2175,9 +2169,9 @@
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-gray-600 mb-1">ເຊື່ອມໃບສັ່ງຈ່າຍ (PV Ref)</label>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">ເຊື່ອມໃບຄິດໄລ່ (ດຶງເລກທີ່ໃບຄິດໄລ່)</label>
                             <select id="bpPvRef" onchange="bpAutoFillFromPv()" class="w-full bg-white border border-gray-200 rounded-lg px-2 py-2 text-xs">
-                                <option value="">-- ເລືອກໃບສັ່ງຈ່າຍ --</option>
+                                <option value="">-- ເລືອກໃບຄິດໄລ່ --</option>
                             </select>
                         </div>
                         <div>
@@ -2266,7 +2260,7 @@
                             <th class="p-2 text-left">ເລກທີ</th>
                             <th class="p-2 text-left">ຫົວຂໍ້</th>
                             <th class="p-2 text-left">ສາຂາ</th>
-                            <th class="p-2 text-left">ອ້າງ PV</th>
+                            <th class="p-2 text-left">ອ້າງ ເລກທີ່ໃບຄິດໄລ່</th>
                             <th class="p-2 text-right">ຈຳນວນ (LAK)</th>
                             <th class="p-2 text-center">ວ/ທ</th>
                             <th class="p-2 text-center">ສະຖານະ</th>
@@ -3368,33 +3362,57 @@
         // remote snapshot from another device (the "2nd/3rd person's data vanished" bug).
         var _ntLocalDirtyIds = {};        // { storeName: Set(ids) }
         var _ntLastLocalEditAt = 0;       // ms timestamp of this device's most recent local edit
+        var _ntPendingSnapshot = null;    // remote snapshot queued while the user is mid-edit
+        var _ntPendingTimer = null;       // interval that applies the queued snapshot once idle
 
         // Mark that a local edit happened (called from ntSave). Within a short window,
         // incoming remote arrays are MERGED rather than overwritten, so concurrent edits survive.
         function ntMarkLocalEdit() { _ntLastLocalEditAt = Date.now(); }
 
-        // Merge two arrays of {id,...} records: start from remote, then overlay any LOCAL records
-        // that remote doesn't have OR that the local user just edited (within the protect window).
-        // This prevents a remote snapshot from deleting records the local user just added/changed.
+        // Stamp a record (or array of records) with a last-modified time + author device,
+        // so ntMergeById can keep the newest version when two devices edit concurrently.
+        function ntStamp(rec) {
+            const now = Date.now();
+            const mark = r => { if (r && typeof r === 'object') { r._lm = now; r._by = NT_DEVICE_ID; } return r; };
+            if (Array.isArray(rec)) rec.forEach(mark); else mark(rec);
+            ntMarkLocalEdit();
+            return rec;
+        }
+
+        // Merge two arrays of {id,...} records. For records present on BOTH sides, keep the one
+        // with the newer per-record timestamp (_lm). This prevents a stale remote snapshot from
+        // reverting a record the local user just edited ("dates changing by themselves"), and avoids
+        // a tug-of-war between two devices each in their protect window.
         function ntMergeById(localArr, remoteArr, protectLocal) {
             if (!Array.isArray(remoteArr)) return localArr;
             if (!Array.isArray(localArr)) return remoteArr;
+            const localById = {};
+            localArr.forEach(l => { if (l && l.id != null) localById[l.id] = l; });
             const byId = {};
-            // remote first (base truth)
-            remoteArr.forEach(r => { if (r && r.id != null) byId[r.id] = r; });
-            // if the local user recently edited, overlay local records the remote is missing,
-            // and keep local versions of records the user just touched
-            if (protectLocal) {
-                const remoteIds = new Set(remoteArr.map(r => r && r.id));
-                localArr.forEach(l => {
-                    if (!l || l.id == null) return;
-                    // local-only record (remote hasn't seen it yet) → keep it
-                    if (!remoteIds.has(l.id)) byId[l.id] = l;
-                });
-            }
-            // preserve a stable order: remote order, then any extra local ones
-            const out = [];
-            const seen = new Set();
+            // Start from remote (base truth from the cloud)
+            remoteArr.forEach(r => {
+                if (!r || r.id == null) return;
+                const l = localById[r.id];
+                if (l) {
+                    // Present on both → keep whichever was modified most recently
+                    const lm = Number(l._lm) || 0, rm = Number(r._lm) || 0;
+                    if (lm > rm) byId[r.id] = l;            // local edit is newer
+                    else if (rm > lm) byId[r.id] = r;       // remote edit is newer
+                    else byId[r.id] = protectLocal ? l : r; // no timestamps → during protect window, trust local
+                } else {
+                    byId[r.id] = r;
+                }
+            });
+            // Local-only records: keep if we're in the protect window (we just added them) OR
+            // if they carry a recent timestamp the remote simply hasn't seen yet.
+            const remoteIds = new Set(remoteArr.map(r => r && r.id));
+            localArr.forEach(l => {
+                if (!l || l.id == null || remoteIds.has(l.id)) return;
+                const recentlyEdited = (Number(l._lm) || 0) > (Date.now() - 30000);
+                if (protectLocal || recentlyEdited) byId[l.id] = l;
+            });
+            // Stable order: remote order first, then any extra local ones
+            const out = []; const seen = new Set();
             remoteArr.forEach(r => { if (r && r.id != null && byId[r.id] && !seen.has(r.id)) { out.push(byId[r.id]); seen.add(r.id); } });
             Object.keys(byId).forEach(id => { if (!seen.has(id)) { out.push(byId[id]); seen.add(id); } });
             return out;
@@ -3608,58 +3626,45 @@
                     const stamp = cloudData._stamp || '';
                     if (stamp && stamp === _ntLastAppliedStamp) return;       // our own write coming back
                     if (cloudData._updatedBy && cloudData._updatedBy === NT_DEVICE_ID && stamp && stamp <= _ntLastAppliedStamp) return;
-                    _ntLastAppliedStamp = stamp;
 
-                    // ===== TYPING GUARD: don't disrupt a user mid-edit =====
-                    // If a modal is open or an input/textarea/select is focused, defer the
-                    // re-render until they're done (data is still stored, UI refreshes after).
-                    const active = document.activeElement;
-                    const isEditing = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT');
-                    const modalOpen = Array.from(document.querySelectorAll('.fixed.inset-0')).some(m => !m.classList.contains('hidden') && m.offsetParent !== null);
-
-                    // ===== APPLY remote data (suppress re-upload while we write to localStorage) =====
-                    // CONCURRENCY PROTECTION: if THIS device made a local edit within the last 12s,
-                    // merge remote arrays with local (union by id) so a near-simultaneous remote
-                    // snapshot can't delete the records this user just added/edited.
-                    const protectLocal = (Date.now() - _ntLastLocalEditAt) < 12000;
-                    _ntApplyingRemote = true;
-                    try {
-                        if (cloudData.transactions) { transactions = ntMergeById(transactions, cloudData.transactions, protectLocal); localStorage.setItem("treasury_transactions_pro", JSON.stringify(transactions)); }
-                        if (cloudData.branches)     { branches = ntMergeObjById(branches, cloudData.branches, protectLocal); localStorage.setItem("treasury_branches_pro", JSON.stringify(branches)); }
-                        if (cloudData.categories)   { categories = cloudData.categories; localStorage.setItem("treasury_categories_pro", JSON.stringify(categories)); }
-                        if (cloudData.customers)    { customers = ntMergeObjById(customers, cloudData.customers, protectLocal); localStorage.setItem("treasury_customers_pro", JSON.stringify(customers)); }
-                        if (cloudData.invoices)     { invoices = ntMergeById(invoices, cloudData.invoices, protectLocal); localStorage.setItem("treasury_invoices_pro", JSON.stringify(invoices)); }
-                        if (cloudData.aps)          { aps = ntMergeById(aps, cloudData.aps, protectLocal); localStorage.setItem("treasury_aps_pro", JSON.stringify(aps)); }
-                        if (cloudData.companyInfo)  { companyInfo = cloudData.companyInfo; localStorage.setItem("treasury_company_info", JSON.stringify(companyInfo)); }
-                        // NT modules (merge by id when local edits are fresh)
-                        if (typeof nt_quotations !== 'undefined') {
-                            if (cloudData.nt_quotations)    { nt_quotations    = ntMergeById(nt_quotations, cloudData.nt_quotations, protectLocal);    localStorage.setItem('nt_quotations',    JSON.stringify(nt_quotations)); }
-                            if (cloudData.nt_budgetCalcs)   { nt_budgetCalcs   = ntMergeById(nt_budgetCalcs, cloudData.nt_budgetCalcs, protectLocal);   localStorage.setItem('nt_budgetCalcs',   JSON.stringify(nt_budgetCalcs)); }
-                            if (cloudData.nt_budgetPropols) { nt_budgetPropols = ntMergeById(nt_budgetPropols, cloudData.nt_budgetPropols, protectLocal); localStorage.setItem('nt_budgetPropols', JSON.stringify(nt_budgetPropols)); }
-                            if (cloudData.nt_contracts)     { nt_contracts     = ntMergeById(nt_contracts, cloudData.nt_contracts, protectLocal);     localStorage.setItem('nt_contracts',     JSON.stringify(nt_contracts)); }
-                            if (cloudData.nt_contactLogs)   { nt_contactLogs   = ntMergeById(nt_contactLogs, cloudData.nt_contactLogs, protectLocal);   localStorage.setItem('nt_contactLogs',   JSON.stringify(nt_contactLogs)); }
-                            if (cloudData.nt_aftersales)    { nt_aftersales    = ntMergeById(nt_aftersales, cloudData.nt_aftersales, protectLocal);    localStorage.setItem('nt_aftersales',    JSON.stringify(nt_aftersales)); }
-                        }
-                        // Cost & settings data — costTrack merged by id; rest are config (replace)
-                        if (cloudData.nt_costTrack) {
-                            const localCT = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
-                            const mergedCT = ntMergeById(localCT, cloudData.nt_costTrack, protectLocal);
-                            localStorage.setItem('nt_costTrack', JSON.stringify(mergedCT));
-                        }
-                        if (cloudData.nt_costTemplates && typeof nt_costTemplates !== 'undefined')       { nt_costTemplates = cloudData.nt_costTemplates; localStorage.setItem('nt_costTemplates', JSON.stringify(nt_costTemplates)); }
-                        if (cloudData.nt_serviceCategories && typeof nt_serviceCategories !== 'undefined'){ nt_serviceCategories = cloudData.nt_serviceCategories; localStorage.setItem('nt_serviceCategories', JSON.stringify(nt_serviceCategories)); }
-                        if (cloudData.nt_fixedExpenses && typeof nt_fixedExpenses !== 'undefined')        { nt_fixedExpenses = cloudData.nt_fixedExpenses; localStorage.setItem('nt_fixedExpenses', JSON.stringify(nt_fixedExpenses)); }
-                        if (cloudData.nt_signatures)        localStorage.setItem('nt_signatures', JSON.stringify(cloudData.nt_signatures));
-                        if (cloudData.nt_staffDuties)       { nt_staffDuties = ntMergeById(nt_staffDuties, cloudData.nt_staffDuties, protectLocal); localStorage.setItem('nt_staffDuties', JSON.stringify(nt_staffDuties)); }
-                        if (cloudData.nt_accrualProj)       { nt_accrualProj = protectLocal ? Object.assign({}, cloudData.nt_accrualProj, nt_accrualProj) : cloudData.nt_accrualProj; localStorage.setItem('nt_accrualProj', JSON.stringify(nt_accrualProj)); }
-                        if (cloudData.nt_proposalLetters && typeof nt_proposalLetters !== 'undefined') { nt_proposalLetters = ntMergeById(nt_proposalLetters, cloudData.nt_proposalLetters, protectLocal); localStorage.setItem('nt_proposalLetters', JSON.stringify(nt_proposalLetters)); }
-                        // If we merged in local-only records, push the merged result back so other devices converge.
-                        if (protectLocal) { setTimeout(() => { if (typeof triggerCloudBackup === 'function') triggerCloudBackup(); }, 1500); }
-                    } catch(applyErr) { console.warn('apply remote error:', applyErr); }
-
-                    // ===== RE-RENDER (respect typing/modal); guard stays ON through render =====
-                    const doRender = () => {
-                        _ntApplyingRemote = true;  // re-assert: renders may call ntSave→triggerCloudBackup
+                    // Applies the remote snapshot to memory + localStorage, then re-renders.
+                    // Records are merged by id with per-record timestamps so the newest edit wins.
+                    const applySnapshot = (data) => {
+                        _ntLastAppliedStamp = data._stamp || stamp;
+                        const protectLocal = (Date.now() - _ntLastLocalEditAt) < 12000;
+                        _ntApplyingRemote = true;
+                        try {
+                            if (data.transactions) { transactions = ntMergeById(transactions, data.transactions, protectLocal); localStorage.setItem("treasury_transactions_pro", JSON.stringify(transactions)); }
+                            if (data.branches)     { branches = ntMergeObjById(branches, data.branches, protectLocal); localStorage.setItem("treasury_branches_pro", JSON.stringify(branches)); }
+                            if (data.categories)   { categories = data.categories; localStorage.setItem("treasury_categories_pro", JSON.stringify(categories)); }
+                            if (data.customers)    { customers = ntMergeObjById(customers, data.customers, protectLocal); localStorage.setItem("treasury_customers_pro", JSON.stringify(customers)); }
+                            if (data.invoices)     { invoices = ntMergeById(invoices, data.invoices, protectLocal); localStorage.setItem("treasury_invoices_pro", JSON.stringify(invoices)); }
+                            if (data.aps)          { aps = ntMergeById(aps, data.aps, protectLocal); localStorage.setItem("treasury_aps_pro", JSON.stringify(aps)); }
+                            if (data.companyInfo)  { companyInfo = data.companyInfo; localStorage.setItem("treasury_company_info", JSON.stringify(companyInfo)); }
+                            if (typeof nt_quotations !== 'undefined') {
+                                if (data.nt_quotations)    { nt_quotations    = ntMergeById(nt_quotations, data.nt_quotations, protectLocal);    localStorage.setItem('nt_quotations',    JSON.stringify(nt_quotations)); }
+                                if (data.nt_budgetCalcs)   { nt_budgetCalcs   = ntMergeById(nt_budgetCalcs, data.nt_budgetCalcs, protectLocal);   localStorage.setItem('nt_budgetCalcs',   JSON.stringify(nt_budgetCalcs)); }
+                                if (data.nt_budgetPropols) { nt_budgetPropols = ntMergeById(nt_budgetPropols, data.nt_budgetPropols, protectLocal); localStorage.setItem('nt_budgetPropols', JSON.stringify(nt_budgetPropols)); }
+                                if (data.nt_contracts)     { nt_contracts     = ntMergeById(nt_contracts, data.nt_contracts, protectLocal);     localStorage.setItem('nt_contracts',     JSON.stringify(nt_contracts)); }
+                                if (data.nt_contactLogs)   { nt_contactLogs   = ntMergeById(nt_contactLogs, data.nt_contactLogs, protectLocal);   localStorage.setItem('nt_contactLogs',   JSON.stringify(nt_contactLogs)); }
+                                if (data.nt_aftersales)    { nt_aftersales    = ntMergeById(nt_aftersales, data.nt_aftersales, protectLocal);    localStorage.setItem('nt_aftersales',    JSON.stringify(nt_aftersales)); }
+                            }
+                            if (data.nt_costTrack) {
+                                const localCT = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+                                const mergedCT = ntMergeById(localCT, data.nt_costTrack, protectLocal);
+                                localStorage.setItem('nt_costTrack', JSON.stringify(mergedCT));
+                            }
+                            if (data.nt_costTemplates && typeof nt_costTemplates !== 'undefined')       { nt_costTemplates = data.nt_costTemplates; localStorage.setItem('nt_costTemplates', JSON.stringify(nt_costTemplates)); }
+                            if (data.nt_serviceCategories && typeof nt_serviceCategories !== 'undefined'){ nt_serviceCategories = data.nt_serviceCategories; localStorage.setItem('nt_serviceCategories', JSON.stringify(nt_serviceCategories)); }
+                            if (data.nt_fixedExpenses && typeof nt_fixedExpenses !== 'undefined')        { nt_fixedExpenses = data.nt_fixedExpenses; localStorage.setItem('nt_fixedExpenses', JSON.stringify(nt_fixedExpenses)); }
+                            if (data.nt_signatures)        localStorage.setItem('nt_signatures', JSON.stringify(data.nt_signatures));
+                            if (data.nt_staffDuties)       { nt_staffDuties = ntMergeById(nt_staffDuties, data.nt_staffDuties, protectLocal); localStorage.setItem('nt_staffDuties', JSON.stringify(nt_staffDuties)); }
+                            if (data.nt_accrualProj)       { nt_accrualProj = protectLocal ? Object.assign({}, data.nt_accrualProj, nt_accrualProj) : data.nt_accrualProj; localStorage.setItem('nt_accrualProj', JSON.stringify(nt_accrualProj)); }
+                            if (data.nt_proposalLetters && typeof nt_proposalLetters !== 'undefined') { nt_proposalLetters = ntMergeById(nt_proposalLetters, data.nt_proposalLetters, protectLocal); localStorage.setItem('nt_proposalLetters', JSON.stringify(nt_proposalLetters)); }
+                            // If we merged in protected local edits, push the merged result back so other devices converge.
+                            if (protectLocal) { setTimeout(() => { if (typeof triggerCloudBackup === 'function') triggerCloudBackup(); }, 1500); }
+                        } catch(applyErr) { console.warn('apply remote error:', applyErr); }
+                        // Re-render
                         try {
                             try { if (typeof populateBranchSelectors === 'function') populateBranchSelectors(); } catch(e){}
                             try { if (typeof fillCompanySetupForm === 'function') fillCompanySetupForm(); } catch(e){}
@@ -3667,23 +3672,35 @@
                             try { if (typeof refreshAllViews === 'function') refreshAllViews(); else if (typeof updateAppView === 'function') updateAppView(); } catch(e){}
                             if (typeof showToast === 'function') showToast('🔄 ຂໍ້ມູນອັບເດດ ຈາກອຸປະກອນອື່ນ (ຣຽວທາມ)', 'info');
                         } finally {
-                            // Release the guard only AFTER all renders settle
                             setTimeout(() => { _ntApplyingRemote = false; }, 50);
                         }
                     };
 
-                    if (isEditing || modalOpen) {
-                        // Defer: keep the user's current edit intact. Re-render once they blur/close.
-                        _ntApplyingRemote = false; // not rendering yet; allow this user's own edits to save
-                        const recheck = setInterval(() => {
-                            const a = document.activeElement;
-                            const stillEditing = a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.tagName === 'SELECT');
-                            const stillModal = Array.from(document.querySelectorAll('.fixed.inset-0')).some(m => !m.classList.contains('hidden') && m.offsetParent !== null);
-                            if (!stillEditing && !stillModal) { clearInterval(recheck); doRender(); }
-                        }, 1500);
-                        setTimeout(() => { clearInterval(recheck); }, 30000);
+                    // ===== BUSY GUARD: never mutate data while the user is mid-edit =====
+                    // If a modal is open OR an input/textarea/select is focused, we DEFER the WHOLE
+                    // apply (not just the render) so in-progress edits and dates are never disturbed.
+                    // The latest snapshot is queued and applied once the user is idle.
+                    const isBusy = () => {
+                        const a = document.activeElement;
+                        const editing = a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.tagName === 'SELECT');
+                        const modal = Array.from(document.querySelectorAll('.fixed.inset-0')).some(m => !m.classList.contains('hidden') && m.offsetParent !== null);
+                        return editing || modal;
+                    };
+
+                    if (isBusy()) {
+                        // Queue ONLY the most recent snapshot; do not touch data yet.
+                        _ntPendingSnapshot = cloudData;
+                        if (!_ntPendingTimer) {
+                            _ntPendingTimer = setInterval(() => {
+                                if (!isBusy()) {
+                                    clearInterval(_ntPendingTimer); _ntPendingTimer = null;
+                                    const pend = _ntPendingSnapshot; _ntPendingSnapshot = null;
+                                    if (pend) applySnapshot(pend);
+                                }
+                            }, 1200);
+                        }
                     } else {
-                        doRender();
+                        applySnapshot(cloudData);
                     }
                 }, err => {
                     console.error("Firestore onSnapshot error: ", err);
@@ -4048,10 +4065,12 @@
                 ntPopulateBranchCustSelects();
                 ntRenderBudgetCalcList();
                 ntRenderBudgetCalcPending();
+                if (typeof autoBcNumber === 'function') autoBcNumber();
                 if (typeof renderPvTracking === 'function') renderPvTracking();
             } else if (tabId === 'budget-proposal') {
                 ntPopulateBranchCustSelects();
                 ntRenderBudgetProposalList();
+                if (typeof autoBpNumber === 'function') autoBpNumber();
                 if (typeof renderBpTracking === 'function') renderBpTracking();
             } else if (tabId === 'proposal-letter') {
                 if (typeof plPopulateBranchSelects === 'function') plPopulateBranchSelects();
@@ -4956,7 +4975,10 @@
                     </div>
                     <div class="flex flex-col items-end gap-1.5">
                         ${statusBadge}
-                        <button onclick="deleteInvoice('${i.id}', event)" ${isStaff ? 'disabled class="text-gray-300 cursor-not-allowed"' : 'class="text-gray-400 hover:text-rose-600 transition p-1 text-xs"'}><i class="fa-regular fa-trash-can"></i></button>
+                        <div class="flex items-center gap-1">
+                            <button onclick="editInvoice('${i.id}', event)" ${isStaff ? 'disabled class="text-gray-300 cursor-not-allowed"' : 'class="text-gray-400 hover:text-blue-600 transition p-1 text-xs"'} title="ແກ້ໄຂ"><i class="fa-regular fa-pen-to-square"></i></button>
+                            <button onclick="deleteInvoice('${i.id}', event)" ${isStaff ? 'disabled class="text-gray-300 cursor-not-allowed"' : 'class="text-gray-400 hover:text-rose-600 transition p-1 text-xs"'} title="ລົບ"><i class="fa-regular fa-trash-can"></i></button>
+                        </div>
                     </div>
                 `;
                 container.appendChild(card);
@@ -5141,6 +5163,39 @@
         function closeInvoiceModal() {
             const modal = document.getElementById('invoiceModal');
             if (modal) modal.classList.add('hidden');
+        }
+
+        // Edit an existing invoice — ALL fields editable (price/items, date, branch, customer, status, currency...)
+        function editInvoice(id, event) {
+            if (event) event.stopPropagation();
+            if (currentUserRole === 'staff') return;
+            const iv = invoices.find(i => i.id === id);
+            if (!iv) { showToast('ບໍ່ພົບໃບບິນ', 'error'); return; }
+            openInvoiceModal(); // populates dropdowns/datalists + schedules auto-number
+            // Override with the invoice's saved values after openInvoiceModal's async number-gen settles
+            setTimeout(() => {
+                const set = (elid, val) => { const e = document.getElementById(elid); if (e) e.value = val; };
+                const titleEl = document.getElementById('invoiceModalTitle'); if (titleEl) titleEl.innerText = 'ແກ້ໄຂໃບບິນ ' + (iv.invoiceNo||'');
+                set('editInvId', iv.id);
+                set('invFormType', iv.type || 'IV');
+                set('invFormNo', iv.invoiceNo || '');
+                const bSel = document.getElementById('invFormBranch');
+                if (bSel) { bSel.disabled = (currentRole !== 'admin'); bSel.value = iv.branchId || ''; }
+                set('invFormCustId', iv.customerId || '');
+                set('invFormCustSearch', customers[iv.customerId] ? customers[iv.customerId].name : '');
+                set('invFormDate', iv.date || '');
+                set('invFormStatus', iv.status || 'Unpaid');
+                set('invFormMethod', iv.method || 'ເງິນໂອນ');
+                set('invFormCurrency', iv.currency || 'LAK');
+                set('invFormRemark', iv.remark || '');
+                set('invFormRevenueCat', iv.revenueCategory || '');
+                set('rvLinkedIv', iv.rvLinkedIv || '');
+                // Items
+                inv_items = (iv.items && iv.items.length)
+                    ? JSON.parse(JSON.stringify(iv.items))
+                    : [{ desc: iv.item || '', unit: 'ຄັ້ງ', qty: 1, price: iv.amount || 0 }];
+                renderInvItems();
+            }, 80);
         }
 
         // When user picks IV in RV mode, auto-fill all fields from that IV
@@ -5330,6 +5385,7 @@
                 bankName: b.bankName || ''
             };
 
+            ntStamp(invData);
             if (editId) {
                 const idx = invoices.findIndex(i => i.id === editId);
                 if (idx !== -1) {
@@ -5481,7 +5537,7 @@
                 const idx = aps.findIndex(item => item.id === editId);
                 if (idx !== -1) {
                     const oldStatus = aps[idx].status;
-                    aps[idx] = { id: editId, title, supplier, dueDate, amount, status, currency };
+                    aps[idx] = ntStamp({ id: editId, title, supplier, dueDate, amount, status, currency, branchId: aps[idx].branchId });
                     
                     if (status === 'Paid' && oldStatus !== 'Paid') {
                         autoCreateTransactionFromAp(aps[idx]);
@@ -5490,7 +5546,7 @@
                 showToast("ອັບເດດໜີ້ຕ້ອງສົ່ງສຳເລັດ!");
             } else {
                 const newId = "AP-" + Date.now().toString().substring(8);
-                const newAp = { id: newId, title, supplier, dueDate, amount, status, currency };
+                const newAp = ntStamp({ id: newId, title, supplier, dueDate, amount, status, currency });
                 aps.push(newAp);
                 
                 if (status === 'Paid') {
@@ -5854,12 +5910,12 @@
                 if (editId) {
                     const idx = transactions.findIndex(t => t.id === editId);
                     if (idx !== -1) {
-                        transactions[idx] = { id: editId, date, branch, type, category, item, amount, note, image: uploadedImageBase64, pvNo, pvDate, rvNo, rvDate, paymentMethod };
+                        transactions[idx] = ntStamp({ id: editId, date, branch, type, category, item, amount, note, image: uploadedImageBase64, pvNo, pvDate, rvNo, rvDate, paymentMethod });
                     }
                     showToast("ອັບເດດທຸລະກຳສຳເລັດ!");
                 } else {
                     const newId = "T-" + Date.now().toString().substring(8);
-                    transactions.push({ id: newId, date, branch, type, category, item, amount, note, image: uploadedImageBase64, pvNo, pvDate, rvNo, rvDate, paymentMethod });
+                    transactions.push(ntStamp({ id: newId, date, branch, type, category, item, amount, note, image: uploadedImageBase64, pvNo, pvDate, rvNo, rvDate, paymentMethod }));
                     showToast("ບັນທຶກທຸລະກຳໃໝ່ສຳເລັດ!");
                 }
 
@@ -9893,8 +9949,10 @@ function renderPvTracking() {
     const noEl = document.getElementById('pvTrackReportNo');
     if (noEl) noEl.innerText = `ເລກທີ: PVR-${(month||'').replace('-','')}`;
 
-    // Filter BCs by month + branch
+    // Filter BCs by month + branch. Business rule: the calc REPORT shows ONLY PAID calcs
+    // (pending → nowhere; approved → AP page only; paid → here + monthly income-expense report).
     const filteredBCs = (nt_budgetCalcs||[]).filter(bc => {
+        if (bc.status !== 'paid') return false;
         if (month && (bc.date||'').substring(0,7) !== month) return false;
         if (branchFilter !== 'all' && (bc.branchId||'') !== branchFilter) return false;
         return true;
@@ -9903,6 +9961,10 @@ function renderPvTracking() {
     // Group line items by category. Each entry keeps full per-line detail.
     const byCat = {};  // {cat: [{date, bcNo, rvRef, name, qty, unit, price, amount, note}]}
     filteredBCs.forEach(bc => {
+        // Reverse-lookup: find the budget proposal (ໃບສະເໜີຂໍງົບປະມານ) that references this calc
+        // via its pvRef/pvNumber, and show that BP's number in the tracking column.
+        const linkedBp = (nt_budgetPropols||[]).find(bp => bp.pvRef === bc.id || (bp.pvNumber && bp.pvNumber === bc.number));
+        const bpNoForCalc = linkedBp ? linkedBp.number : '-';
         (bc.items || []).forEach(it => {
             const cat = it.category || 'ບໍ່ມີປະເພດ';
             if (catFilter !== 'all' && cat !== catFilter) return;
@@ -9910,7 +9972,7 @@ function renderPvTracking() {
             if (!byCat[cat]) byCat[cat] = [];
             byCat[cat].push({
                 date: bc.date, bcNo: bc.number, rvRef: bc.rvRef || '-',
-                bpRef: bc.bpRef || '-',
+                bpRef: bpNoForCalc,
                 name: it.name||'-', qty: it.qty||1, unit: it.unit||'', price: it.price||0,
                 amount: amt, note: it.note||'', payee: bc.payee||''
             });
@@ -10010,7 +10072,13 @@ var pl_currentId = null;
 function plOnBranchChange() { plRefreshNumber(); }
 
 function plRefreshNumber() {
-    const branchId = document.getElementById('plBranch')?.value;
+    const sel = document.getElementById('plBranch');
+    if (!sel) return;
+    if (!sel.value) {
+        if (typeof currentRole !== 'undefined' && currentRole !== 'admin' && branches[currentRole]) sel.value = currentRole;
+        else { const ids = Object.keys(branches); if (ids.length === 1) sel.value = ids[0]; }
+    }
+    const branchId = sel.value;
     const date = document.getElementById('plDate')?.value;
     if (!branchId) { document.getElementById('plNumber').value = ''; return; }
     if (!pl_currentId) {
@@ -10293,17 +10361,20 @@ function ntFmt(n)      { return Number(n||0).toLocaleString(); }
 
 function ntGenNo(prefix, branchId, arr, dateStr) {
     const b = ntBranch(branchId);
-    const code = (b && (b.code || branchId)).toUpperCase();
+    // Null-safe branch code: use branch.code, else the branchId, else a generic 'XX' (never throw)
+    const code = String((b && (b.code || b.name)) || branchId || 'XX').toUpperCase().replace(/\s+/g,'').slice(0,6);
     // Use the document's date (or today) to determine the month bucket
     const d = dateStr ? new Date(dateStr) : new Date();
-    const yy = String(d.getFullYear()).slice(-2);
-    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const valid = !isNaN(d.getTime());
+    const dd = valid ? d : new Date();
+    const yy = String(dd.getFullYear()).slice(-2);
+    const mm = String(dd.getMonth()+1).padStart(2,'0');
     const ym = yy + mm;  // e.g. 2602 for Feb 2026
+    const targetYM = `${dd.getFullYear()}-${mm}`;
     // Count only records in the SAME branch AND SAME month → resets each month
     const sameMonthCount = (arr||[]).filter(x => {
-        if (x.branchId !== branchId) return false;
+        if (!x || x.branchId !== branchId) return false;
         const xd = (x.date || x.createdAt || '').toString().substring(0,7); // YYYY-MM
-        const targetYM = `${d.getFullYear()}-${mm}`;
         return xd === targetYM;
     }).length;
     const seq = String(sameMonthCount + 1).padStart(3,'0');
@@ -10335,7 +10406,7 @@ function ntPopulateBranchCustSelects() {
     const pvEl = document.getElementById('bpPvRef');
     if (pvEl) {
         const cur = pvEl.value;
-        pvEl.innerHTML = '<option value="">-- ເລືອກ PV --</option>';
+        pvEl.innerHTML = '<option value="">-- ເລືອກ ໃບຄິດໄລ່ --</option>';
         nt_budgetCalcs.forEach(bc => pvEl.appendChild(new Option(`${bc.number} (${ntFmt(bc.total)} LAK)`, bc.id)));
         if (cur) pvEl.value = cur;
     }
@@ -10529,8 +10600,16 @@ var bc_items = [];
 var bc_currentId = null;
 
 function autoBcNumber() {
-    const b = document.getElementById('bcBranch').value;
-    if (b) document.getElementById('bcNumber').value = ntGenNo('CALC', b, nt_budgetCalcs);
+    const sel = document.getElementById('bcBranch');
+    if (!sel) return;
+    // Auto-select a branch if none chosen (single branch, or staff's fixed branch)
+    if (!sel.value) {
+        if (typeof currentRole !== 'undefined' && currentRole !== 'admin' && branches[currentRole]) sel.value = currentRole;
+        else { const ids = Object.keys(branches); if (ids.length === 1) sel.value = ids[0]; }
+    }
+    const b = sel.value;
+    const date = document.getElementById('bcDate')?.value || '';
+    if (b && !bc_currentId) document.getElementById('bcNumber').value = ntGenNo('CALC', b, nt_budgetCalcs, date);
 }
 
 function newBudgetCalc() {
@@ -10545,6 +10624,7 @@ function newBudgetCalc() {
     document.getElementById('bcType').value = 'cost';
     document.getElementById('bcStatus').value = 'pending';
     ntRenderBcItems();
+    autoBcNumber();   // auto-fill the number immediately (picks single/staff branch if applicable)
     ntRenderBudgetCalcPrint(null);
     ntRenderBudgetCalcList();
 }
@@ -10677,6 +10757,7 @@ function saveBudgetCalc() {
     window._pvCostTrackRefs = [];
     window._pvIsFixedExpense = false;
 
+    ntStamp(bc);
     if (bc_currentId) { const idx = nt_budgetCalcs.findIndex(x=>x.id===bc_currentId); if(idx>=0) nt_budgetCalcs[idx]=bc; else nt_budgetCalcs.push(bc); }
     else nt_budgetCalcs.push(bc);
     bc_currentId = bc.id;
@@ -10730,6 +10811,7 @@ function applyCalcToAP(bc) {
         fromCalcId: bc.id
     };
     if (idx >= 0) aps[idx] = apObj; else aps.push(apObj);
+    ntStamp(apObj);
     safeSetLocalStorage('treasury_aps_pro', JSON.stringify(aps));
 }
 // Remove the AP entry tied to a calc (when paid or reverted)
@@ -11154,8 +11236,15 @@ function ntRenderBudgetCalcPrint(bc) {
 var bp_currentId = null;
 
 function autoBpNumber() {
-    const b = document.getElementById('bpBranch').value;
-    if (b) document.getElementById('bpNumber').value = ntGenNo('BP', b, nt_budgetPropols);
+    const sel = document.getElementById('bpBranch');
+    if (!sel) return;
+    if (!sel.value) {
+        if (typeof currentRole !== 'undefined' && currentRole !== 'admin' && branches[currentRole]) sel.value = currentRole;
+        else { const ids = Object.keys(branches); if (ids.length === 1) sel.value = ids[0]; }
+    }
+    const b = sel.value;
+    const date = document.getElementById('bpDate')?.value || '';
+    if (b && !bp_currentId) document.getElementById('bpNumber').value = ntGenNo('BP', b, nt_budgetPropols, date);
 }
 
 function newBudgetProposal() {
@@ -11169,6 +11258,7 @@ function newBudgetProposal() {
     document.getElementById('bpDetail').value = '';
     document.getElementById('bpApprover').value = 'ຜູ້ອຳນວຍການ (ຜອ)';
     document.getElementById('bpStatus').value = 'submitted';
+    autoBpNumber();   // auto-fill the number immediately
     ntRenderBudgetProposalPrint(null); ntRenderBudgetProposalList();
 }
 
@@ -11344,7 +11434,7 @@ function ntRenderBudgetProposalPrint(bp) {
         </div>
         <div class="bg-gray-50 border rounded p-4 text-xs mb-4 space-y-2"><p><span class="text-gray-500">ເຖິງ:</span> <strong>${bp.approver||'-'}</strong></p>
         <p><span class="text-gray-500">ຫົວຂໍ້:</span> <strong>${bp.title||'-'}</strong></p>
-        <p><span class="text-gray-500">ອ້າງ PV:</span> <strong>${bp.pvNumber||bp.pvRef||'-'}</strong></p>
+        <p><span class="text-gray-500">ອ້າງ ເລກທີ່ໃບຄິດໄລ່:</span> <strong>${bp.pvNumber||bp.pvRef||'-'}</strong></p>
         <p><span class="text-gray-500">ຈຳນວນຂໍ:</span> <strong class="text-indigo-700 text-base">${ntFmt(bp.amount)} ກີບ</strong></p></div>
         <div class="border rounded p-4 text-xs mb-6"><p class="font-bold mb-1">ລາຍລະອຽດ:</p><p style="white-space: pre-line">${bp.detail||'-'}</p></div>
         <!-- Signatures: ຜູ້ອຳນວຍການ ກ່ອນ → ຄະນະບໍລິຫານ → ຜູ້ຮ້ອງຂໍ ສຸດທ້າຍ (uploadable PNG) -->
