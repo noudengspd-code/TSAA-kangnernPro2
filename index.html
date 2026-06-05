@@ -656,10 +656,14 @@
                 </div>
 
                 <!-- FILTER BAR -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 no-print">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 no-print">
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">ຄົ້ນຫາ</label>
                         <input type="text" id="filterSearch" oninput="filterTransactions()" placeholder="ຄົ້ນຫາລາຍການ, ປະເພດ, ເລກທີ..." class="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">ເດືອນ</label>
+                        <input type="month" id="filterMonth" onchange="filterTransactions()" class="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">ປະເພດຫຼັກ</label>
@@ -1922,6 +1926,7 @@
                 <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">ລາຍການໃບຄິດໄລ່</h4>
                 <div class="space-y-1.5 mb-2 no-print">
                     <input type="month" id="bcListMonth" onchange="ntRenderBudgetCalcList()" class="w-full text-xs bg-white border border-gray-200 rounded-lg px-2 py-1.5">
+                    <select id="bcListBranch" onchange="ntRenderBudgetCalcList()" class="w-full text-xs bg-white border border-gray-200 rounded-lg px-2 py-1.5"><option value="all">ທຸກສາຂາ</option></select>
                     <input type="text" id="bcListSearch" oninput="ntRenderBudgetCalcList()" placeholder="🔍 ຄົ້ນຫາຜູ້ຮັບ/ເລກທີ..." class="w-full text-xs bg-white border border-gray-200 rounded-lg px-2 py-1.5">
                 </div>
                 <div id="budgetCalcListContainer" class="space-y-2">
@@ -2139,6 +2144,7 @@
                 <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">ລາຍການໃບສະເໜີຂໍງົບ</h4>
                 <div class="space-y-1.5 mb-2 no-print">
                     <input type="month" id="bpListMonth" onchange="ntRenderBudgetProposalList()" class="w-full text-xs bg-white border border-gray-200 rounded-lg px-2 py-1.5">
+                    <select id="bpListBranch" onchange="ntRenderBudgetProposalList()" class="w-full text-xs bg-white border border-gray-200 rounded-lg px-2 py-1.5"><option value="all">ທຸກສາຂາ</option></select>
                     <input type="text" id="bpListSearch" oninput="ntRenderBudgetProposalList()" placeholder="🔍 ຄົ້ນຫາ ເລື່ອງ/ເລກທີ..." class="w-full text-xs bg-white border border-gray-200 rounded-lg px-2 py-1.5">
                 </div>
                 <div id="budgetProposalListContainer" class="space-y-2">
@@ -3355,6 +3361,15 @@
             return id;
         })();
         var _ntApplyingRemote = false;   // true while applying a snapshot → suppresses re-upload (no echo loop)
+        // Globally-unique id generator: timestamp + this device's id + randomness, so two devices
+        // creating a record in the same millisecond NEVER produce the same id (which would make the
+        // merge treat them as one record and lose one). Keeps the human-readable prefix.
+        function ntUID(prefix) {
+            const t = Date.now().toString(36);
+            const dev = (typeof NT_DEVICE_ID === 'string' && NT_DEVICE_ID) ? NT_DEVICE_ID.replace(/[^a-z0-9]/gi,'').slice(-4) : 'xxxx';
+            const r = Math.random().toString(36).slice(2, 7);
+            return (prefix || 'ID-') + t + '-' + dev + '-' + r;
+        }
         var _ntSyncTimer = null;          // debounce timer for outgoing writes
         var _ntLastLocalWriteAt = 0;      // when this device last wrote (for conflict awareness)
         var _ntPendingWrite = false;      // a write is queued
@@ -3387,6 +3402,50 @@
         // with the newer per-record timestamp (_lm). This prevents a stale remote snapshot from
         // reverting a record the local user just edited ("dates changing by themselves"), and avoids
         // a tug-of-war between two devices each in their protect window.
+        // ===== Deletion tombstones =====
+        // Because merges are now UNION-based (a record is never dropped just because a stale
+        // snapshot lacks it), deletions must be tracked explicitly so they still propagate across
+        // devices. nt_deletions maps a record id → the time it was deleted. A record is removed
+        // only when a tombstone is at least as new as the record's last edit.
+        var nt_deletions = (function(){ try { return JSON.parse(localStorage.getItem('nt_deletions')||'{}'); } catch(_) { return {}; } })();
+        function ntMarkDeleted(ids) {
+            const list = Array.isArray(ids) ? ids : [ids];
+            const now = Date.now();
+            let changed = false;
+            list.forEach(id => { if (id != null) { nt_deletions[String(id)] = now; changed = true; } });
+            if (changed) {
+                try { localStorage.setItem('nt_deletions', JSON.stringify(nt_deletions)); } catch(_){}
+                if (typeof ntMarkLocalEdit === 'function') ntMarkLocalEdit();
+                if (typeof triggerCloudBackup === 'function') { try { triggerCloudBackup(); } catch(_){} }
+            }
+        }
+        // Drop any record whose id has a tombstone newer than (or equal to) its last edit.
+        function ntApplyDeletions(arr) {
+            if (!Array.isArray(arr) || !nt_deletions) return arr;
+            return arr.filter(r => {
+                if (!r || r.id == null) return true;
+                const del = nt_deletions[String(r.id)];
+                if (!del) return true;
+                const lm = Number(r._lm) || 0;
+                // If the record was edited AFTER it was deleted, it was re-created → keep it.
+                return lm > del;
+            });
+        }
+        // Merge remote tombstones into local (keep the newest deletion time per id), then prune
+        // tombstones that are very old to avoid unbounded growth.
+        function ntMergeDeletions(remoteDel) {
+            if (remoteDel && typeof remoteDel === 'object') {
+                Object.keys(remoteDel).forEach(id => {
+                    const t = Number(remoteDel[id]) || 0;
+                    if (t > (Number(nt_deletions[id]) || 0)) nt_deletions[id] = t;
+                });
+            }
+            // prune tombstones older than 60 days
+            const cutoff = Date.now() - 60*24*3600*1000;
+            Object.keys(nt_deletions).forEach(id => { if ((Number(nt_deletions[id])||0) < cutoff) delete nt_deletions[id]; });
+            try { localStorage.setItem('nt_deletions', JSON.stringify(nt_deletions)); } catch(_){}
+        }
+
         function ntMergeById(localArr, remoteArr, protectLocal) {
             if (!Array.isArray(remoteArr)) return localArr;
             if (!Array.isArray(localArr)) return remoteArr;
@@ -3407,28 +3466,46 @@
                     byId[r.id] = r;
                 }
             });
-            // Local-only records: keep if we're in the protect window (we just added them) OR
-            // if they carry a recent timestamp the remote simply hasn't seen yet.
+            // Local-only records: ALWAYS keep them. A record that exists locally but not in the
+            // remote snapshot must NOT be discarded — the remote may simply be stale or have been
+            // overwritten by another device/tab that hadn't yet received this record. Dropping it
+            // here caused data to vanish on refresh even though it had been saved. Deletions are
+            // handled explicitly via tombstones (ntApplyDeletions), never by absence from a snapshot.
             const remoteIds = new Set(remoteArr.map(r => r && r.id));
             localArr.forEach(l => {
                 if (!l || l.id == null || remoteIds.has(l.id)) return;
-                const recentlyEdited = (Number(l._lm) || 0) > (Date.now() - 30000);
-                if (protectLocal || recentlyEdited) byId[l.id] = l;
+                byId[l.id] = l;   // union — keep every local-only record
             });
             // Stable order: remote order first, then any extra local ones
             const out = []; const seen = new Set();
             remoteArr.forEach(r => { if (r && r.id != null && byId[r.id] && !seen.has(r.id)) { out.push(byId[r.id]); seen.add(r.id); } });
             Object.keys(byId).forEach(id => { if (!seen.has(id)) { out.push(byId[id]); seen.add(id); } });
-            return out;
+            return ntApplyDeletions(out);   // remove anything that was explicitly deleted
         }
 
-        // Merge two id-keyed objects (customers, branches): remote base + local-only/locally-edited keys.
+        // Merge two id-keyed objects (customers, branches): UNION — never drop a local-only key
+        // just because a stale snapshot lacks it (same data-loss fix as ntMergeById). For keys on
+        // both sides, the newer _lm wins. Deletions are handled via tombstones.
         function ntMergeObjById(localObj, remoteObj, protectLocal) {
             if (!remoteObj || typeof remoteObj !== 'object') return localObj;
             if (!localObj || typeof localObj !== 'object') return remoteObj;
             const out = { ...remoteObj };
-            if (protectLocal) {
-                Object.keys(localObj).forEach(k => { if (!(k in remoteObj)) out[k] = localObj[k]; });
+            Object.keys(localObj).forEach(k => {
+                if (!(k in remoteObj)) {
+                    out[k] = localObj[k];                       // local-only → always keep (union)
+                } else {
+                    const lm = Number(localObj[k] && localObj[k]._lm) || 0;
+                    const rm = Number(remoteObj[k] && remoteObj[k]._lm) || 0;
+                    if (lm > rm) out[k] = localObj[k];          // local edit newer
+                    else if (rm === lm && protectLocal) out[k] = localObj[k];
+                }
+            });
+            // Apply deletion tombstones
+            if (nt_deletions) {
+                Object.keys(out).forEach(k => {
+                    const del = nt_deletions[String(k)];
+                    if (del) { const lm = Number(out[k] && out[k]._lm) || 0; if (!(lm > del)) delete out[k]; }
+                });
             }
             return out;
         }
@@ -3638,6 +3715,8 @@
                         const protectLocal = (Date.now() - _ntLastLocalEditAt) < 12000;
                         _ntApplyingRemote = true;
                         try {
+                            // Merge deletion tombstones FIRST so the per-store merges below prune deleted records.
+                            if (data.nt_deletions && typeof ntMergeDeletions === 'function') ntMergeDeletions(data.nt_deletions);
                             if (data.transactions) { transactions = ntMergeById(transactions, data.transactions, protectLocal); localStorage.setItem("treasury_transactions_pro", JSON.stringify(transactions)); }
                             if (data.branches)     { branches = ntMergeObjById(branches, data.branches, protectLocal); localStorage.setItem("treasury_branches_pro", JSON.stringify(branches)); }
                             if (data.categories)   { categories = data.categories; localStorage.setItem("treasury_categories_pro", JSON.stringify(categories)); }
@@ -4460,6 +4539,8 @@
             const type = filterTypeEl ? filterTypeEl.value : "all";
             const filterBranchEl = document.getElementById('filterBranch');
             const branch = filterBranchEl ? filterBranchEl.value : "all";
+            const filterMonthEl = document.getElementById('filterMonth');
+            const fMonth = filterMonthEl ? filterMonthEl.value : "";
 
             let filtered = data.filter(t => {
                 const matchesSearch = (t.category && t.category.toLowerCase().includes(search)) || 
@@ -4469,7 +4550,8 @@
                                       (t.rvNo && t.rvNo.toLowerCase().includes(search));
                 const matchesType = type === 'all' || t.type === type;
                 const matchesBranch = branch === 'all' || t.branch === branch;
-                return matchesSearch && matchesType && matchesBranch;
+                const matchesMonth = !fMonth || (t.date||'').substring(0,7) === fMonth;
+                return matchesSearch && matchesType && matchesBranch && matchesMonth;
             });
 
             filtered.sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -4533,6 +4615,7 @@
         function clearFilters() {
             const fs = document.getElementById('filterSearch'); if(fs) fs.value = "";
             const ft = document.getElementById('filterType'); if(ft) ft.value = "all";
+            const fm = document.getElementById('filterMonth'); if(fm) fm.value = "";
             const fb = document.getElementById('filterBranch');
             if (currentRole === 'admin' && fb) {
                 fb.value = "all";
@@ -4915,7 +4998,7 @@
                 customers[editId] = data;
                 showToast("ອັບເດດຂໍ້ມູນລູກຄ້າສຳເລັດ!");
             } else {
-                const newId = "C-" + Date.now().toString().substring(8);
+                const newId = ntUID("C-");
                 customers[newId] = data;
                 showToast("ເພີ່ມຂໍ້ມູນລູກຄ້າໃໝ່ສຳເລັດ!");
             }
@@ -4943,6 +5026,7 @@
             }
             showConfirm(`ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລົບລູກຄ້າ "${customers[id].name}"?`, () => {
                 delete customers[id];
+                if (typeof ntMarkDeleted==='function') ntMarkDeleted(id);
                 localStorage.setItem("treasury_customers_pro", JSON.stringify(customers));
                 triggerCloudBackup();
                 renderCustomersList();
@@ -5350,7 +5434,7 @@
             const name = searchInput.value.trim();
             if (!name) { showToast('ກະລຸນາພິມຊື່ກ່ອນ','warning'); return; }
             if (!confirm(`ບໍ່ພົບລູກຄ້າ "${name}". ສ້າງລູກຄ້າໃໝ່?`)) return;
-            const id = 'C_' + Date.now();
+            const id = ntUID('C_');
             customers[id] = { name, taxId: '', address: '', tel: '' };
             safeSetLocalStorage('treasury_customers_pro', JSON.stringify(customers));
             // Refresh datalist
@@ -5435,7 +5519,7 @@
             const b = branches[finalBranchId] || {};
 
             const invData = {
-                id: editId || ("INV-" + Date.now().toString().slice(-9)),
+                id: editId || ntUID("INV-"),
                 invoiceNo, date,
                 customerId: finalCustomerId,
                 type,
@@ -5527,6 +5611,7 @@
             if (event) event.stopPropagation();
             showConfirm("ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລົບໃບບິນນີ້?", () => {
                 invoices = invoices.filter(i => i.id !== id);
+                if (typeof ntMarkDeleted==='function') ntMarkDeleted(id);
                 localStorage.setItem("treasury_invoices_pro", JSON.stringify(invoices));
                 triggerCloudBackup();
                 if (activeInvoiceId === id && invoices.length > 0) {
@@ -5610,7 +5695,7 @@
                 }
                 showToast("ອັບເດດໜີ້ຕ້ອງສົ່ງສຳເລັດ!");
             } else {
-                const newId = "AP-" + Date.now().toString().substring(8);
+                const newId = ntUID("AP-");
                 const newAp = ntStamp({ id: newId, title, supplier, dueDate, amount, status, currency });
                 aps.push(newAp);
                 
@@ -5690,6 +5775,7 @@
 
             showConfirm("ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລົບລາຍການໜີ້ຕ້ອງສົ່ງນີ້?", () => {
                 aps = aps.filter(item => item.id !== id);
+                if (typeof ntMarkDeleted==='function') ntMarkDeleted(id);
                 localStorage.setItem("treasury_aps_pro", JSON.stringify(aps));
                 triggerCloudBackup();
                 renderArApLedgers();
@@ -6006,6 +6092,7 @@
 
             showConfirm("ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລົບທຸລະກຳນີ້?", () => {
                 transactions = transactions.filter(t => t.id !== id);
+                if (typeof ntMarkDeleted==='function') ntMarkDeleted(id);
                 localStorage.setItem("treasury_transactions_pro", JSON.stringify(transactions));
                 triggerCloudBackup();
                 refreshAllViews();
@@ -6208,6 +6295,7 @@
             }
             showConfirm(`ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລົບສາຂາ "${branches[id].name}"?`, () => {
                 delete branches[id];
+                if (typeof ntMarkDeleted==='function') ntMarkDeleted(id);
                 localStorage.setItem("treasury_branches_pro", JSON.stringify(branches));
                 triggerCloudBackup();
                 populateBranchSelectors();
@@ -7865,7 +7953,54 @@ var costRows = [];
             _ntSyncTimer = setTimeout(_ntFlushCloudWrite, 800);
         }
 
-        // Actually perform the write (called after debounce settles)
+        // Merge two category objects (each = { groupName: [names...] }) by unioning the lists,
+        // so one device adding a category never erases another device's additions.
+        function _ntMergeCategories(localCat, cloudCat) {
+            if (!cloudCat || typeof cloudCat !== 'object') return localCat;
+            if (!localCat || typeof localCat !== 'object') return cloudCat;
+            const out = {};
+            const groups = new Set([...Object.keys(localCat), ...Object.keys(cloudCat)]);
+            groups.forEach(g => {
+                const a = Array.isArray(localCat[g]) ? localCat[g] : [];
+                const b = Array.isArray(cloudCat[g]) ? cloudCat[g] : [];
+                out[g] = [...new Set([...b, ...a])];   // union, preserve order (cloud first, then new local)
+            });
+            return out;
+        }
+
+        // Adopt a merged payload into local memory + localStorage so this device converges with the
+        // record-level merge that was just written to the cloud. Deferred while the user is mid-edit.
+        var _ntPendingMerged = null;
+        function _ntAdoptMerged(m) {
+            if (!m) return;
+            _ntApplyingRemote = true;
+            try {
+                if (m.transactions) { transactions = m.transactions; localStorage.setItem('treasury_transactions_pro', JSON.stringify(transactions)); }
+                if (m.invoices)     { invoices = m.invoices; localStorage.setItem('treasury_invoices_pro', JSON.stringify(invoices)); }
+                if (m.aps)          { aps = m.aps; localStorage.setItem('treasury_aps_pro', JSON.stringify(aps)); }
+                if (m.customers)    { customers = m.customers; localStorage.setItem('treasury_customers_pro', JSON.stringify(customers)); }
+                if (m.branches)     { branches = m.branches; localStorage.setItem('treasury_branches_pro', JSON.stringify(branches)); }
+                if (m.categories)   { categories = m.categories; localStorage.setItem('treasury_categories_pro', JSON.stringify(categories)); }
+                if (typeof nt_quotations    !== 'undefined' && m.nt_quotations)    { nt_quotations = m.nt_quotations; localStorage.setItem('nt_quotations', JSON.stringify(nt_quotations)); }
+                if (typeof nt_budgetCalcs   !== 'undefined' && m.nt_budgetCalcs)   { nt_budgetCalcs = m.nt_budgetCalcs; localStorage.setItem('nt_budgetCalcs', JSON.stringify(nt_budgetCalcs)); }
+                if (typeof nt_budgetPropols !== 'undefined' && m.nt_budgetPropols) { nt_budgetPropols = m.nt_budgetPropols; localStorage.setItem('nt_budgetPropols', JSON.stringify(nt_budgetPropols)); }
+                if (typeof nt_contracts     !== 'undefined' && m.nt_contracts)     { nt_contracts = m.nt_contracts; localStorage.setItem('nt_contracts', JSON.stringify(nt_contracts)); }
+                if (typeof nt_contactLogs   !== 'undefined' && m.nt_contactLogs)   { nt_contactLogs = m.nt_contactLogs; localStorage.setItem('nt_contactLogs', JSON.stringify(nt_contactLogs)); }
+                if (typeof nt_aftersales    !== 'undefined' && m.nt_aftersales)    { nt_aftersales = m.nt_aftersales; localStorage.setItem('nt_aftersales', JSON.stringify(nt_aftersales)); }
+                if (m.nt_costTrack) localStorage.setItem('nt_costTrack', JSON.stringify(m.nt_costTrack));
+                if (typeof nt_proposalLetters !== 'undefined' && m.nt_proposalLetters) { nt_proposalLetters = m.nt_proposalLetters; localStorage.setItem('nt_proposalLetters', JSON.stringify(nt_proposalLetters)); }
+                if (m.nt_staffDuties) { if (typeof nt_staffDuties !== 'undefined') nt_staffDuties = m.nt_staffDuties; localStorage.setItem('nt_staffDuties', JSON.stringify(m.nt_staffDuties)); }
+                if (m.nt_accrualProj) { if (typeof nt_accrualProj !== 'undefined') nt_accrualProj = m.nt_accrualProj; localStorage.setItem('nt_accrualProj', JSON.stringify(m.nt_accrualProj)); }
+            } catch(e) { console.warn('adopt merged error', e); }
+            const busy = (function(){ const a=document.activeElement; return (a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.tagName==='SELECT')) || Array.from(document.querySelectorAll('.fixed.inset-0')).some(mo=>!mo.classList.contains('hidden')&&mo.offsetParent!==null); })();
+            if (!busy) { try { if (typeof refreshAllViews === 'function') refreshAllViews(); } catch(e){} }
+            setTimeout(() => { _ntApplyingRemote = false; }, 50);
+        }
+
+        // Actually perform the write (called after debounce settles).
+        // Uses a TRANSACTION: read the current cloud doc, merge record-by-record (newest _lm wins,
+        // union, tombstones), then write. This guarantees a device NEVER clobbers another device's
+        // newer records — fixing "another person's branch/date changed when I saved".
         function _ntFlushCloudWrite() {
             if (!db || !navigator.onLine) return;
             if (_ntApplyingRemote) return;
@@ -7873,76 +8008,81 @@ var costRows = [];
             _ntLastLocalWriteAt = Date.now();
             const stamp = NT_DEVICE_ID + ':' + _ntLastLocalWriteAt;
             _ntLastAppliedStamp = stamp; // we authored this; ignore its echo
+            const ref = db.collection('treasury_backups').doc('main_data');
+            const statusLabel = document.getElementById('cloudStatusLabel');
 
-            const payload = {
-                // Core financial data
-                transactions: transactions,
-                invoices: invoices,
-                aps: aps,
-                customers: customers,
-                branches: branches,
-                categories: categories,
-                companyInfo: companyInfo,
-                // NT module data
-                nt_quotations:    (typeof nt_quotations    !== 'undefined') ? nt_quotations    : [],
-                nt_budgetCalcs:   (typeof nt_budgetCalcs   !== 'undefined') ? nt_budgetCalcs   : [],
-                nt_budgetPropols: (typeof nt_budgetPropols !== 'undefined') ? nt_budgetPropols : [],
-                nt_contracts:     (typeof nt_contracts     !== 'undefined') ? nt_contracts     : [],
-                nt_contactLogs:   (typeof nt_contactLogs   !== 'undefined') ? nt_contactLogs   : [],
-                nt_aftersales:    (typeof nt_aftersales    !== 'undefined') ? nt_aftersales    : [],
-                // Cost & settings data (previously NOT synced → caused cross-device mismatch)
-                nt_costTrack:        JSON.parse(localStorage.getItem('nt_costTrack') || '[]'),
-                nt_costTemplates:    (typeof nt_costTemplates    !== 'undefined') ? nt_costTemplates    : [],
-                nt_serviceCategories:(typeof nt_serviceCategories !== 'undefined') ? nt_serviceCategories : [],
-                nt_fixedExpenses:    (typeof nt_fixedExpenses    !== 'undefined') ? nt_fixedExpenses    : [],
-                // NOTE: nt_signatures are intentionally NOT here — they are images that can be
-                // large and would push this document past Firestore's 1 MiB limit, causing the
-                // sync to fail and the connection to appear to drop. They sync via their own
-                // document (triggerSignatureBackup) instead.
-                nt_staffDuties:      JSON.parse(localStorage.getItem('nt_staffDuties') || '[]'),
-                nt_accrualProj:      JSON.parse(localStorage.getItem('nt_accrualProj') || '{}'),
-                nt_proposalLetters:  (typeof nt_proposalLetters !== 'undefined') ? nt_proposalLetters : [],
-                // Sync metadata
-                _updatedBy: NT_DEVICE_ID,
-                _stamp: stamp,
-                updatedAt: new Date()
+            const buildMerged = (cloud) => {
+                cloud = cloud || {};
+                if (cloud.nt_deletions && typeof ntMergeDeletions === 'function') ntMergeDeletions(cloud.nt_deletions);
+                const A = (loc, key) => ntMergeById(Array.isArray(loc) ? loc : [], Array.isArray(cloud[key]) ? cloud[key] : [], false);
+                const localCostTrack = JSON.parse(localStorage.getItem('nt_costTrack') || '[]');
+                const localStaff     = JSON.parse(localStorage.getItem('nt_staffDuties') || '[]');
+                const localAccrual   = JSON.parse(localStorage.getItem('nt_accrualProj') || '{}');
+                return {
+                    transactions: A(transactions, 'transactions'),
+                    invoices:     A(invoices, 'invoices'),
+                    aps:          A(aps, 'aps'),
+                    customers:    ntMergeObjById(customers, cloud.customers || {}, false),
+                    branches:     ntMergeObjById(branches, cloud.branches || {}, false),
+                    categories:   _ntMergeCategories(categories, cloud.categories),
+                    companyInfo:  companyInfo || cloud.companyInfo || {},
+                    nt_quotations:    A((typeof nt_quotations!=='undefined')?nt_quotations:[], 'nt_quotations'),
+                    nt_budgetCalcs:   A((typeof nt_budgetCalcs!=='undefined')?nt_budgetCalcs:[], 'nt_budgetCalcs'),
+                    nt_budgetPropols: A((typeof nt_budgetPropols!=='undefined')?nt_budgetPropols:[], 'nt_budgetPropols'),
+                    nt_contracts:     A((typeof nt_contracts!=='undefined')?nt_contracts:[], 'nt_contracts'),
+                    nt_contactLogs:   A((typeof nt_contactLogs!=='undefined')?nt_contactLogs:[], 'nt_contactLogs'),
+                    nt_aftersales:    A((typeof nt_aftersales!=='undefined')?nt_aftersales:[], 'nt_aftersales'),
+                    nt_costTrack:     A(localCostTrack, 'nt_costTrack'),
+                    nt_costTemplates: (typeof nt_costTemplates!=='undefined')?nt_costTemplates:(cloud.nt_costTemplates||[]),
+                    nt_serviceCategories: (typeof nt_serviceCategories!=='undefined')?nt_serviceCategories:(cloud.nt_serviceCategories||[]),
+                    nt_fixedExpenses: (typeof nt_fixedExpenses!=='undefined')?nt_fixedExpenses:(cloud.nt_fixedExpenses||[]),
+                    nt_staffDuties:   A(localStaff, 'nt_staffDuties'),
+                    nt_accrualProj:   Object.assign({}, cloud.nt_accrualProj || {}, localAccrual),
+                    nt_proposalLetters: A((typeof nt_proposalLetters!=='undefined')?nt_proposalLetters:[], 'nt_proposalLetters'),
+                    nt_deletions:     (typeof nt_deletions!=='undefined')?nt_deletions:{},
+                    _updatedBy: NT_DEVICE_ID, _stamp: stamp, updatedAt: new Date()
+                };
             };
 
-            const statusLabel = document.getElementById('cloudStatusLabel');
-            // merge:true so a partial write never wipes fields; doc is small enough to set fully here.
-            db.collection('treasury_backups').doc('main_data').set(payload)
-                .then(() => {
-                    _ntRetryCount = 0;   // success → reset retry counter
-                    if (statusLabel) { statusLabel.textContent = 'Cloud Synced ✓'; statusLabel.className = 'font-bold cloud-status-ok'; }
-                    setTimeout(() => {
-                        if (statusLabel && statusLabel.textContent === 'Cloud Synced ✓') {
-                            statusLabel.textContent = 'Cloud Firestore Ready';
-                            statusLabel.className = 'font-bold cloud-status-ok';
-                        }
-                    }, 2000);
-                })
-                .catch(err => {
-                    if (statusLabel) { statusLabel.textContent = 'Sync Failed!'; statusLabel.className = 'font-bold cloud-status-error'; }
-                    if (typeof logError === 'function') logError('Firestore backup failed: ' + (err && err.message));
-                    // Bounded retry with backoff. Do NOT retry permanent errors (e.g. payload too
-                    // large, permission denied) — endlessly retrying those caused the "always
-                    // failing / keeps disconnecting" behavior.
-                    const msg = (err && (err.code || err.message) || '').toString().toLowerCase();
-                    const permanent = msg.includes('invalid-argument') || msg.includes('too large') ||
-                                      msg.includes('permission') || msg.includes('exceeds the maximum');
-                    if (permanent) {
-                        _ntRetryCount = 0;
-                        if (statusLabel) { statusLabel.textContent = 'Sync error (data too large)'; statusLabel.className = 'font-bold cloud-status-error'; }
-                        return;
-                    }
-                    if (_ntRetryCount < 3) {
-                        _ntRetryCount++;
-                        const delay = 2000 * _ntRetryCount; // 2s, 4s, 6s backoff
-                        setTimeout(() => { if (db && navigator.onLine && !_ntApplyingRemote) _ntFlushCloudWrite(); }, delay);
-                    } else {
-                        _ntRetryCount = 0; // give up this burst; next genuine edit will try again
-                    }
-                });
+            const onOk = (merged) => {
+                _ntRetryCount = 0;
+                if (merged) { _ntPendingMerged = merged; }
+                // Adopt the merged superset locally so this device converges (listener will ignore our echo).
+                if (_ntPendingMerged) { try { _ntAdoptMerged(_ntPendingMerged); } catch(e){} _ntPendingMerged = null; }
+                if (statusLabel) { statusLabel.textContent = 'Cloud Synced ✓'; statusLabel.className = 'font-bold cloud-status-ok'; }
+                setTimeout(() => { if (statusLabel && statusLabel.textContent === 'Cloud Synced ✓') { statusLabel.textContent = 'Cloud Firestore Ready'; statusLabel.className = 'font-bold cloud-status-ok'; } }, 2000);
+            };
+            const onErr = (err) => {
+                if (statusLabel) { statusLabel.textContent = 'Sync Failed!'; statusLabel.className = 'font-bold cloud-status-error'; }
+                if (typeof logError === 'function') logError('Firestore backup failed: ' + (err && err.message));
+                const msg = (err && (err.code || err.message) || '').toString().toLowerCase();
+                const permanent = msg.includes('invalid-argument') || msg.includes('too large') || msg.includes('permission') || msg.includes('exceeds the maximum');
+                if (permanent) { _ntRetryCount = 0; if (statusLabel) { statusLabel.textContent = 'Sync error (data too large)'; statusLabel.className = 'font-bold cloud-status-error'; } return; }
+                if (_ntRetryCount < 3) { _ntRetryCount++; setTimeout(() => { if (db && navigator.onLine && !_ntApplyingRemote) _ntFlushCloudWrite(); }, 2000 * _ntRetryCount); }
+                else { _ntRetryCount = 0; }
+            };
+
+            // Preferred path: transaction (read-merge-write) — never clobbers others' newer records.
+            let usedTx = false;
+            try {
+                if (typeof db.runTransaction === 'function') {
+                    usedTx = true;
+                    let mergedRef = null;
+                    db.runTransaction(tx => tx.get(ref).then(snap => {
+                        const merged = buildMerged(snap && snap.exists ? snap.data() : {});
+                        mergedRef = merged;
+                        tx.set(ref, merged);
+                    })).then(() => onOk(mergedRef)).catch(err => {
+                        // Fall back to a plain merged set() if the transaction fails (e.g. SDK quirk)
+                        const merged = buildMerged({});
+                        ref.set(merged).then(() => onOk(merged)).catch(onErr);
+                    });
+                }
+            } catch(e) { usedTx = false; }
+            if (!usedTx) {
+                const merged = buildMerged({});
+                ref.set(merged).then(() => onOk(merged)).catch(onErr);
+            }
         }
 
         // ===== Signature sync (separate document) =====
@@ -8265,7 +8405,7 @@ function saveCostCalculation(costDestination) {
 
     // 1. Always save to cost tracker (history)
     const entry = {
-        id: 'CT_'+Date.now(),
+        id: ntUID('CT_'),
         rvId: cost_currentRvId, rvNo: rv.invoiceNo||'',
         customerId: rv.customerId||'',
         customerName: customers[rv.customerId||'']?.name||'',
@@ -9024,7 +9164,7 @@ function importParsedData(targetType, headers, dataRows) {
                 if (newData.name && c.name !== newData.name) c.name = newData.name;
                 updated++;
             } else {
-                const id = 'C_' + Date.now() + '_' + count;
+                const id = ntUID('C_') + '_' + count;
                 customers[id] = newData;
                 count++;
             }
@@ -9048,7 +9188,7 @@ function importParsedData(targetType, headers, dataRows) {
             const dup = transactions.find(t => t.date===date && t.amount===amount && t.item===item && t.type===type);
             if (dup) { skipped++; return; }
             transactions.push({
-                id: 'T_' + Date.now() + '_' + count,
+                id: ntUID('T_') + '_' + count,
                 date, type, category: String(r[ci]||''),
                 item, amount,
                 branch: String(r[bi]||Object.keys(branches)[0]||'B01'),
@@ -9073,7 +9213,7 @@ function importParsedData(targetType, headers, dataRows) {
             const dup = aps.find(a => a.supplier===supplier && a.title===title && a.amount===amount && a.dueDate===dueDate);
             if (dup) { skipped++; return; }
             aps.push({
-                id: 'AP_' + Date.now() + '_' + count,
+                id: ntUID('AP_') + '_' + count,
                 title, supplier, amount, dueDate,
                 status: 'Unpaid', branchId: Object.keys(branches)[0]||'B01'
             });
@@ -9143,7 +9283,7 @@ function importParsedData(targetType, headers, dataRows) {
                 updated++;
             } else {
                 nt_contracts.push({
-                    id: 'CT_' + Date.now() + '_' + count,
+                    id: ntUID('CT_') + '_' + count,
                     ...data,
                     createdAt: new Date().toISOString()
                 });
@@ -9788,7 +9928,7 @@ function saveStaffDuty(event) {
     if (!name) { showToast('ກະລຸນາໃສ່ຊື່ພະນັກງານ','warning'); return; }
     const branchId = document.getElementById('staffDutyBranch').value;
     nt_staffDuties.push({
-        id: 'SD_'+Date.now(),
+        id: ntUID('SD_'),
         name,
         position: document.getElementById('staffDutyPosition').value.trim(),
         branchId,
@@ -10256,7 +10396,19 @@ function plPopulateCalcRefs() {
     if (!sel) return;
     const cur = sel.value;
     sel.innerHTML = '<option value="">-- ບໍ່ເຊື່ອມ / ໃສ່ເອງ --</option>';
+    // Calc ids already linked by ANOTHER proposal letter → hide them (reduces confusion when
+    // searching for a calc number to link). The currently-edited letter's own calc stays visible.
+    const linkedElsewhere = new Set();
+    (typeof nt_proposalLetters !== 'undefined' ? nt_proposalLetters : []).forEach(p => {
+        if (!p || (typeof pl_currentId !== 'undefined' && p.id === pl_currentId)) return;
+        if (p.calcId) linkedElsewhere.add(p.calcId);
+    });
+    const ownCalcId = (typeof pl_currentId !== 'undefined' && pl_currentId)
+        ? ((nt_proposalLetters.find(p => p.id === pl_currentId) || {}).calcId || '')
+        : '';
     (nt_budgetCalcs||[]).forEach(bc => {
+        // Skip calcs linked by another letter (but always keep the one this letter already uses)
+        if (linkedElsewhere.has(bc.id) && bc.id !== ownCalcId) return;
         sel.appendChild(new Option(`${bc.number} — ${ntFmt(bc.total)} LAK`, bc.id));
     });
     if (cur) sel.value = cur;
@@ -10420,6 +10572,7 @@ function editPlLetter(id) {
 function deletePlLetter(id) {
     if (!confirm('ລົບໜັງສືສະເໜີນີ້?')) return;
     nt_proposalLetters = nt_proposalLetters.filter(x=>x.id!==id);
+    if (typeof ntMarkDeleted==='function') ntMarkDeleted(id);
     if (pl_currentId===id) resetPlForm();
     plSave();
     renderPlTracking();
@@ -10725,6 +10878,7 @@ function ntRenderQuotationList() {
 function ntDeleteQuotation(id) {
     if (!confirm('ລົບໃບສະເໜີລາຄານີ້?')) return;
     nt_quotations = nt_quotations.filter(x => x.id !== id);
+    if (typeof ntMarkDeleted==='function') ntMarkDeleted(id);
     if (qt_currentId === id) {
         qt_currentId = null;
         qt_items = [];
@@ -10826,6 +10980,39 @@ function bcPopulateBpRefs() {
 
 function addBcItem() { bc_items.push({ name:'', category:'', unit:'', qty:1, price:0, amount:0, note:'' }); ntRenderBcItems(); }
 
+// Clickable unit list for budget-calc items. Persists on this device; defaults cover common units.
+var nt_units = (function(){
+    const def = ['ມື້','ຄືນ','ຄັ້ງ','ກ່ອງ','ຊຸດ','ຄົນ','ໂຕ','ແຜ່ນ','ເຄື່ອງ','ຄັນ','ເດືອນ','ປີ','ຊົ່ວໂມງ','ໜ່ວຍ','ກິໂລ','ແມັດ','ລິດ'];
+    try { const s = JSON.parse(localStorage.getItem('nt_units') || 'null'); if (Array.isArray(s) && s.length) return [...new Set([...s, ...def])]; } catch(_) {}
+    return def;
+})();
+function ntSaveUnits() { try { localStorage.setItem('nt_units', JSON.stringify(nt_units)); } catch(_){} }
+// Build <option> list for the unit dropdown; always includes the item's current value (even if custom)
+function ntUnitOpts(current) {
+    const cur = current || '';
+    let list = nt_units.slice();
+    if (cur && !list.includes(cur)) list = [cur, ...list];   // keep an existing custom value visible
+    return '<option value="">--</option>' +
+        list.map(u => `<option value="${(u||'').replace(/"/g,'&quot;')}"${u===cur?' selected':''}>${u}</option>`).join('') +
+        '<option value="__ADD_UNIT__" style="color:#10b981;font-weight:bold">➕ ເພີ່ມ...</option>';
+}
+// Handle unit selection, including the "add new unit" choice
+function bcUnitChanged(idx, sel) {
+    if (sel.value === '__ADD_UNIT__') {
+        const nu = prompt('ໃສ່ຊື່ຫົວໜ່ວຍໃໝ່ (ເຊັ່ນ: ກ່ອງ, ຄັ້ງ, ມື້):');
+        if (nu && nu.trim()) {
+            const v = nu.trim();
+            if (!nt_units.includes(v)) { nt_units.push(v); ntSaveUnits(); }
+            bc_items[idx].unit = v;
+        } else {
+            bc_items[idx].unit = bc_items[idx].unit || '';
+        }
+        ntRenderBcItems();
+        return;
+    }
+    bc_items[idx].unit = sel.value;
+}
+
 function ntRenderBcItems() {
     const tbody = document.getElementById('bcItemsBody');
     if (!tbody) return;
@@ -10856,7 +11043,7 @@ function ntRenderBcItems() {
             <td class="p-1 text-center text-gray-400 text-xs">${i+1}</td>
             <td class="p-1"><input type="text" value="${(item.name||'').replace(/"/g,'&quot;')}" onchange="bc_items[${i}].name=this.value" placeholder="ລາຍການ" class="w-full border-b border-gray-200 px-1 py-1 text-xs bg-transparent focus:outline-none"></td>
             <td class="p-1"><select onchange="bcCategoryChanged(${i}, this)" class="w-full border-b border-gray-200 px-1 py-1 text-xs bg-transparent focus:outline-none">${catOpts(item.category)}</select></td>
-            <td class="p-1"><input type="text" value="${(item.unit||'').replace(/"/g,'&quot;')}" onchange="bc_items[${i}].unit=this.value" placeholder="ໜ່ວຍ" class="w-full border-b border-gray-200 px-1 py-1 text-xs text-center bg-transparent focus:outline-none"></td>
+            <td class="p-1"><select onchange="bcUnitChanged(${i}, this)" class="w-full border-b border-gray-200 px-1 py-1 text-xs text-center bg-transparent focus:outline-none">${ntUnitOpts(item.unit)}</select></td>
             <td class="p-1"><input type="number" value="${qty}" min="1" onchange="bc_items[${i}].qty=+this.value;ntRenderBcItems()" class="w-full border-b border-gray-200 px-1 py-1 text-xs text-center bg-transparent focus:outline-none"></td>
             <td class="p-1"><input type="number" value="${price}" min="0" onchange="bc_items[${i}].price=+this.value;ntRenderBcItems()" class="w-full border-b border-gray-200 px-1 py-1 text-xs text-right bg-transparent focus:outline-none"></td>
             <td class="p-1 text-right font-bold text-rose-600 text-xs">${ntFmt(amount)}</td>
@@ -11221,8 +11408,17 @@ function ntRenderBudgetCalcList() {
     if (!el) return;
     const fMonth = document.getElementById('bcListMonth')?.value || '';
     const fSearch = (document.getElementById('bcListSearch')?.value || '').toLowerCase().trim();
+    // Populate + read branch filter
+    const bSel = document.getElementById('bcListBranch');
+    let fBranch = 'all';
+    if (bSel) {
+        const cur = bSel.value || 'all';
+        bSel.innerHTML = '<option value="all">ທຸກສາຂາ</option>' + Object.keys(branches).map(bid => `<option value="${bid}">${branches[bid].name||bid}</option>`).join('');
+        bSel.value = cur; fBranch = cur;
+    }
     let list = [...nt_budgetCalcs].filter(bc => {
         if (fMonth && (bc.date||'').substring(0,7) !== fMonth) return false;
+        if (fBranch !== 'all' && (bc.branchId||'') !== fBranch) return false;
         if (fSearch && !((bc.payee||'').toLowerCase().includes(fSearch) || (bc.number||'').toLowerCase().includes(fSearch))) return false;
         return true;
     });
@@ -11264,6 +11460,7 @@ function ntDeleteBudgetCalc(id) {
 
     // 4. Remove the PV itself
     nt_budgetCalcs = nt_budgetCalcs.filter(x => x.id !== id);
+    if (typeof ntMarkDeleted==='function') ntMarkDeleted(id);
     if (bc_currentId === id) {
         bc_currentId = null;
         bc_items = [];
@@ -11523,8 +11720,16 @@ function ntRenderBudgetProposalList() {
     const el = document.getElementById('budgetProposalListContainer'); if(!el) return;
     const fMonth = document.getElementById('bpListMonth')?.value || '';
     const fSearch = (document.getElementById('bpListSearch')?.value || '').toLowerCase().trim();
+    const bSel = document.getElementById('bpListBranch');
+    let fBranch = 'all';
+    if (bSel) {
+        const cur = bSel.value || 'all';
+        bSel.innerHTML = '<option value="all">ທຸກສາຂາ</option>' + Object.keys(branches).map(bid => `<option value="${bid}">${branches[bid].name||bid}</option>`).join('');
+        bSel.value = cur; fBranch = cur;
+    }
     let list = [...nt_budgetPropols].filter(bp => {
         if (fMonth && (bp.date||'').substring(0,7) !== fMonth) return false;
+        if (fBranch !== 'all' && (bp.branchId||'') !== fBranch) return false;
         if (fSearch && !((bp.title||'').toLowerCase().includes(fSearch) || (bp.number||'').toLowerCase().includes(fSearch) || (bp.subject||'').toLowerCase().includes(fSearch))) return false;
         return true;
     });
@@ -11548,6 +11753,7 @@ function ntRenderBudgetProposalList() {
 function ntDeleteBudgetProposal(id) {
     if (!confirm('ລົບໃບສະເໜີຂໍງົບປະມານນີ້?')) return;
     nt_budgetPropols = nt_budgetPropols.filter(x => x.id !== id);
+    if (typeof ntMarkDeleted==='function') ntMarkDeleted(id);
     if (bp_currentId === id) {
         bp_currentId = null;
         newBudgetProposal();
@@ -12155,7 +12361,7 @@ function saveContract(event) {
         if(typeof showToast==='function') showToast('ອັບເດດສັນຍາສຳເລັດ','success');
     } else {
         // ADD new contract
-        nt_contracts.push({ id:'CT_'+Date.now(), ...data, createdAt:new Date().toISOString() });
+        nt_contracts.push({ id:ntUID('CT_'), ...data, createdAt:new Date().toISOString() });
         if(typeof showToast==='function') showToast('ບັນທຶກສັນຍາໃໝ່ສຳເລັດ','success');
     }
     ntSave();
@@ -12427,7 +12633,7 @@ function contractScheduleInvoice(contractId, idx) {
     // Create an IV (collection invoice)
     const invNo = ntGenNo('IV', c.branchId || Object.keys(branches)[0] || '', invoices.filter(i=>i.type==='IV'), s.month+'-'+String(s.dueDay||1).padStart(2,'0'));
     invoices.push({
-        id: 'INV_'+Date.now()+'_'+idx,
+        id: ntUID('INV_')+'_'+idx,
         invoiceNo: invNo,
         type: 'IV',
         date: `${s.month}-${String(s.dueDay||1).padStart(2,'0')}`,
@@ -12625,6 +12831,7 @@ function bulkDeleteContracts() {
     if (!ids.length) { showToast('ກະລຸນາເລືອກສັນຍາທີ່ຕ້ອງການລົບ','warning'); return; }
     if (!confirm(`ລົບສັນຍາ ${ids.length} ລາຍການ?\nການກະທຳນີ້ກູ້ຄືນບໍ່ໄດ້.`)) return;
     nt_contracts = nt_contracts.filter(c => !ids.includes(c.id));
+    if (typeof ntMarkDeleted==='function') ntMarkDeleted(ids);
     bulkClear('contracts');
     ntSave();
     ntRenderContractTable();
@@ -12638,6 +12845,7 @@ function bulkDeleteCustomers() {
     if (!ids.length) { showToast('ກະລຸນາເລືອກລູກຄ້າທີ່ຕ້ອງການລົບ','warning'); return; }
     if (!confirm(`ລົບລູກຄ້າ ${ids.length} ລາຍການ?\nການກະທຳນີ້ກູ້ຄືນບໍ່ໄດ້.`)) return;
     ids.forEach(id => { delete customers[id]; });
+    if (typeof ntMarkDeleted==='function') ntMarkDeleted(ids);
     bulkClear('customers');
     safeSetLocalStorage('treasury_customers_pro', JSON.stringify(customers));
     if (typeof refreshAllViews === 'function') refreshAllViews();
@@ -12722,7 +12930,7 @@ function saveAftersales(event){
     const cust=ntCust(custId);
     const editingId = window._editingAftersalesId;
     const entry={
-        id: editingId || ('AS_'+Date.now()),
+        id: editingId || ntUID('AS_'),
         customerId:custId, customerName:cust?.name||'',
         serviceCategory: document.getElementById('asServiceCategory')?.value || '',
         docItems: document.getElementById('asDocItems')?.value || '',
@@ -12752,6 +12960,7 @@ function saveAftersales(event){
 function deleteAftersales(id) {
     if (!confirm('ລົບລາຍການນີ້?')) return;
     nt_aftersales = nt_aftersales.filter(x => x.id !== id);
+    if (typeof ntMarkDeleted==='function') ntMarkDeleted(id);
     ntSave(); ntRenderAftersales();
     if(typeof showToast==='function') showToast('ລົບສຳເລັດ','success');
 }
@@ -12768,7 +12977,7 @@ function saveContactLog(event){
     if(event) event.preventDefault();
     const custId=document.getElementById('clCustSel').value;
     const cust=ntCust(custId);
-    const log={id:'CL_'+Date.now(), customerId:custId, customerName:cust?.name||'',
+    const log={id:ntUID('CL_'), customerId:custId, customerName:cust?.name||'',
         date:document.getElementById('clDate').value,
         type:document.getElementById('clType').value,
         summary:document.getElementById('clSummary').value,
@@ -12992,6 +13201,7 @@ function openContactLogModalForCustomer(customerId) {
 function deleteContactLog(id) {
     if (!confirm('ລົບການຕິດຕໍ່ນີ້?')) return;
     nt_contactLogs = nt_contactLogs.filter(x => x.id !== id);
+    if (typeof ntMarkDeleted==='function') ntMarkDeleted(id);
     ntSave();
     ntRenderContactLogTable();
     if (typeof showToast === 'function') showToast('ລົບສຳເລັດ','success');
