@@ -1280,6 +1280,8 @@
                         <div class="flex items-center gap-3 flex-wrap">
                             <label class="text-xs font-bold text-gray-600">ເລືອກເດືອນຕິດຕາມ:</label>
                             <input type="month" id="trackerMonth" onchange="renderInvoicesList(); renderInvoiceDocPreview();" class="text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-pink-500 font-bold">
+                            <label class="text-xs font-bold text-gray-600">ສາຂາ:</label>
+                            <select id="trackerBranch" onchange="renderInvoicesList()" class="text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-pink-500"><option value="all">ທຸກສາຂາ</option></select>
                             <label class="text-xs font-bold text-gray-600">ຄົ້ນຫາລູກຄ້າ:</label>
                             <input type="text" id="invSearchName" oninput="renderInvoicesList()" placeholder="ພິມຊື່ລູກຄ້າ..." class="text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-pink-500" list="invSearchDatalist">
                             <datalist id="invSearchDatalist"></datalist>
@@ -3357,6 +3359,8 @@
         var _ntLastLocalWriteAt = 0;      // when this device last wrote (for conflict awareness)
         var _ntPendingWrite = false;      // a write is queued
         var _ntLastAppliedStamp = '';     // last remote update stamp this device applied
+        var _ntRetryCount = 0;            // bounded retry counter for the main data write
+        var _ntLastAppliedSigStamp = '';  // last signature-doc stamp this device applied
         // Records (by id) this device touched since its last successful upload.
         // Used to PROTECT a user's just-made edits from being clobbered by a slightly-older
         // remote snapshot from another device (the "2nd/3rd person's data vanished" bug).
@@ -3704,8 +3708,36 @@
                     }
                 }, err => {
                     console.error("Firestore onSnapshot error: ", err);
-                    if (typeof setOnlineStatus === 'function') setOnlineStatus(false);
+                    // Transient errors are normal (Firestore auto-reconnects). Only show offline
+                    // if the network is genuinely down — don't flap the status on every blip.
+                    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+                        if (typeof setOnlineStatus === 'function') setOnlineStatus(false);
+                    }
                 });
+
+                // ===== Separate listener for the SIGNATURES document =====
+                const sigRef = db.collection('treasury_backups').doc('signatures');
+                sigRef.onSnapshot(sigSnap => {
+                    if (!sigSnap.exists) return;
+                    const sd = sigSnap.data();
+                    const stamp = sd._stamp || '';
+                    if (stamp && stamp === _ntLastAppliedSigStamp) return;             // our own echo
+                    if (sd._updatedBy && sd._updatedBy === NT_DEVICE_ID) return;        // we wrote it
+                    if (!sd.signatures || typeof sd.signatures !== 'object') return;
+                    _ntLastAppliedSigStamp = stamp;
+                    try {
+                        // Merge remote signatures with local (remote wins per-key, but never wipes
+                        // a local key the remote doesn't have).
+                        const local = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
+                        const merged = Object.assign({}, local, sd.signatures);
+                        localStorage.setItem('nt_signatures', JSON.stringify(merged));
+                        // Re-render only if not mid-edit, so signatures appear on open docs
+                        const a = document.activeElement;
+                        const busy = (a && (a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.tagName==='SELECT')) ||
+                                     Array.from(document.querySelectorAll('.fixed.inset-0')).some(m => !m.classList.contains('hidden') && m.offsetParent !== null);
+                        if (!busy && typeof refreshAllViews === 'function') { _ntApplyingRemote = true; try { refreshAllViews(); } finally { setTimeout(()=>{_ntApplyingRemote=false;},50); } }
+                    } catch(e) { console.warn('signature sync apply error', e); }
+                }, err => { console.warn('signature onSnapshot error', err); });
             } catch (err) {
                 console.error("Firestore loading failed: ", err);
             }
@@ -4078,6 +4110,11 @@
                 if (typeof plRefreshNumber === 'function') plRefreshNumber();
                 if (typeof renderPlTracking === 'function') renderPlTracking();
                 const pd = document.getElementById('plDate'); if (pd && !pd.value) pd.value = new Date().toISOString().split('T')[0];
+                // Pre-fill the fixed default references if the field is empty and not editing
+                const plRefsEl = document.getElementById('plRefs');
+                if (plRefsEl && !plRefsEl.value.trim() && typeof pl_currentId !== 'undefined' && !pl_currentId && typeof NT_PL_DEFAULT_REFS === 'string') {
+                    plRefsEl.value = NT_PL_DEFAULT_REFS;
+                }
             } else if (tabId === 'doc-tracker') {
                 ntPopulateBranchCustSelects();
                 ntRenderDocTracker();
@@ -4923,6 +4960,15 @@
             const trackerMonth = document.getElementById('trackerMonth');
             const filterMonth = trackerMonth ? trackerMonth.value : "";
             const searchName = (document.getElementById('invSearchName')?.value || '').toLowerCase().trim();
+            const branchFilter = document.getElementById('trackerBranch')?.value || 'all';
+
+            // Populate branch filter dropdown (preserve selection)
+            const tbf = document.getElementById('trackerBranch');
+            if (tbf) {
+                const cur = tbf.value || 'all';
+                tbf.innerHTML = '<option value="all">ທຸກສາຂາ</option>' + Object.keys(branches).map(bid => `<option value="${bid}">${branches[bid].name||bid}</option>`).join('');
+                tbf.value = cur;
+            }
 
             // Update datalist with customer names for autocomplete
             const datalist = document.getElementById('invSearchDatalist');
@@ -4934,9 +4980,13 @@
             if (currentRole !== 'admin') {
                 filtered = filtered.filter(i => i.branchId === currentRole);
             }
+            // Branch filter (admin can pick a specific branch; staff already locked above)
+            if (branchFilter !== 'all') {
+                filtered = filtered.filter(i => (i.branchId||'') === branchFilter);
+            }
 
             if (filterMonth) {
-                filtered = filtered.filter(i => i.date.substring(0, 7) === filterMonth);
+                filtered = filtered.filter(i => (i.date||'').substring(0, 7) === filterMonth);
             }
 
             if (searchName) {
@@ -5114,7 +5164,22 @@
             const titleEl = document.getElementById('invoiceModalTitle');
             if (titleEl) titleEl.innerText = "ສ້າງໃບບິນໃໝ່";
             const invFormDate = document.getElementById('invFormDate');
-            if (invFormDate) invFormDate.valueAsDate = new Date();
+            if (invFormDate) {
+                // If a month is selected in the list filter, default the new bill's date to THAT
+                // month (so back-dated bills don't accidentally get today's date). Use today's day
+                // within the selected month when valid; otherwise the 1st. Current month → today.
+                const selMonth = (document.getElementById('trackerMonth')?.value || '').trim(); // YYYY-MM
+                const now = new Date();
+                const curMonth = now.toISOString().substring(0,7);
+                if (selMonth && /^\d{4}-\d{2}$/.test(selMonth) && selMonth !== curMonth) {
+                    const [yy, mm] = selMonth.split('-').map(Number);
+                    const lastDay = new Date(yy, mm, 0).getDate();
+                    const day = Math.min(now.getDate(), lastDay);
+                    invFormDate.value = `${selMonth}-${String(day).padStart(2,'0')}`;
+                } else {
+                    invFormDate.valueAsDate = now;
+                }
+            }
 
             // Populate customer datalist (typeahead — works with 200+ customers)
             const datalist = document.getElementById('invCustomerDatalist');
@@ -7830,7 +7895,10 @@ var costRows = [];
                 nt_costTemplates:    (typeof nt_costTemplates    !== 'undefined') ? nt_costTemplates    : [],
                 nt_serviceCategories:(typeof nt_serviceCategories !== 'undefined') ? nt_serviceCategories : [],
                 nt_fixedExpenses:    (typeof nt_fixedExpenses    !== 'undefined') ? nt_fixedExpenses    : [],
-                nt_signatures:       JSON.parse(localStorage.getItem('nt_signatures') || '{}'),
+                // NOTE: nt_signatures are intentionally NOT here — they are images that can be
+                // large and would push this document past Firestore's 1 MiB limit, causing the
+                // sync to fail and the connection to appear to drop. They sync via their own
+                // document (triggerSignatureBackup) instead.
                 nt_staffDuties:      JSON.parse(localStorage.getItem('nt_staffDuties') || '[]'),
                 nt_accrualProj:      JSON.parse(localStorage.getItem('nt_accrualProj') || '{}'),
                 nt_proposalLetters:  (typeof nt_proposalLetters !== 'undefined') ? nt_proposalLetters : [],
@@ -7844,6 +7912,7 @@ var costRows = [];
             // merge:true so a partial write never wipes fields; doc is small enough to set fully here.
             db.collection('treasury_backups').doc('main_data').set(payload)
                 .then(() => {
+                    _ntRetryCount = 0;   // success → reset retry counter
                     if (statusLabel) { statusLabel.textContent = 'Cloud Synced ✓'; statusLabel.className = 'font-bold cloud-status-ok'; }
                     setTimeout(() => {
                         if (statusLabel && statusLabel.textContent === 'Cloud Synced ✓') {
@@ -7854,9 +7923,55 @@ var costRows = [];
                 })
                 .catch(err => {
                     if (statusLabel) { statusLabel.textContent = 'Sync Failed!'; statusLabel.className = 'font-bold cloud-status-error'; }
-                    if (typeof logError === 'function') logError('Firestore backup failed: ' + err.message);
-                    // Retry once after 3s in case of transient network blip
-                    setTimeout(() => { if (_ntPendingWrite || true) triggerCloudBackup(); }, 3000);
+                    if (typeof logError === 'function') logError('Firestore backup failed: ' + (err && err.message));
+                    // Bounded retry with backoff. Do NOT retry permanent errors (e.g. payload too
+                    // large, permission denied) — endlessly retrying those caused the "always
+                    // failing / keeps disconnecting" behavior.
+                    const msg = (err && (err.code || err.message) || '').toString().toLowerCase();
+                    const permanent = msg.includes('invalid-argument') || msg.includes('too large') ||
+                                      msg.includes('permission') || msg.includes('exceeds the maximum');
+                    if (permanent) {
+                        _ntRetryCount = 0;
+                        if (statusLabel) { statusLabel.textContent = 'Sync error (data too large)'; statusLabel.className = 'font-bold cloud-status-error'; }
+                        return;
+                    }
+                    if (_ntRetryCount < 3) {
+                        _ntRetryCount++;
+                        const delay = 2000 * _ntRetryCount; // 2s, 4s, 6s backoff
+                        setTimeout(() => { if (db && navigator.onLine && !_ntApplyingRemote) _ntFlushCloudWrite(); }, delay);
+                    } else {
+                        _ntRetryCount = 0; // give up this burst; next genuine edit will try again
+                    }
+                });
+        }
+
+        // ===== Signature sync (separate document) =====
+        // Signatures are images; keeping them out of the main data doc prevents the main sync
+        // from ever exceeding the 1 MiB limit. They live in their own document and sync independently.
+        var _ntSigSyncTimer = null, _ntSigRetryCount = 0;
+        function triggerSignatureBackup() {
+            if (_ntApplyingRemote) return;
+            if (typeof ntMarkLocalEdit === 'function') ntMarkLocalEdit();
+            if (!db || !navigator.onLine) return;
+            if (_ntSigSyncTimer) clearTimeout(_ntSigSyncTimer);
+            _ntSigSyncTimer = setTimeout(_ntFlushSignatureWrite, 900);
+        }
+        function _ntFlushSignatureWrite() {
+            if (!db || !navigator.onLine || _ntApplyingRemote) return;
+            let sigs = {};
+            try { sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}'); } catch(_) {}
+            const stamp = NT_DEVICE_ID + ':' + Date.now();
+            _ntLastAppliedSigStamp = stamp;
+            const payload = { signatures: sigs, _updatedBy: NT_DEVICE_ID, _stamp: stamp, updatedAt: new Date() };
+            db.collection('treasury_backups').doc('signatures').set(payload)
+                .then(() => { _ntSigRetryCount = 0; })
+                .catch(err => {
+                    const msg = (err && (err.code || err.message) || '').toString().toLowerCase();
+                    const permanent = msg.includes('invalid-argument') || msg.includes('too large') ||
+                                      msg.includes('permission') || msg.includes('exceeds the maximum');
+                    if (permanent) { _ntSigRetryCount = 0; if (typeof showToast==='function') showToast('ລາຍເຊັນໃຫຍ່ເກີນ — ບັນທຶກໃນເຄື່ອງເທົ່ານັ້ນ', 'warning'); return; }
+                    if (_ntSigRetryCount < 2) { _ntSigRetryCount++; setTimeout(_ntFlushSignatureWrite, 2500 * _ntSigRetryCount); }
+                    else _ntSigRetryCount = 0;
                 });
         }
 
@@ -9421,8 +9536,8 @@ function ntSignatureSlot(role, key) {
     const sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
     const saved = sigs[key];
     const imgHtml = saved && saved.img
-        ? `<img src="${saved.img}" style="max-height:${saved.h||48}px; max-width:${saved.w||130}px; object-fit:contain;" class="mx-auto">`
-        : `<div class="h-12"></div>`;
+        ? `<img src="${saved.img}" style="height:${saved.h||60}px; max-width:${saved.w||150}px; object-fit:contain;" class="mx-auto">`
+        : `<div class="h-16"></div>`;
     return `
     <div class="text-center text-xs">
         <p class="text-slate-950 font-bold mb-1">${role}</p>
@@ -9430,7 +9545,7 @@ function ntSignatureSlot(role, key) {
             ${imgHtml}
             <div class="border-t border-gray-400 mt-1 pt-1 text-gray-400">ລາຍເຊັນ & ຊື່</div>
             <div class="no-print absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-white/70">
-                <button onclick="ntUploadSignature('${key}')" class="text-[10px] bg-indigo-600 text-white px-2 py-1 rounded shadow" title="ອັບໂຫຼດລາຍເຊັນ (PNG)"><i class="fa-solid fa-upload mr-1"></i>ລາຍເຊັນ</button>
+                <button onclick="ntUploadSignature('${key}')" class="text-[10px] bg-indigo-600 text-white px-2 py-1 rounded shadow" title="ອັບໂຫຼດລາຍເຊັນ (PNG/JPG)"><i class="fa-solid fa-upload mr-1"></i>ລາຍເຊັນ</button>
                 ${saved && saved.img ? `<button onclick="ntAdjustSignature('${key}')" class="text-[10px] bg-amber-500 text-white px-2 py-1 rounded shadow ml-1" title="ປັບຂະໜາດ"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button><button onclick="ntRemoveSignature('${key}')" class="text-[10px] bg-rose-500 text-white px-2 py-1 rounded shadow ml-1" title="ລົບ"><i class="fa-solid fa-trash"></i></button>` : ''}
             </div>
         </div>
@@ -9444,8 +9559,8 @@ function ntSignatureBlock(roles, areaKey) {
         const key = `${areaKey}_${i}`;
         const saved = sigs[key];
         const imgHtml = saved && saved.img
-            ? `<img src="${saved.img}" style="max-height:${saved.h||60}px; max-width:${saved.w||140}px; object-fit:contain;" class="mx-auto">`
-            : `<div class="h-14"></div>`;
+            ? `<img src="${saved.img}" style="height:${saved.h||70}px; max-width:${saved.w||150}px; object-fit:contain;" class="mx-auto">`
+            : `<div class="h-16"></div>`;
         return `
         <div class="text-center text-xs flex-1">
             <p class="font-bold mb-1">${role}</p>
@@ -9453,7 +9568,7 @@ function ntSignatureBlock(roles, areaKey) {
                 ${imgHtml}
                 <div class="border-t border-gray-400 mt-1 pt-1 text-gray-400">ລາຍເຊັນ & ຊື່</div>
                 <div class="no-print absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-white/70">
-                    <button onclick="ntUploadSignature('${key}')" class="text-[10px] bg-indigo-600 text-white px-2 py-1 rounded shadow" title="ອັບໂຫຼດລາຍເຊັນ (PNG)"><i class="fa-solid fa-upload mr-1"></i>ລາຍເຊັນ</button>
+                    <button onclick="ntUploadSignature('${key}')" class="text-[10px] bg-indigo-600 text-white px-2 py-1 rounded shadow" title="ອັບໂຫຼດລາຍເຊັນ (PNG/JPG)"><i class="fa-solid fa-upload mr-1"></i>ລາຍເຊັນ</button>
                     ${saved && saved.img ? `<button onclick="ntAdjustSignature('${key}')" class="text-[10px] bg-amber-500 text-white px-2 py-1 rounded shadow ml-1" title="ປັບຂະໜາດ"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button><button onclick="ntRemoveSignature('${key}')" class="text-[10px] bg-rose-500 text-white px-2 py-1 rounded shadow ml-1" title="ລົບ"><i class="fa-solid fa-trash"></i></button>` : ''}
                 </div>
             </div>
@@ -9462,23 +9577,72 @@ function ntSignatureBlock(roles, areaKey) {
     return `<div class="nt-signature-block flex justify-around gap-6 mt-8 pt-4">${cols}</div>`;
 }
 
-// Upload a PNG signature into a slot
+// Upload a signature image into a slot. Accepts ANY image format (PNG/JPG/JPEG/WEBP...),
+// auto-resizes & compresses it so it fits localStorage + cloud sync, and preserves PNG transparency.
 function ntUploadSignature(key) {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/png';
+    input.accept = 'image/*';            // accept all image types, not just PNG
     input.onchange = (e) => {
-        const file = e.target.files[0];
+        const file = e.target.files && e.target.files[0];
         if (!file) return;
-        if (!file.type.includes('png')) { showToast('ກະລຸນາໃຊ້ໄຟລ໌ PNG ເທົ່ານັ້ນ', 'warning'); return; }
+        if (!file.type || file.type.indexOf('image') !== 0) {
+            showToast('ກະລຸນາເລືອກໄຟລ໌ຮູບພາບ (PNG, JPG ...)', 'warning');
+            return;
+        }
         const reader = new FileReader();
+        reader.onerror = () => showToast('ອ່ານໄຟລ໌ບໍ່ໄດ້ ລອງໃໝ່', 'error');
         reader.onload = (ev) => {
-            const sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
-            sigs[key] = { img: ev.target.result, w: 140, h: 60, x: 0, y: 0 };
-            localStorage.setItem('nt_signatures', JSON.stringify(sigs));
-            if (typeof triggerCloudBackup === 'function') try{ triggerCloudBackup(); }catch(_){}
-            if (typeof refreshAllViews === 'function') refreshAllViews();
-            showToast('ອັບໂຫຼດລາຍເຊັນສຳເລັດ', 'success');
+            const img = new Image();
+            img.onload = () => {
+                try {
+                    // Scale down for STORAGE so the data URL stays small (keeps cloud sync reliable)
+                    const MAX_W = 360, MAX_H = 360;   // square-ish cap so tall signatures keep height
+                    let w = img.width, h = img.height;
+                    const ratio = Math.min(MAX_W / w, MAX_H / h, 1);
+                    w = Math.round(w * ratio); h = Math.round(h * ratio);
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    const isPng = (file.type || '').includes('png');
+                    let dataUrl;
+                    if (isPng) {
+                        ctx.clearRect(0, 0, w, h);            // keep transparency
+                        ctx.drawImage(img, 0, 0, w, h);
+                        dataUrl = canvas.toDataURL('image/png');
+                        // PNG can be heavy; if too big, re-encode as JPEG on white to shrink
+                        if (dataUrl.length > 90000) {
+                            ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,w,h); ctx.drawImage(img,0,0,w,h);
+                            dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+                        }
+                    } else {
+                        ctx.fillStyle = '#ffffff';            // flatten onto white for JPGs
+                        ctx.fillRect(0, 0, w, h);
+                        ctx.drawImage(img, 0, 0, w, h);
+                        dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+                    }
+                    const sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
+                    // DISPLAY size: allow a TALLER signature (portrait). Fit within a 170(w) x 150(h)
+                    // box keeping aspect — so vertical signatures get more height than before.
+                    const BOX_W = 170, BOX_H = 150;
+                    const dispRatio = Math.min(BOX_W / w, BOX_H / h, 1);
+                    const dispW = Math.max(40, Math.round(w * dispRatio));
+                    const dispH = Math.max(20, Math.round(h * dispRatio));
+                    sigs[key] = { img: dataUrl, w: dispW, h: dispH, x: 0, y: 0 };
+                    const okSave = (typeof safeSetLocalStorage === 'function')
+                        ? safeSetLocalStorage('nt_signatures', JSON.stringify(sigs))
+                        : (function(){ try { localStorage.setItem('nt_signatures', JSON.stringify(sigs)); return true; } catch(_) { return false; } })();
+                    if (okSave === false) { showToast('ພື້ນທີ່ຈັດເກັບເຕັມ ລອງຮູບນ້ອຍກວ່າ', 'error'); return; }
+                    if (typeof triggerSignatureBackup === 'function') try{ triggerSignatureBackup(); }catch(_){}
+                    if (typeof refreshAllViews === 'function') refreshAllViews();
+                    showToast('ອັບໂຫຼດລາຍເຊັນສຳເລັດ — ຈະຄ້າງໄວ້ໃນຟອມຈົນກວ່າຈະປ່ຽນໃໝ່', 'success');
+                } catch (err) {
+                    console.error('signature upload error', err);
+                    showToast('ອັບໂຫຼດລາຍເຊັນບໍ່ສຳເລັດ: ' + (err && err.message || ''), 'error');
+                }
+            };
+            img.onerror = () => showToast('ຮູບພາບເສຍຫາຍ ຫຼື ບໍ່ຮອງຮັບ', 'error');
+            img.src = ev.target.result;
         };
         reader.readAsDataURL(file);
     };
@@ -9490,15 +9654,15 @@ function ntAdjustSignature(key) {
     const sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
     if (!sigs[key]) return;
     const cur = sigs[key];
-    const w = prompt('ຄວາມກວ້າງລາຍເຊັນ (px, 40-300):', cur.w || 140);
+    const w = prompt('ຄວາມກວ້າງລາຍເຊັນ (px, 40-320):', cur.w || 150);
     if (w === null) return;
-    const h = prompt('ຄວາມສູງລາຍເຊັນ (px, 20-150):', cur.h || 60);
+    const h = prompt('ຄວາມສູງລາຍເຊັນ (px, 20-320) — ໃສ່ຫຼາຍຂຶ້ນສຳລັບລາຍເຊັນແນວຕັ້ງ:', cur.h || 120);
     if (h === null) return;
-    cur.w = Math.max(40, Math.min(300, parseInt(w) || 140));
-    cur.h = Math.max(20, Math.min(150, parseInt(h) || 60));
+    cur.w = Math.max(40, Math.min(320, parseInt(w) || 150));
+    cur.h = Math.max(20, Math.min(320, parseInt(h) || 120));
     sigs[key] = cur;
     localStorage.setItem('nt_signatures', JSON.stringify(sigs));
-    if (typeof triggerCloudBackup === 'function') try{ triggerCloudBackup(); }catch(_){}
+    if (typeof triggerSignatureBackup === 'function') try{ triggerSignatureBackup(); }catch(_){}
     if (typeof refreshAllViews === 'function') refreshAllViews();
     showToast('ປັບຂະໜາດລາຍເຊັນສຳເລັດ', 'success');
 }
@@ -9508,7 +9672,7 @@ function ntRemoveSignature(key) {
     const sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
     delete sigs[key];
     localStorage.setItem('nt_signatures', JSON.stringify(sigs));
-    if (typeof triggerCloudBackup === 'function') try{ triggerCloudBackup(); }catch(_){}
+    if (typeof triggerSignatureBackup === 'function') try{ triggerSignatureBackup(); }catch(_){}
     if (typeof refreshAllViews === 'function') refreshAllViews();
     showToast('ລົບລາຍເຊັນສຳເລັດ', 'success');
 }
@@ -10126,11 +10290,16 @@ function resetPlForm() {
     document.getElementById('plSubject').value = 'ຂໍອະນຸມັດງົບປະມານ';
     document.getElementById('plTo').value = 'ທ່ານ ຜູ້ອຳນວຍການ TSAA ຈຳກັດ';
     document.getElementById('plDept').value = 'ບໍລິຫານ';
+    // Fixed default references (each on its own line). User can add more lines below these.
+    const plRefs = document.getElementById('plRefs');
+    if (plRefs) plRefs.value = NT_PL_DEFAULT_REFS;
     document.getElementById('plDate').value = new Date().toISOString().split('T')[0];
     document.getElementById('plStatus').value = 'pending';
     plRefreshNumber();
     document.getElementById('plPrintArea').innerHTML = '<div class="text-center text-gray-400 py-12"><i class="fa-solid fa-envelope-open-text text-5xl mb-3 block"></i><p>ຄີຂໍ້ມູນ ແລ້ວກົດ "ບັນທຶກ" ເພື່ອເບິ່ງຕົວຢ່າງ</p></div>';
 }
+// Fixed default "ອີງຕາມ" references that pre-fill every new proposal letter.
+var NT_PL_DEFAULT_REFS = 'ກົດລະບຽບຂອງບໍລິສັດ\nຂໍ້ຕົກລົງແຕ່ງຕັ້ງຫົວໜ້າຄະນະບໍລິຫານ ສະບັບເລກທີ່ 2511001/TSAA ລົງວັນທີ 14/11/2025';
 
 function savePlLetter() {
     const branchId = document.getElementById('plBranch').value;
@@ -10139,7 +10308,10 @@ function savePlLetter() {
     const amount = parseFloat(document.getElementById('plAmount').value) || 0;
     if (amount <= 0) { showToast('ໃສ່ຈຳນວນເງິນ', 'warning'); return; }
     const existing = pl_currentId ? nt_proposalLetters.find(x=>x.id===pl_currentId) : null;
-    const autoNo = (existing && existing.number) || document.getElementById('plNumber').value || ntGenNo('SNS', branchId, nt_proposalLetters, date);
+    let autoNo = (existing && existing.number) || document.getElementById('plNumber').value || ntGenNo('SNS', branchId, nt_proposalLetters, date);
+    if (!existing && nt_proposalLetters.some(x => x && x.id !== pl_currentId && (x.number === autoNo))) {
+        autoNo = ntGenNo('SNS', branchId, nt_proposalLetters.filter(x => x.id !== pl_currentId), date);
+    }
     const calcId = document.getElementById('plCalcRef').value;
     const calcRef = calcId ? (nt_budgetCalcs.find(x=>x.id===calcId)?.number || '') : '';
     const pl = {
@@ -10371,15 +10543,27 @@ function ntGenNo(prefix, branchId, arr, dateStr) {
     const mm = String(dd.getMonth()+1).padStart(2,'0');
     const ym = yy + mm;  // e.g. 2602 for Feb 2026
     const targetYM = `${dd.getFullYear()}-${mm}`;
-    // Count only records in the SAME branch AND SAME month → resets each month
-    const sameMonthCount = (arr||[]).filter(x => {
-        if (!x || x.branchId !== branchId) return false;
-        const xd = (x.date || x.createdAt || '').toString().substring(0,7); // YYYY-MM
-        return xd === targetYM;
-    }).length;
-    const seq = String(sameMonthCount + 1).padStart(3,'0');
-    // Format: PREFIX-CODE-YYMM-SEQ  (e.g. PV-HQ-2602-001)
-    return `${prefix}-${code}-${ym}-${seq}`;
+    // Collect EVERY number already in use (across .number / .paidNumber / .invoiceNo) so we
+    // never hand out a duplicate — even if a record was deleted or two devices created at once.
+    const used = new Set();
+    (arr||[]).forEach(x => {
+        if (!x) return;
+        if (x.number) used.add(x.number);
+        if (x.paidNumber) used.add(x.paidNumber);
+        if (x.invoiceNo) used.add(x.invoiceNo);
+    });
+    // Count records in the SAME branch AND SAME month → starting sequence (resets each month)
+    // Start the search from 1 and pick the LOWEST sequence number not yet used for this
+    // prefix+branch+month. This way, when an old number is deleted, its slot is reused
+    // (no permanent gaps), while still guaranteeing the result is never a duplicate.
+    let seqNum = 1;
+    let candidate = `${prefix}-${code}-${ym}-${String(seqNum).padStart(3,'0')}`;
+    let guard = 0;
+    while (used.has(candidate) && guard < 100000) {
+        seqNum++; guard++;
+        candidate = `${prefix}-${code}-${ym}-${String(seqNum).padStart(3,'0')}`;
+    }
+    return candidate;
 }
 
 function ntPopulateBranchCustSelects() {
@@ -10715,7 +10899,11 @@ function saveBudgetCalc() {
     const branchId = document.getElementById('bcBranch').value;
     const date = document.getElementById('bcDate').value;
     if (!branchId || !date) { if(typeof showToast==='function') showToast('ເລືອກສາຂາ ແລະ ວັນທີ', 'error'); return; }
-    const autoNo = document.getElementById('bcNumber').value || ntGenNo('CALC', branchId, nt_budgetCalcs, date);
+    let autoNo = document.getElementById('bcNumber').value || ntGenNo('CALC', branchId, nt_budgetCalcs, date);
+    // Hard uniqueness guard: if this number is already used by ANOTHER calc, regenerate.
+    if (nt_budgetCalcs.some(x => x && x.id !== bc_currentId && (x.number === autoNo))) {
+        autoNo = ntGenNo('CALC', branchId, nt_budgetCalcs.filter(x => x.id !== bc_currentId), date);
+    }
     document.getElementById('bcNumber').value = autoNo;
     const total = bc_items.reduce((s, i) => s + (i.amount||0), 0);
     // Preserve existing receipt unless a new one was uploaded
@@ -11294,7 +11482,10 @@ function saveBudgetProposal() {
     const branchId = document.getElementById('bpBranch').value;
     const date = document.getElementById('bpDate').value;
     if (!branchId || !date) { if(typeof showToast==='function') showToast('ເລືອກສາຂາ ແລະ ວັນທີ','error'); return; }
-    const autoNo = document.getElementById('bpNumber').value || ntGenNo('BP', branchId, nt_budgetPropols, date);
+    let autoNo = document.getElementById('bpNumber').value || ntGenNo('BP', branchId, nt_budgetPropols, date);
+    if (nt_budgetPropols.some(x => x && x.id !== bp_currentId && (x.number === autoNo))) {
+        autoNo = ntGenNo('BP', branchId, nt_budgetPropols.filter(x => x.id !== bp_currentId), date);
+    }
     document.getElementById('bpNumber').value = autoNo;
     const pvId = document.getElementById('bpPvRef').value;
     const pvItem = nt_budgetCalcs.find(x=>x.id===pvId);
