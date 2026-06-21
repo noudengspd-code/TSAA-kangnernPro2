@@ -19,6 +19,7 @@
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-storage-compat.js"></script>
 
     <!-- SheetJS (Excel export) -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -233,6 +234,7 @@
         .print-only { display: none; }
         @media print {
             .print-only { display: inline !important; visibility: visible !important; }
+            .nt-printhide { display: none !important; }   /* empty sections cut from print to save paper */
             body {
                 background: #ffffff !important;
                 color: #000000 !important;
@@ -268,6 +270,11 @@
                 color: #000000 !important;
                 padding: 6px !important;
             }
+        }
+
+        /* ===== ມືຖື/ແທັບເລັດ: ໃບລາຍງານ/ຕາຕະລາງ ຫຍໍ້ທັງໜ້າຕາມສັດສ່ວນ (zoom-to-fit ຄືເປີດ PDF) — JS ຈັດການ scale ===== */
+        @media screen and (max-width: 1023px) {
+            main, .max-w-7xl { overflow-x: hidden; }   /* ກັນບໍ່ໃຫ້ໜ້າເລື່ອນຊ້າຍ-ຂວາ */
         }
     </style>
 </head>
@@ -404,7 +411,7 @@
 
     <div class="flex-1 flex flex-col lg:flex-row lg:items-start">
         <!-- Sidebar Menu -->
-        <aside class="w-full lg:w-64 bg-slate-800 text-slate-300 p-6 flex flex-col gap-2 border-r border-slate-700 no-print lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:flex-shrink-0">
+        <aside id="appSidebar" class="hidden lg:flex lg:flex-col lg:w-64 bg-slate-800 text-slate-300 p-6 gap-2 border-r border-slate-700 no-print lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:flex-shrink-0">
             <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">ເມນູຫຼັກ</p>
             <button onclick="switchTab('dashboard')" id="btn-dashboard" class="menu-btn flex items-center gap-3 px-4 py-3 rounded-xl transition bg-emerald-600 text-white font-medium w-full text-left">
                 <i class="fa-solid fa-chart-pie w-5"></i> ພາບລວມການເງິນ (P&L)
@@ -479,7 +486,7 @@
         </aside>
 
         <!-- Main Content Area -->
-        <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full overflow-hidden">
+        <main class="flex-1 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-24 lg:pb-8 max-w-7xl mx-auto w-full overflow-hidden">
             
             <!-- ALERT BANNER FOR BRANCH LEVEL VIEW -->
             <div id="branchAlertBanner" class="hidden mb-6 bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl flex items-center gap-3 no-print">
@@ -1205,6 +1212,7 @@
       </div>
       <div class="flex gap-2 items-center no-print flex-wrap">
         <input type="month" id="costTrackMonth" onchange="renderCostTrackTable()" class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5">
+        <input type="text" id="costTrackCustomer" oninput="renderCostTrackTable()" placeholder="🔍 ຄົ້ນຫາລູກຄ້າ..." class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 w-40">
         <select id="costTrackBranch" onchange="renderCostTrackTable()" class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5">
           <option value="all">ທຸກສາຂາ</option>
         </select>
@@ -1500,6 +1508,16 @@
 
             <!-- TAB: SYSTEM SETUP / CONFIGURATION -->
             <div id="tab-system-setup" class="tab-content hidden space-y-6">
+                <!-- SIGNATURE BANK (ຄັງລາຍເຊັນ) -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex justify-between items-center flex-wrap gap-2">
+                        <div>
+                            <h3 class="text-base font-bold text-gray-800"><i class="fa-solid fa-signature text-indigo-600 mr-2"></i>ຄັງລາຍເຊັນ (Signature Bank)</h3>
+                            <p class="text-xs text-gray-500 mt-1">ອັບລາຍເຊັນຂອງແຕ່ລະຄົນເທື່ອດຽວ. ໃນເອກະສານ ກົດປຸ່ມ <b class="text-emerald-600">“ຄັງ”</b> ທີ່ຊ່ອງລາຍເຊັນ ແລ້ວເລືອກຊື່ → ລາຍເຊັນຈະຂຶ້ນ ແລະ ປັບຂະໜາດໄດ້. (ບໍ່ກະທົບການເຊື່ອມຕໍ່ຖານຂໍ້ມູນ)</p>
+                        </div>
+                        <button onclick="openSigBankModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold no-print whitespace-nowrap"><i class="fa-solid fa-folder-open mr-1"></i>ຈັດການຄັງລາຍເຊັນ</button>
+                    </div>
+                </div>
                 <!-- STAFF ROLES / DUTIES (add-only: cannot edit or delete) -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <div class="nt-header-slot" data-title="ໜ້າທີ່ຂອງພະນັກງານ (Staff Duties)"></div>
@@ -2594,6 +2612,22 @@
         <p class="text-xs text-fuchsia-200 mt-1">ຕິດຕາມຄວາມຄືບໜ້າ, ວັນເກີດບໍລິສັດ, ແຊັດ/ພົບ ລູກຄ້າ</p>
     </div>
 
+    <!-- CUSTOMER 360 DIRECTORY (ຕິດຕາມຂັ້ນສຸດ) -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <div class="flex justify-between items-center flex-wrap gap-2 mb-4">
+            <div>
+                <h4 class="text-sm font-bold text-gray-800"><i class="fa-solid fa-address-book mr-2 text-fuchsia-500"></i>ໄດເຣັກທໍຣີລູກຄ້າ — ຕິດຕາມຂັ້ນສຸດ (360°)</h4>
+                <p class="text-[11px] text-gray-500 mt-0.5">ກົດຊື່ລູກຄ້າ → ເຫັນແດສບອດລວມທຸກຢ່າງ: ບໍລິການ, ລາຍຮັບ, ຕົ້ນທຶນ, ໃບບິນ, ການຊຳລະ, ເອກະສານ, ການພົບ</p>
+            </div>
+            <span id="custDirCount" class="text-[11px] text-gray-400"></span>
+        </div>
+        <div class="relative mb-3">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+            <input id="custDirSearch" type="text" oninput="ntRenderCustomerDirectory()" placeholder="ຄົ້ນຫາລູກຄ້າ (ຊື່/ລະຫັດພາສີ/ເບີໂທ)..." class="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:border-fuchsia-500">
+        </div>
+        <div id="custDirList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-96 overflow-y-auto"></div>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Service Progress Tracker -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
@@ -3350,6 +3384,8 @@
         // FIREBASE INITIALIZATION & ENVIROMENT VARIABLES
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'smart-treasury-app-id';
         var db = null;
+        var storage = null;            // Firebase Cloud Storage (for unlimited cross-device image sync)
+        var ntStorageAvailable = false;
         var auth = null;
         var isOnline = false;
 
@@ -3446,6 +3482,92 @@
             try { localStorage.setItem('nt_deletions', JSON.stringify(nt_deletions)); } catch(_){}
         }
 
+        // ===== Auto-sharding so the cloud data NEVER exceeds Firestore's 1 MiB per-document limit =====
+        // When the (image-stripped) payload is small — the normal case for years — it is written to a
+        // single document exactly as before. When it grows large, the big record arrays overflow into
+        // extra documents (main_data_o1, _o2, …) so no single document is ever too big → "full" can't
+        // happen on the cloud side, no matter how much data accumulates (ideal for the Blaze plan).
+        var NT_SHARD_MAX = 850000;                  // ~850 KB ceiling per document (safe under 1 MiB)
+        var NT_SHARD_COLS = ['transactions','invoices','aps','nt_quotations','nt_budgetCalcs','nt_budgetPropols','nt_contracts','nt_contactLogs','nt_aftersales','nt_costTrack','nt_proposalLetters','nt_staffDuties'];
+        function _ntSplitPayload(payload) {
+            const main = Object.assign({}, payload);
+            if (JSON.stringify(main).length < NT_SHARD_MAX) { main._ovf = 0; return { main: main, shards: [] }; }
+            // Pull the big collections out, then greedily refill main + overflow shards up to the cap.
+            const pools = {};
+            NT_SHARD_COLS.forEach(c => { pools[c] = Array.isArray(main[c]) ? main[c] : []; main[c] = []; });
+            const shards = [];
+            let cur = null;                          // null → still filling main
+            const fits = (obj) => JSON.stringify(obj).length < NT_SHARD_MAX;
+            NT_SHARD_COLS.forEach(col => {
+                pools[col].forEach(rec => {
+                    if (cur === null) {
+                        main[col].push(rec);
+                        if (!fits(main)) { main[col].pop(); cur = { _records: {} }; cur._records[col] = [rec]; shards.push(cur); }
+                    } else {
+                        if (!cur._records[col]) cur._records[col] = [];
+                        cur._records[col].push(rec);
+                        if (!fits(cur) && cur._records[col].length > 1) { cur._records[col].pop(); cur = { _records: {} }; cur._records[col] = [rec]; shards.push(cur); }
+                    }
+                });
+            });
+            main._ovf = shards.length;
+            return { main: main, shards: shards };
+        }
+        function _ntReassemble(mainData, ovfDocs) {
+            const full = Object.assign({}, mainData);
+            delete full._ovf;
+            (ovfDocs || []).forEach(od => {
+                if (od && od._records) {
+                    Object.keys(od._records).forEach(col => {
+                        if (!Array.isArray(full[col])) full[col] = [];
+                        full[col] = full[col].concat(od._records[col] || []);
+                    });
+                }
+            });
+            return full;
+        }
+
+
+        // Base64 images (receipt photos, payment QR codes) are large; embedding them in the single
+        // synced document quickly exceeds Firestore's 1 MiB per-document limit, which made the
+        // heavy user's writes fail silently → other users saw stale totals. We keep images in
+        // localStorage on each device and strip them from the cloud payload. The merge preserves a
+        // device's own local images so they are never lost.
+        var NT_IMG_FIELDS = ['receiptImage','qrImage','qrCodeImage','slipImage','billImage','attachmentImage','docImage','image','photo'];
+        function _ntIsBigDataUrl(v) { return typeof v === 'string' && v.length > 4000 && v.slice(0,11) === 'data:image/'; }
+        // Return a shallow copy of a record with only LARGE base64 images removed (for writing to the
+        // cloud). Storage URLs (short https links) are KEPT so images now sync across devices; only
+        // heavy embedded base64 (the fallback when Storage is off) is stripped to protect doc size.
+        function _ntStripImages(rec) {
+            if (!rec || typeof rec !== 'object') return rec;
+            let copy = null;
+            for (const k in rec) {
+                if (_ntIsBigDataUrl(rec[k])) {
+                    if (!copy) copy = Object.assign({}, rec);
+                    delete copy[k];
+                }
+            }
+            return copy || rec;
+        }
+        function _ntStripImagesArr(arr) { return Array.isArray(arr) ? arr.map(_ntStripImages) : arr; }
+        function _ntStripImagesObj(obj) {
+            if (!obj || typeof obj !== 'object') return obj;
+            const out = {}; for (const k in obj) out[k] = _ntStripImages(obj[k]); return out;
+        }
+        // Copy image fields from `local` onto `chosen` when `chosen` (from cloud) lacks them.
+        function _ntKeepImages(chosen, local) {
+            if (!chosen || !local) return chosen;
+            let out = chosen, copied = false;
+            NT_IMG_FIELDS.forEach(f => {
+                if (local[f] && !out[f]) { if (!copied) { out = Object.assign({}, chosen); copied = true; } out[f] = local[f]; }
+            });
+            // also catch any other big data-url field present locally but missing on the cloud copy
+            for (const k in local) {
+                if (_ntIsBigDataUrl(local[k]) && !out[k]) { if (!copied) { out = Object.assign({}, chosen); copied = true; } out[k] = local[k]; }
+            }
+            return out;
+        }
+
         function ntMergeById(localArr, remoteArr, protectLocal) {
             if (!Array.isArray(remoteArr)) return localArr;
             if (!Array.isArray(localArr)) return remoteArr;
@@ -3459,9 +3581,15 @@
                 if (l) {
                     // Present on both → keep whichever was modified most recently
                     const lm = Number(l._lm) || 0, rm = Number(r._lm) || 0;
-                    if (lm > rm) byId[r.id] = l;            // local edit is newer
-                    else if (rm > lm) byId[r.id] = r;       // remote edit is newer
-                    else byId[r.id] = protectLocal ? l : r; // no timestamps → during protect window, trust local
+                    let chosen;
+                    if (lm > rm) chosen = l;            // local edit is newer
+                    else if (rm > lm) chosen = r;       // remote edit is newer
+                    else chosen = protectLocal ? l : r; // no timestamps → during protect window, trust local
+                    // Images are NOT synced to the cloud (they would blow past Firestore's 1 MiB
+                    // per-document limit). So if the chosen record came from the cloud (image-less)
+                    // but THIS device has the image locally, keep the local image — never wipe it.
+                    if (chosen !== l && typeof _ntKeepImages === 'function') chosen = _ntKeepImages(chosen, l);
+                    byId[r.id] = chosen;
                 } else {
                     byId[r.id] = r;
                 }
@@ -3498,6 +3626,7 @@
                     const rm = Number(remoteObj[k] && remoteObj[k]._lm) || 0;
                     if (lm > rm) out[k] = localObj[k];          // local edit newer
                     else if (rm === lm && protectLocal) out[k] = localObj[k];
+                    else if (typeof _ntKeepImages === 'function') out[k] = _ntKeepImages(out[k], localObj[k]); // keep local image on a cloud (image-less) winner
                 }
             });
             // Apply deletion tombstones
@@ -3530,6 +3659,13 @@
         // SYSTEM START
         window.onload = function() {
             initFirebaseOnline();
+            // Build the mobile/tablet bottom tab bar from the sidebar menu.
+            try { if (typeof ntBuildBottomTabs === 'function') ntBuildBottomTabs(); } catch(_) {}
+            // Watch content + resize → auto zoom-to-fit wide reports/tables on small screens.
+            try { if (typeof ntSetupFitObserver === 'function') ntSetupFitObserver(); } catch(_) {}
+            setTimeout(function(){ try { if (typeof ntScheduleFit === 'function') ntScheduleFit(); } catch(_){} }, 800);
+            // Heal any legacy oversized signature that's filling up the online signatures document.
+            setTimeout(function(){ if (typeof _ntHealSignatures === 'function') _ntHealSignatures(); }, 4000);
             
             // Sync Local Storage as fallback
             if (!localStorage.getItem("treasury_branches_pro")) localStorage.setItem("treasury_branches_pro", JSON.stringify(defaultBranches));
@@ -3641,6 +3777,7 @@
                 const app = firebase.initializeApp(config);
                 auth = firebase.auth(app);
                 db = firebase.firestore(app);
+                try { if (firebase.storage) { storage = firebase.storage(app); ntStorageAvailable = true; } } catch(e) { console.warn('Storage init failed:', e); }
 
                 // Auth FIRST before query (Rule 3)
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -3744,8 +3881,11 @@
                             if (data.nt_staffDuties)       { nt_staffDuties = ntMergeById(nt_staffDuties, data.nt_staffDuties, protectLocal); localStorage.setItem('nt_staffDuties', JSON.stringify(nt_staffDuties)); }
                             if (data.nt_accrualProj)       { nt_accrualProj = protectLocal ? Object.assign({}, data.nt_accrualProj, nt_accrualProj) : data.nt_accrualProj; localStorage.setItem('nt_accrualProj', JSON.stringify(nt_accrualProj)); }
                             if (data.nt_proposalLetters && typeof nt_proposalLetters !== 'undefined') { nt_proposalLetters = ntMergeById(nt_proposalLetters, data.nt_proposalLetters, protectLocal); localStorage.setItem('nt_proposalLetters', JSON.stringify(nt_proposalLetters)); }
-                            // If we merged in protected local edits, push the merged result back so other devices converge.
-                            if (protectLocal) { setTimeout(() => { if (typeof triggerCloudBackup === 'function') triggerCloudBackup(); }, 1500); }
+                            // NOTE: we intentionally do NOT re-upload here. The write path already
+                            // merges record-by-record in a transaction, so any local edit was already
+                            // pushed when it happened. Re-uploading on every received snapshot created a
+                            // feedback loop between devices (A→B→A→B…) that overwhelmed the single
+                            // Firestore document and made the connection look like it kept dropping.
                         } catch(applyErr) { console.warn('apply remote error:', applyErr); }
                         // Re-render
                         try {
@@ -3770,20 +3910,35 @@
                         return editing || modal;
                     };
 
-                    if (isBusy()) {
-                        // Queue ONLY the most recent snapshot; do not touch data yet.
-                        _ntPendingSnapshot = cloudData;
-                        if (!_ntPendingTimer) {
-                            _ntPendingTimer = setInterval(() => {
-                                if (!isBusy()) {
-                                    clearInterval(_ntPendingTimer); _ntPendingTimer = null;
-                                    const pend = _ntPendingSnapshot; _ntPendingSnapshot = null;
-                                    if (pend) applySnapshot(pend);
-                                }
-                            }, 1200);
+                    const proceed = (data) => {
+                        if (isBusy()) {
+                            // Queue ONLY the most recent snapshot; do not touch data yet.
+                            _ntPendingSnapshot = data;
+                            if (!_ntPendingTimer) {
+                                _ntPendingTimer = setInterval(() => {
+                                    if (!isBusy()) {
+                                        clearInterval(_ntPendingTimer); _ntPendingTimer = null;
+                                        const pend = _ntPendingSnapshot; _ntPendingSnapshot = null;
+                                        if (pend) applySnapshot(pend);
+                                    }
+                                }, 1200);
+                            }
+                        } else {
+                            applySnapshot(data);
                         }
+                    };
+
+                    // If the cloud data is sharded across overflow documents, fetch + reassemble first.
+                    if (cloudData._ovf && cloudData._ovf > 0 && db) {
+                        const col2 = db.collection('treasury_backups');
+                        let chain = Promise.resolve([]);
+                        for (let i = 1; i <= cloudData._ovf; i++) {
+                            chain = chain.then(acc => col2.doc('main_data_o' + i).get().then(s => { acc.push(s && s.exists ? s.data() : {}); return acc; }).catch(() => { acc.push({}); return acc; }));
+                        }
+                        chain.then(ovfDocs => proceed(_ntReassemble(cloudData, ovfDocs)))
+                             .catch(e => { console.warn('overflow fetch failed', e); proceed(cloudData); });
                     } else {
-                        applySnapshot(cloudData);
+                        proceed(cloudData);
                     }
                 }, err => {
                     console.error("Firestore onSnapshot error: ", err);
@@ -3802,19 +3957,31 @@
                     const stamp = sd._stamp || '';
                     if (stamp && stamp === _ntLastAppliedSigStamp) return;             // our own echo
                     if (sd._updatedBy && sd._updatedBy === NT_DEVICE_ID) return;        // we wrote it
-                    if (!sd.signatures || typeof sd.signatures !== 'object') return;
                     _ntLastAppliedSigStamp = stamp;
                     try {
-                        // Merge remote signatures with local (remote wins per-key, but never wipes
-                        // a local key the remote doesn't have).
-                        const local = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
-                        const merged = Object.assign({}, local, sd.signatures);
-                        localStorage.setItem('nt_signatures', JSON.stringify(merged));
+                        // Merge slot signatures (remote wins per-key, never wipes a local-only key)
+                        if (sd.signatures && typeof sd.signatures === 'object') {
+                            const local = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
+                            localStorage.setItem('nt_signatures', JSON.stringify(Object.assign({}, local, sd.signatures)));
+                        }
+                        // Merge the Signature Bank by id (newest name/img kept; union so nobody's entry is lost)
+                        if (Array.isArray(sd.sigBank)) {
+                            let localBank = [];
+                            try { localBank = JSON.parse(localStorage.getItem('nt_sigBank') || '[]'); } catch(_) {}
+                            const byId = {};
+                            sd.sigBank.forEach(b => { if (b && b.id) byId[b.id] = b; });
+                            localBank.forEach(b => { if (b && b.id && !byId[b.id]) byId[b.id] = b; });  // keep local-only
+                            const merged = Object.values(byId);
+                            localStorage.setItem('nt_sigBank', JSON.stringify(merged));
+                            if (typeof nt_sigBank !== 'undefined') nt_sigBank = merged;
+                        }
                         // Re-render only if not mid-edit, so signatures appear on open docs
                         const a = document.activeElement;
                         const busy = (a && (a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.tagName==='SELECT')) ||
                                      Array.from(document.querySelectorAll('.fixed.inset-0')).some(m => !m.classList.contains('hidden') && m.offsetParent !== null);
                         if (!busy && typeof refreshAllViews === 'function') { _ntApplyingRemote = true; try { refreshAllViews(); } finally { setTimeout(()=>{_ntApplyingRemote=false;},50); } }
+                        // If the cloud held a legacy oversized signature, shrink it now and push it back.
+                        if (typeof _ntHealSignatures === 'function') setTimeout(_ntHealSignatures, 1500);
                     } catch(e) { console.warn('signature sync apply error', e); }
                 }, err => { console.warn('signature onSnapshot error', err); });
             } catch (err) {
@@ -4028,11 +4195,133 @@
             showToast("ບັນທຶກຂໍ້ມູນບໍລິສັດສຳເລັດ!");
         }
 
+        // Compress an uploaded image to a small JPEG/PNG before storing, so a single photo is
+        // ~100-250 KB instead of several MB. Without this, a couple of receipt photos fill the
+        // browser's localStorage (~5-10 MB) and every upload then says "full".
+        // Upload a base64 data URL to Firebase Storage and return its download URL (small string that
+        // CAN be synced across devices). If Storage isn't set up or the upload fails, returns null so
+        // the caller falls back to keeping the (compressed) base64 locally — the app never breaks.
+        function _ntUploadToStorage(dataUrl, cb) {
+            if (!storage || !ntStorageAvailable || typeof dataUrl !== 'string' || dataUrl.slice(0, 11) !== 'data:image/') { cb(null); return; }
+            try {
+                const mime = dataUrl.slice(5, dataUrl.indexOf(';'));
+                const ext = (mime.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
+                const path = 'tsaa_images/' + (typeof NT_DEVICE_ID !== 'undefined' ? NT_DEVICE_ID : 'dev') + '/' + Date.now() + '_' + Math.random().toString(36).slice(2, 9) + '.' + ext;
+                const sref = storage.ref().child(path);
+                sref.putString(dataUrl, 'data_url').then(snap => snap.ref.getDownloadURL()).then(url => cb(url || null)).catch(err => { console.warn('Storage upload failed, keeping local:', err && err.code); cb(null); });
+            } catch (e) { console.warn('Storage upload error:', e); cb(null); }
+        }
+
+        // Compress a File then push it to Storage. Calls back with the BEST available reference:
+        // a Storage URL (syncs everywhere) when possible, otherwise the compressed base64 (local).
+        function _ntProcessImage(file, maxDim, quality, cb) {
+            _ntCompressImage(file, maxDim, quality, function(dataUrl) {
+                _ntUploadToStorage(dataUrl, function(url) { cb(url || dataUrl, !!url); });
+            });
+        }
+
+        // Compress an EXISTING data URL (not a File) — used to auto-heal oversized legacy images.
+        function _ntCompressDataUrl(dataUrl, maxDim, quality, cb) {
+            if (typeof dataUrl !== 'string' || dataUrl.slice(0, 11) !== 'data:image/') { cb(dataUrl); return; }
+            const img = new Image();
+            img.onload = function() {
+                try {
+                    let w = img.width, h = img.height;
+                    const r = Math.min(maxDim / w, maxDim / h, 1);
+                    w = Math.round(w * r); h = Math.round(h * r);
+                    const c = document.createElement('canvas'); c.width = w; c.height = h;
+                    const ctx = c.getContext('2d');
+                    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, h); ctx.drawImage(img, 0, 0, w, h);
+                    let out = c.toDataURL('image/jpeg', quality), q = quality;
+                    while (out.length > 120000 && q > 0.4) { q -= 0.12; out = c.toDataURL('image/jpeg', q); }
+                    cb(out.length < dataUrl.length ? out : dataUrl);
+                } catch (e) { cb(dataUrl); }
+            };
+            img.onerror = function() { cb(dataUrl); };
+            img.src = dataUrl;
+        }
+
+        // Auto-heal: find any oversized base64 signature (legacy, uploaded before compression existed)
+        // and shrink it, then re-save + re-sync. This is what fixes a near-full signatures document
+        // without the user doing anything — runs on load and after each signature sync.
+        var _ntHealingSigs = false;
+        function _ntHealSignatures() {
+            if (_ntHealingSigs) return;
+            _ntHealingSigs = true;
+            setTimeout(() => { _ntHealingSigs = false; }, 8000);
+            // slot signatures
+            try {
+                const sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
+                let pending = 0, changed = false;
+                Object.keys(sigs).forEach(k => {
+                    const s = sigs[k];
+                    if (s && typeof s.img === 'string' && s.img.length > 90000 && s.img.slice(0, 11) === 'data:image/') {
+                        pending++;
+                        _ntCompressDataUrl(s.img, 360, 0.8, (nimg) => {
+                            if (nimg !== s.img) { s.img = nimg; changed = true; }
+                            if (--pending === 0 && changed) {
+                                safeSetLocalStorage('nt_signatures', JSON.stringify(sigs));
+                                if (typeof triggerSignatureBackup === 'function') triggerSignatureBackup();
+                                if (typeof refreshAllViews === 'function') refreshAllViews();
+                            }
+                        });
+                    }
+                });
+            } catch (e) {}
+            // signature bank
+            try {
+                let bank = JSON.parse(localStorage.getItem('nt_sigBank') || '[]');
+                let pending = 0, changed = false;
+                bank.forEach(b => {
+                    if (b && typeof b.img === 'string' && b.img.length > 90000 && b.img.slice(0, 11) === 'data:image/') {
+                        pending++;
+                        _ntCompressDataUrl(b.img, 360, 0.8, (nimg) => {
+                            if (nimg !== b.img) { b.img = nimg; changed = true; }
+                            if (--pending === 0 && changed) {
+                                localStorage.setItem('nt_sigBank', JSON.stringify(bank));
+                                if (typeof nt_sigBank !== 'undefined') nt_sigBank = bank;
+                                if (typeof triggerSignatureBackup === 'function') triggerSignatureBackup();
+                            }
+                        });
+                    }
+                });
+            } catch (e) {}
+        }
+
+        function _ntCompressImage(file, maxDim, quality, cb) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    try {
+                        let w = img.width, h = img.height;
+                        const r = Math.min(maxDim / w, maxDim / h, 1);
+                        w = Math.round(w * r); h = Math.round(h * r);
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w; canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, h);
+                        ctx.drawImage(img, 0, 0, w, h);
+                        let out = canvas.toDataURL('image/jpeg', quality);
+                        // If still large, step the quality down so it always lands small
+                        let q = quality;
+                        while (out.length > 320000 && q > 0.4) { q -= 0.12; out = canvas.toDataURL('image/jpeg', q); }
+                        cb(out);
+                    } catch (err) { cb(e.target.result); }   // fallback: original
+                };
+                img.onerror = function() { cb(e.target.result); };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
         function uploadBase64Image(event, targetProp) {
             const file = event.target.files[0];
             if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
+            // Logos/QR can be a touch sharper; receipts (often photos) compress harder.
+            const isReceipt = (targetProp === 'bcReceipt' || targetProp === 'bpReceipt');
+            _ntProcessImage(file, isReceipt ? 1100 : 700, isReceipt ? 0.7 : 0.8, function(dataUrl, toCloud) {
+                const e = { target: { result: dataUrl } };
                 if (targetProp === 'branchQr') {
                     window._uploadedBranchQr = e.target.result;
                     const prev = document.getElementById('previewBranchQr');
@@ -4050,20 +4339,19 @@
                     showToast("ອັບໂຫຼດໃບເຊັດສຳເລັດ!");
                 } else if (targetProp === 'companyLogo') {
                     companyInfo.logoImage = e.target.result;
-                    localStorage.setItem("treasury_company_info", JSON.stringify(companyInfo));
+                    safeSetLocalStorage("treasury_company_info", JSON.stringify(companyInfo));
                     triggerCloudBackup();
                     fillCompanySetupForm();
                     if (typeof updateAllLogos === 'function') updateAllLogos();
                     showToast("ອັບໂຫຼດໂລໂກ້ສຳເລັດ!");
                 } else {
                     companyInfo[targetProp === 'companyQr' ? 'qrImage' : 'signatureImage'] = e.target.result;
-                    localStorage.setItem("treasury_company_info", JSON.stringify(companyInfo));
+                    safeSetLocalStorage("treasury_company_info", JSON.stringify(companyInfo));
                     triggerCloudBackup();
                     fillCompanySetupForm();
                     showToast("ອັບໂຫຼດຮູບພາບສຳເລັດ!");
                 }
-            };
-            reader.readAsDataURL(file);
+            });
         }
 
         function populateBranchSelectors() {
@@ -4128,6 +4416,105 @@
         }
 
         // TAB SWITCHER
+
+        // PRINT: cut blank/empty sections so we don't waste paper on pages with no data.
+        var _ntPrintHidden=[];
+        function _ntPrintHideEmpty(){
+            _ntPrintHidden=[];
+            const cards=document.querySelectorAll('[class*="rounded-2xl"], [class*="rounded-xl"]');
+            cards.forEach(card=>{
+                if(card.closest('.fixed')) return;                 // skip modals
+                if(card.offsetParent===null) return;               // skip hidden (inactive tabs)
+                if(card.querySelector('img, canvas, svg')) return; // keep anything with an image/chart
+                const tables=card.querySelectorAll('table');
+                let hasDataTable=false;
+                tables.forEach(tb=>{ const body=tb.tBodies[0]; if(body){ Array.from(body.rows).forEach(r=>{ const txt=(r.textContent||'').trim(); if(txt && r.cells.length>1 && !/ບໍ່ມີ|ຍັງບໍ່|no data|ບໍ່ພົບ/i.test(txt)) hasDataTable=true; }); } });
+                const txt=(card.textContent||'').replace(/\s+/g,' ').trim();
+                const isEmptyMsg=/ຍັງບໍ່ມີຂໍ້ມູນ|ບໍ່ມີຂໍ້ມູນ|ບໍ່ພົບ|ກຳລັງໂຫຼດ|ຍັງບໍ່ມີ/.test(txt);
+                if(tables.length>0 && !hasDataTable){ card.classList.add('nt-printhide'); _ntPrintHidden.push(card); return; }
+                if(isEmptyMsg && txt.length<140){ card.classList.add('nt-printhide'); _ntPrintHidden.push(card); return; }
+            });
+        }
+        function _ntPrintRestore(){ _ntPrintHidden.forEach(c=>c.classList.remove('nt-printhide')); _ntPrintHidden=[]; }
+        window.addEventListener('beforeprint', _ntPrintHideEmpty);
+        window.addEventListener('afterprint', _ntPrintRestore);
+
+        // Build the mobile/tablet bottom tab bar from the sidebar menu items (equal-width buttons).
+        function ntBuildBottomTabs(){
+            const bar = document.getElementById('mobileBottomTabs');
+            if(!bar) return;
+            const list = Array.from(document.querySelectorAll('.menu-btn'));
+            bar.innerHTML = list.map(b=>{
+                const m = (b.getAttribute('onclick')||'').match(/switchTab\('([^']+)'\)/);
+                if(!m) return '';
+                const tabId = m[1];
+                const icon = b.querySelector('i');
+                const iconHtml = icon ? icon.outerHTML.replace(/\bw-5\b/,'').replace(/text-(left|right|center)/,'') : '<i class="fa-solid fa-circle"></i>';
+                let label = (b.textContent||'').trim().replace(/\s+/g,' ').replace(/Live$/,'');
+                if(label.length>9) label = label.slice(0,8)+'…';
+                return `<button onclick="switchTab('${tabId}')" id="bbtn-${tabId}" class="bottom-tab flex flex-col items-center justify-center gap-1 flex-shrink-0 w-[4.5rem] py-2 text-slate-400 hover:text-white transition">
+                    <span class="text-lg leading-none">${iconHtml}</span>
+                    <span class="text-[9px] leading-tight text-center w-full px-0.5">${label}</span>
+                </button>`;
+            }).join('');
+            // set initial active highlight
+            const cur = document.querySelector('.menu-btn.bg-emerald-600');
+            const m2 = cur ? (cur.getAttribute('onclick')||'').match(/switchTab\('([^']+)'\)/) : null;
+            if(m2) ntHighlightBottomTab(m2[1]);
+        }
+        function ntHighlightBottomTab(tabId){
+            document.querySelectorAll('.bottom-tab').forEach(b=>{ b.classList.remove('bg-emerald-600','text-white'); b.classList.add('text-slate-400'); });
+            const bb = document.getElementById('bbtn-'+tabId);
+            if(bb){ bb.classList.remove('text-slate-400'); bb.classList.add('bg-emerald-600','text-white'); }
+        }
+
+        // ===== ມືຖື/ແທັບເລັດ: ຫຍໍ້ໃບລາຍງານ/ຕາຕະລາງທີ່ກວ້າງເກີນ ໃຫ້ພໍດີໜ້າຈໍ ຕາມສັດສ່ວນ (ຄືເປີດ PDF) =====
+        // ໃຊ້ transform:scale ຮັກສາໂຄງສ້າງເດີມ (ບໍ່ຕົກແຖວ), ຕົວໜັງສືນ້ອຍລົງຕາມ scale.
+        var _ntFitTimer = null;
+        function ntFitScale(){
+            var mobile = window.innerWidth < 1024;
+            var tables = document.querySelectorAll('table');
+            for (var i=0; i<tables.length; i++){
+                var tb = tables[i];
+                try {
+                    var parent = tb.parentElement; if(!parent) continue;
+                    // reset to measure natural size
+                    tb.style.transform = 'none';
+                    tb.style.marginBottom = '';
+                    if(parent.getAttribute('data-nt-ovx') === null){ parent.setAttribute('data-nt-ovx', parent.style.overflowX || ''); }
+                    // desktop OR not visible → restore + skip
+                    if(!mobile || tb.offsetParent === null){
+                        parent.style.overflowX = parent.getAttribute('data-nt-ovx') || '';
+                        continue;
+                    }
+                    var avail = parent.clientWidth;
+                    var natural = tb.offsetWidth;
+                    var naturalH = tb.offsetHeight;
+                    if(natural > avail + 2 && avail > 0){
+                        var scale = avail / natural;
+                        tb.style.transformOrigin = 'top left';
+                        tb.style.transform = 'scale(' + scale + ')';
+                        tb.style.marginBottom = (-(naturalH * (1 - scale))) + 'px';  // ດຶງເນື້ອຫາລຸ່ມຂຶ້ນປິດຊ່ອງຫວ່າງ
+                        parent.style.overflowX = 'hidden';
+                    } else {
+                        parent.style.overflowX = parent.getAttribute('data-nt-ovx') || '';
+                    }
+                } catch(e){}
+            }
+        }
+        function ntScheduleFit(){ if(_ntFitTimer) clearTimeout(_ntFitTimer); _ntFitTimer = setTimeout(function(){ try{ ntFitScale(); }catch(e){} }, 180); }
+        // ຕິດຕາມການປ່ຽນແປງເນື້ອຫາ (ຕາຕະລາງ render ໃໝ່) → ຫຍໍ້ໃຫ້ພໍດີອັດຕະໂນມັດ
+        function ntSetupFitObserver(){
+            try {
+                var mainEl = document.querySelector('main');
+                if(mainEl && window.MutationObserver){
+                    var obs = new MutationObserver(function(){ ntScheduleFit(); });
+                    obs.observe(mainEl, { childList:true, subtree:true });
+                }
+                window.addEventListener('resize', ntScheduleFit);
+            } catch(e){}
+        }
+
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
             const targetTab = document.getElementById(`tab-${tabId}`);
@@ -4143,6 +4530,8 @@
                 activeBtn.classList.remove('hover:bg-slate-700', 'hover:text-white');
                 activeBtn.classList.add('bg-emerald-600', 'text-white', 'font-medium');
             }
+            ntHighlightBottomTab(tabId);   // mirror active state on the bottom tab bar
+            ntScheduleFit();               // re-fit wide reports/tables to the screen (mobile)
 
             // 🌐 Sync this tab's local month/branch filters to the global filter (set on dashboard)
             // so the user doesn't have to re-pick on every page.
@@ -4201,6 +4590,7 @@
                 ntRenderContractTable();
             } else if (tabId === 'aftersales') {
                 ntRenderAftersales();
+                if (typeof ntRenderCustomerDirectory === 'function') ntRenderCustomerDirectory();
             }
         }
 
@@ -4995,11 +5385,13 @@
 
             const data = { name, taxId, address, village, district, province, tel };
             if (editId) {
-                customers[editId] = data;
+                customers[editId] = { ...(customers[editId] || {}), ...data };
+                if (typeof ntStamp === 'function') ntStamp(customers[editId]);  // bump _lm so the edit wins the merge
                 showToast("ອັບເດດຂໍ້ມູນລູກຄ້າສຳເລັດ!");
             } else {
                 const newId = ntUID("C-");
                 customers[newId] = data;
+                if (typeof ntStamp === 'function') ntStamp(customers[newId]);
                 showToast("ເພີ່ມຂໍ້ມູນລູກຄ້າໃໝ່ສຳເລັດ!");
             }
 
@@ -6108,16 +6500,13 @@
         function previewImage(event) {
             const file = event.target.files[0];
             if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                uploadedImageBase64 = e.target.result;
+            _ntProcessImage(file, 1100, 0.7, function(dataUrl, toCloud) {
+                uploadedImageBase64 = dataUrl;
                 const previewImg = document.getElementById('imagePreview');
                 if (previewImg) previewImg.src = uploadedImageBase64;
                 const container = document.getElementById('imagePreviewContainer');
                 if (container) container.classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
+            });
         }
 
         function viewReceipt(imageSrc) {
@@ -6266,10 +6655,12 @@
 
             if (editId) {
                 branches[editId] = { ...branches[editId], ...data };
+                if (typeof ntStamp === 'function') ntStamp(branches[editId]);
                 showToast("ອັບເດດສາຂາສຳເລັດ!");
             } else {
                 if (branches[id]) { showToast("ລະຫັດຊ້ຳ!", "error"); return; }
                 branches[id] = data;
+                if (typeof ntStamp === 'function') ntStamp(branches[id]);
                 showToast("ເພີ່ມສາຂາໃໝ່ສຳເລັດ!");
             }
 
@@ -7239,6 +7630,103 @@
             if (statusEl) { statusEl.innerText = '✗ ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບ model ໃດກໍຕາມ. ກວດສອບ Key ແລະ ເຄືອຂ່າຍ.'; statusEl.className = 'text-xs text-rose-600 mt-2 font-bold'; }
         }
 
+        // ============================================================
+        // LOCAL FINANCE QUERY ENGINE — answers from REAL data, asks clarifying questions.
+        // Runs BEFORE the Gemini call so data questions get precise answers with no API key.
+        // ============================================================
+        var _ntAiPending = null;
+        function _ntMetricLabel(m){ return ({revenue:'ລາຍຮັບ',cost:'ຕົ້ນທຶນ',expense:'ລາຍຈ່າຍ',profit:'ກຳໄລສຸດທິ'})[m]||m; }
+        function _ntRecentMonths(n){ const out=[]; const d=new Date(); for(let i=0;i<n;i++){ out.push(d.toISOString().slice(0,7)); d.setMonth(d.getMonth()-1); } return out; }
+        function _ntParseQuery(text){
+            const q={}; const lower=text.toLowerCase();
+            if (/ລາຍຮັບ|ຍອດຂາຍ|revenue|income|\brv\b/i.test(text)) q.metric='revenue';
+            else if (/ລາຍຈ່າຍ|ຄ່າໃຊ້ຈ່າຍ|expense|opex/i.test(text)) q.metric='expense';
+            else if (/ຕົ້ນທຶນ|cogs|\bcost\b/i.test(text)) q.metric='cost';
+            else if (/ກຳໄລ|profit|margin|ກຳ?ໄຮ/i.test(text)) q.metric='profit';
+            const br = (typeof branches!=='undefined'&&branches)?branches:{};
+            for (const id in br){ const nm=br[id]&&br[id].name; if(nm && text.indexOf(nm)!==-1){ q.branchId=id; q.branchName=nm; break; } }
+            if(!q.branchId){ for(const id in br){ const nm=(br[id]&&br[id].name||'').replace(/ສາຂາ|ແຂວງ|ນະຄອນຫຼວງ/g,'').trim(); if(nm && nm.length>2 && text.indexOf(nm)!==-1){ q.branchId=id; q.branchName=br[id].name; break; } } }
+            const ym=text.match(/(20\d{2})[-/. ](\d{1,2})\b/);
+            if(ym) q.month=ym[1]+'-'+String(ym[2]).padStart(2,'0');
+            else if(/ເດືອນນີ້|this month/i.test(text)){ q.month=new Date().toISOString().slice(0,7); }
+            else if(/ປີນີ້|this year|ທັງປີ|ໝົດປີ/i.test(text)){ q.year=new Date().getFullYear(); }
+            else { const mo=text.match(/ເດືອນ\s*(\d{1,2})/); if(mo){ q.month=new Date().getFullYear()+'-'+String(mo[1]).padStart(2,'0'); } }
+            const cu=(typeof customers!=='undefined'&&customers)?customers:{};
+            for(const id in cu){ const nm=cu[id]&&cu[id].name; if(nm && nm.length>3 && text.indexOf(nm)!==-1){ q.customerId=id; q.customerName=nm; break; } }
+            return q;
+        }
+        function _ntComputeMetric(q){
+            let txns=((typeof transactions!=='undefined'&&transactions)?transactions:[]).slice();
+            if(q.branchId) txns=txns.filter(t=> t.branch===q.branchId || t.branch===q.branchName || t.branchId===q.branchId);
+            if(q.month) txns=txns.filter(t=>(t.date||'').startsWith(q.month));
+            else if(q.year) txns=txns.filter(t=>(t.date||'').startsWith(String(q.year)));
+            const sumType=ty=>txns.filter(t=>t.type===ty).reduce((s,t)=>s+(Number(t.amount)||0),0);
+            const rev=sumType('ລາຍຮັບ'), cost=sumType('ຕົ້ນທຶນ'), exp=sumType('ລາຍຈ່າຍ'), profit=rev-cost-exp;
+            const fmt=n=>Math.round(n).toLocaleString('en-US');
+            const scope=`${q.branchName||'ທຸກສາຂາ'} · ${q.month||q.year||'ທັງໝົດ'}`;
+            let val,label,color;
+            if(q.metric==='revenue'){val=rev;label='ລາຍຮັບ';color='text-emerald-600';}
+            else if(q.metric==='cost'){val=cost;label='ຕົ້ນທຶນ';color='text-orange-600';}
+            else if(q.metric==='expense'){val=exp;label='ລາຍຈ່າຍ';color='text-rose-600';}
+            else {val=profit;label='ກຳໄລສຸດທິ';color=profit<0?'text-rose-600':'text-teal-600';}
+            // breakdown by category (top 5)
+            const tyMap={revenue:'ລາຍຮັບ',cost:'ຕົ້ນທຶນ',expense:'ລາຍຈ່າຍ'};
+            let catRows='';
+            if(tyMap[q.metric]){
+                const byCat={}; txns.filter(t=>t.type===tyMap[q.metric]).forEach(t=>{const c=t.category||'ອື່ນໆ'; byCat[c]=(byCat[c]||0)+(Number(t.amount)||0);});
+                const top=Object.entries(byCat).sort((a,b)=>b[1]-a[1]).slice(0,5);
+                if(top.length) catRows='<div class="text-xs text-gray-600 mt-2 border-t pt-2"><b>ແຍກຕາມໝວດ:</b><br>'+top.map(([c,v])=>`• ${c}: ${fmt(v)} ₭`).join('<br>')+'</div>';
+            }
+            return `<p class="font-bold text-emerald-800 mb-1">${label} <span class="text-xs font-normal text-gray-500">(${scope})</span></p>
+              <p class="text-2xl font-bold ${color}">${fmt(val)} <span class="text-sm">₭</span></p>
+              <div class="text-[11px] text-gray-600 mt-2 border-t pt-2">ລາຍຮັບ ${fmt(rev)} · ຕົ້ນທຶນ ${fmt(cost)} · ລາຍຈ່າຍ ${fmt(exp)} · <b>ກຳໄລ ${fmt(profit)}</b><br>ຈາກ ${txns.length} ທຸລະກຳ${q.year?' (ປີ '+q.year+')':''}</div>${catRows}
+              <p class="text-[10px] text-gray-400 mt-1">* ຄິດໄລ່ຈາກບັນທຶກທຸລະກຳໃນລະບົບ (ສະກຸນຫຼັກ ₭)</p>`;
+        }
+        function ntAiAnswerPeriod(m){
+            const q=_ntAiPending||{};
+            if(m==='YEAR'){ q.year=new Date().getFullYear(); delete q.month; }
+            else q.month=m;
+            appendMessage("User", m==='YEAR'?('ປີ '+new Date().getFullYear()+' ທັງໝົດ'):('ເດືອນ '+m));
+            appendMessage("CFO", _ntComputeMetric(q));
+            _ntAiPending=null;
+        }
+        function ntAiAnswerBranch(bid){
+            const q=_ntAiPending||{};
+            if(bid==='ALL'){ delete q.branchId; delete q.branchName; }
+            else { q.branchId=bid; q.branchName=(branches[bid]&&branches[bid].name)||bid; }
+            appendMessage("User", bid==='ALL'?'ທຸກສາຂາ':q.branchName);
+            // still need a period?
+            if(!q.month && !q.year){ _ntAiPending=q; appendMessage("CFO", _ntAskPeriod(q)); }
+            else { appendMessage("CFO", _ntComputeMetric(q)); _ntAiPending=null; }
+        }
+        function _ntAskPeriod(q){
+            const months=_ntRecentMonths(6);
+            const btns=months.map(m=>`<button onclick="ntAiAnswerPeriod('${m}')" class="text-[11px] bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg border border-emerald-100">${m}</button>`).join('')
+                + `<button onclick="ntAiAnswerPeriod('YEAR')" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded-lg border">ປີນີ້ທັງໝົດ</button>`;
+            return `ຕ້ອງການ <b>${_ntMetricLabel(q.metric)}</b>${q.branchName?(' ຂອງ <b>'+q.branchName+'</b>'):''} <b>ເດືອນໃດ</b>? ກະລຸນາເລືອກ:<div class="flex flex-wrap gap-1.5 mt-2">${btns}</div>`;
+        }
+        function _ntAskBranch(q){
+            const br=(typeof branches!=='undefined'&&branches)?branches:{};
+            const btns=Object.entries(br).map(([id,b])=>`<button onclick="ntAiAnswerBranch('${id}')" class="text-[11px] bg-blue-50 hover:bg-blue-100 text-blue-700 px-2 py-1 rounded-lg border border-blue-100">${b.name}</button>`).join('')
+                + `<button onclick="ntAiAnswerBranch('ALL')" class="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded-lg border">ທຸກສາຂາ</button>`;
+            return `ຕ້ອງການ <b>${_ntMetricLabel(q.metric)}</b> ຂອງ <b>ສາຂາ/ແຂວງໃດ</b>?<div class="flex flex-wrap gap-1.5 mt-2">${btns}</div>`;
+        }
+        // Returns {html, after?} if handled locally, or null to fall back to Gemini.
+        function ntLocalFinanceAnswer(text){
+            // Teaching / how-to / explanation questions belong to the conversational AI, not the data engine.
+            if (/ສອນ|ວິທີ|ອະທິບາຍ|explain|teach|how\s*to|ໝາຍຄວາມ|ແມ່ນຫຍັງ|ຄືແນວໃດ/i.test(text)) return null;
+            const q=_ntParseQuery(text);
+            if(q.customerId && !q.metric){
+                return {html:`ກຳລັງເປີດແດສບອດ 360° ຂອງ "<b>${q.customerName}</b>" ໃຫ້ເຫັນທຸກຢ່າງ...`, after:()=>{ if(typeof ntCustomerDashboard==='function') ntCustomerDashboard(q.customerId); }};
+            }
+            if(!q.metric) return null;  // not a data/metric question → let Gemini handle
+            // Ask clarifying questions for missing dimensions (branch, then period)
+            const mentionsBranch=/ສາຂາ|ແຂວງ|branch/i.test(text);
+            if(!q.branchId && mentionsBranch){ _ntAiPending=q; return {html:_ntAskBranch(q)}; }
+            if(!q.month && !q.year){ _ntAiPending=q; return {html:_ntAskPeriod(q)}; }
+            return {html:_ntComputeMetric(q)};
+        }
+
         function quickAsk(question) {
             const input = document.getElementById('chatInput');
             if (input) {
@@ -7257,6 +7745,16 @@
             // Display user message
             appendMessage("User", text);
             input.value = "";
+
+            // FIRST: try the local data engine (precise answers from real data, asks clarifying Qs).
+            try {
+                const local = (typeof ntLocalFinanceAnswer === 'function') ? ntLocalFinanceAnswer(text) : null;
+                if (local) {
+                    appendMessage("CFO", local.html);
+                    if (local.after) setTimeout(local.after, 300);
+                    return;
+                }
+            } catch(e) { /* fall through to Gemini */ }
 
             // Typing Indicator
             const loaderId = appendMessage("CFO", `<div class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span><span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay:0.2s"></span><span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay:0.4s"></span></div>`);
@@ -7874,6 +8372,7 @@ try {
             firebase.initializeApp(firebaseCloudConfig);
         }
         db = firebase.firestore();
+        try { if (firebase.storage) { storage = firebase.storage(); ntStorageAvailable = true; } } catch(e) { console.warn('Storage init failed:', e); }
         // Anonymous sign-in so Firestore security rules that require auth will pass.
         if (firebase.auth) {
             auth = firebase.auth();
@@ -7950,7 +8449,10 @@ var costRows = [];
             const statusLabel = document.getElementById('cloudStatusLabel');
             if (statusLabel) { statusLabel.textContent = 'Syncing...'; statusLabel.className = 'font-bold cloud-status-syncing'; }
             if (_ntSyncTimer) clearTimeout(_ntSyncTimer);
-            _ntSyncTimer = setTimeout(_ntFlushCloudWrite, 800);
+            // 1500ms (was 800ms): coalesce rapid edits into fewer writes so several users editing
+            // at once don't exceed Firestore's ~1 write/sec/doc limit on the shared document.
+            // Reads stay near-realtime via the snapshot listener; only writes are batched.
+            _ntSyncTimer = setTimeout(_ntFlushCloudWrite, 1500);
         }
 
         // Merge two category objects (each = { groupName: [names...] }) by unioning the lists,
@@ -8014,7 +8516,10 @@ var costRows = [];
             const buildMerged = (cloud) => {
                 cloud = cloud || {};
                 if (cloud.nt_deletions && typeof ntMergeDeletions === 'function') ntMergeDeletions(cloud.nt_deletions);
-                const A = (loc, key) => ntMergeById(Array.isArray(loc) ? loc : [], Array.isArray(cloud[key]) ? cloud[key] : [], false);
+                // During the protect window (just after a local edit) a tie (equal _lm) must go to
+                // LOCAL, so an edit that didn't bump _lm still isn't reverted by the cloud's old copy.
+                const protectLocal = (Date.now() - _ntLastLocalEditAt) < 12000;
+                const A = (loc, key) => ntMergeById(Array.isArray(loc) ? loc : [], Array.isArray(cloud[key]) ? cloud[key] : [], protectLocal);
                 const localCostTrack = JSON.parse(localStorage.getItem('nt_costTrack') || '[]');
                 const localStaff     = JSON.parse(localStorage.getItem('nt_staffDuties') || '[]');
                 const localAccrual   = JSON.parse(localStorage.getItem('nt_accrualProj') || '{}');
@@ -8022,8 +8527,8 @@ var costRows = [];
                     transactions: A(transactions, 'transactions'),
                     invoices:     A(invoices, 'invoices'),
                     aps:          A(aps, 'aps'),
-                    customers:    ntMergeObjById(customers, cloud.customers || {}, false),
-                    branches:     ntMergeObjById(branches, cloud.branches || {}, false),
+                    customers:    ntMergeObjById(customers, cloud.customers || {}, protectLocal),
+                    branches:     ntMergeObjById(branches, cloud.branches || {}, protectLocal),
                     categories:   _ntMergeCategories(categories, cloud.categories),
                     companyInfo:  companyInfo || cloud.companyInfo || {},
                     nt_quotations:    A((typeof nt_quotations!=='undefined')?nt_quotations:[], 'nt_quotations'),
@@ -8053,35 +8558,78 @@ var costRows = [];
                 setTimeout(() => { if (statusLabel && statusLabel.textContent === 'Cloud Synced ✓') { statusLabel.textContent = 'Cloud Firestore Ready'; statusLabel.className = 'font-bold cloud-status-ok'; } }, 2000);
             };
             const onErr = (err) => {
-                if (statusLabel) { statusLabel.textContent = 'Sync Failed!'; statusLabel.className = 'font-bold cloud-status-error'; }
                 if (typeof logError === 'function') logError('Firestore backup failed: ' + (err && err.message));
                 const msg = (err && (err.code || err.message) || '').toString().toLowerCase();
                 const permanent = msg.includes('invalid-argument') || msg.includes('too large') || msg.includes('permission') || msg.includes('exceeds the maximum');
                 if (permanent) { _ntRetryCount = 0; if (statusLabel) { statusLabel.textContent = 'Sync error (data too large)'; statusLabel.className = 'font-bold cloud-status-error'; } return; }
-                if (_ntRetryCount < 3) { _ntRetryCount++; setTimeout(() => { if (db && navigator.onLine && !_ntApplyingRemote) _ntFlushCloudWrite(); }, 2000 * _ntRetryCount); }
-                else { _ntRetryCount = 0; }
+                // Transient (usually write contention when several users save at once). Firestore +
+                // our retry will resolve it — keep a calm "Syncing..." status instead of an alarming
+                // "Sync Failed!" so the connection doesn't *look* like it dropped. Only after all
+                // retries are exhausted do we show a soft notice (data is still safe locally).
+                if (_ntRetryCount < 4) {
+                    _ntRetryCount++;
+                    if (statusLabel) { statusLabel.textContent = 'Syncing...'; statusLabel.className = 'font-bold cloud-status-syncing'; }
+                    setTimeout(() => { if (db && navigator.onLine && !_ntApplyingRemote) _ntFlushCloudWrite(); }, 1500 * _ntRetryCount);
+                } else {
+                    _ntRetryCount = 0;
+                    if (statusLabel) { statusLabel.textContent = 'Saved locally — will retry'; statusLabel.className = 'font-bold cloud-status-syncing'; }
+                    // schedule a delayed retry burst; data remains safe in localStorage meanwhile
+                    setTimeout(() => { if (db && navigator.onLine && !_ntApplyingRemote) { _ntPendingWrite = true; _ntFlushCloudWrite(); } }, 12000);
+                }
+            };
+
+            // Build the cloud-bound copy with images stripped (kept local) so the document stays
+            // small and well under Firestore's 1 MiB limit → reliable sync across all users.
+            const _ntForCloud = (m) => {
+                if (!m) return m;
+                const c = Object.assign({}, m);
+                ['transactions','invoices','aps','nt_quotations','nt_budgetCalcs','nt_budgetPropols','nt_contracts','nt_contactLogs','nt_aftersales','nt_costTrack','nt_staffDuties','nt_proposalLetters'].forEach(k => { if (Array.isArray(c[k])) c[k] = _ntStripImagesArr(c[k]); });
+                ['customers','branches'].forEach(k => { if (c[k] && typeof c[k] === 'object') c[k] = _ntStripImagesObj(c[k]); });
+                if (c.companyInfo && typeof c.companyInfo === 'object') c.companyInfo = _ntStripImages(c.companyInfo);
+                return c;
             };
 
             // Preferred path: transaction (read-merge-write) — never clobbers others' newer records.
+            // Reads main_data AND any overflow shards, merges, then writes a single doc (small data)
+            // or main + overflow shards (large data) so no document ever exceeds the size limit.
+            const col = db.collection('treasury_backups');
+            const ovfRef = (i) => col.doc('main_data_o' + i);
             let usedTx = false;
             try {
                 if (typeof db.runTransaction === 'function') {
                     usedTx = true;
                     let mergedRef = null;
-                    db.runTransaction(tx => tx.get(ref).then(snap => {
-                        const merged = buildMerged(snap && snap.exists ? snap.data() : {});
-                        mergedRef = merged;
-                        tx.set(ref, merged);
-                    })).then(() => onOk(mergedRef)).catch(err => {
-                        // Fall back to a plain merged set() if the transaction fails (e.g. SDK quirk)
+                    db.runTransaction(tx => {
+                        return tx.get(ref).then(snap => {
+                            const mainData = snap && snap.exists ? snap.data() : {};
+                            const oldN = mainData._ovf || 0;
+                            // read overflow shards sequentially (all reads before writes)
+                            let chain = Promise.resolve([]);
+                            for (let i = 1; i <= oldN; i++) {
+                                chain = chain.then(acc => tx.get(ovfRef(i)).then(s => { acc.push(s && s.exists ? s.data() : {}); return acc; }));
+                            }
+                            return chain.then(ovfDocs => {
+                                const cloudFull = _ntReassemble(mainData, ovfDocs);
+                                const merged = buildMerged(cloudFull);
+                                mergedRef = merged;                         // full (with images) for local adoption
+                                const split = _ntSplitPayload(_ntForCloud(merged));
+                                tx.set(ref, split.main);
+                                split.shards.forEach((sh, i) => tx.set(ovfRef(i + 1), sh));
+                                for (let i = split.shards.length + 1; i <= oldN; i++) tx.delete(ovfRef(i));  // remove now-unused shards
+                            });
+                        });
+                    }).then(() => onOk(mergedRef)).catch(err => {
+                        // Fallback: plain set of a single merged doc (no overflow) if the transaction fails
                         const merged = buildMerged({});
-                        ref.set(merged).then(() => onOk(merged)).catch(onErr);
+                        const split = _ntSplitPayload(_ntForCloud(merged));
+                        ref.set(split.main).then(() => { split.shards.forEach((sh,i)=>ovfRef(i+1).set(sh)); onOk(merged); }).catch(onErr);
                     });
                 }
             } catch(e) { usedTx = false; }
             if (!usedTx) {
                 const merged = buildMerged({});
-                ref.set(merged).then(() => onOk(merged)).catch(onErr);
+                const split = _ntSplitPayload(_ntForCloud(merged));
+                ref.set(split.main).then(() => { split.shards.forEach((sh,i)=>ovfRef(i+1).set(sh)); onOk(merged); }).catch(onErr);
             }
         }
 
@@ -8100,9 +8648,11 @@ var costRows = [];
             if (!db || !navigator.onLine || _ntApplyingRemote) return;
             let sigs = {};
             try { sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}'); } catch(_) {}
+            let bank = [];
+            try { bank = JSON.parse(localStorage.getItem('nt_sigBank') || '[]'); } catch(_) {}
             const stamp = NT_DEVICE_ID + ':' + Date.now();
             _ntLastAppliedSigStamp = stamp;
-            const payload = { signatures: sigs, _updatedBy: NT_DEVICE_ID, _stamp: stamp, updatedAt: new Date() };
+            const payload = { signatures: sigs, sigBank: bank, _updatedBy: NT_DEVICE_ID, _stamp: stamp, updatedAt: new Date() };
             db.collection('treasury_backups').doc('signatures').set(payload)
                 .then(() => { _ntSigRetryCount = 0; })
                 .catch(err => {
@@ -8544,6 +9094,11 @@ function renderCostTrackTable() {
     }
 
     let data = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+    // Filter by customer (name search)
+    const custQuery = (document.getElementById('costTrackCustomer')?.value||'').trim().toLowerCase();
+    if (custQuery) {
+        data = data.filter(e => ((e.customerName||'')+' '+(e.rvNo||'')).toLowerCase().indexOf(custQuery)!==-1);
+    }
     // Filter by month
     if (monthFilter) {
         data = data.filter(e => (e.date||'').startsWith(monthFilter));
@@ -9672,6 +10227,209 @@ function ntFormalHeader(title, opts) {
 // roles: array of label strings. areaKey: unique key for storing this area's signatures.
 // Single signature slot (one column) — for placing individual signatures (e.g. flanking a QR code).
 // `key` is the full storage key (caller builds it).
+// ============================================================
+// SIGNATURE BANK (ຄັງລາຍເຊັນ)
+// Upload each person's signature ONCE (keyed by name). In any document, pick a name
+// and that person's signature drops into the slot — resizable per slot.
+// Stored in localStorage 'nt_sigBank' and synced via the SEPARATE signatures document,
+// so it never touches the main data connection (keeps multi-user sync stable).
+// ============================================================
+var nt_sigBank = (function(){ try { return JSON.parse(localStorage.getItem('nt_sigBank') || '[]'); } catch(_) { return []; } })();
+if (!Array.isArray(nt_sigBank)) nt_sigBank = [];
+
+function ntSaveSigBank() {
+    try { localStorage.setItem('nt_sigBank', JSON.stringify(nt_sigBank)); } catch(e) {
+        if (typeof showToast === 'function') showToast('ພື້ນທີ່ຈັດເກັບເຕັມ — ລອງຮູບນ້ອຍ/ໜ້ອຍຄົນລົງ', 'error');
+    }
+    if (typeof triggerSignatureBackup === 'function') { try { triggerSignatureBackup(); } catch(_){} }
+}
+
+// Compress an image File into a small data URL (shared by the bank + slot upload).
+// Returns via callback: { img, w, h } where w/h are a sensible default DISPLAY size.
+function _ntCompressSigFile(file, cb) {
+    const reader = new FileReader();
+    reader.onload = ev => {
+        const img = new Image();
+        img.onload = () => {
+            try {
+                const MAX_W = 360, MAX_H = 360;
+                let w = img.width, h = img.height;
+                const ratio = Math.min(MAX_W / w, MAX_H / h, 1);
+                w = Math.round(w * ratio); h = Math.round(h * ratio);
+                const canvas = document.createElement('canvas');
+                canvas.width = w; canvas.height = h;
+                const ctx = canvas.getContext('2d');
+                const isPng = (file.type || '').includes('png');
+                let dataUrl;
+                if (isPng) {
+                    ctx.clearRect(0, 0, w, h); ctx.drawImage(img, 0, 0, w, h);
+                    dataUrl = canvas.toDataURL('image/png');
+                    if (dataUrl.length > 90000) { ctx.fillStyle = '#fff'; ctx.fillRect(0,0,w,h); ctx.drawImage(img,0,0,w,h); dataUrl = canvas.toDataURL('image/jpeg', 0.82); }
+                } else {
+                    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); ctx.drawImage(img, 0, 0, w, h);
+                    dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+                }
+                // Default display: fit within 170 x 150 box keeping aspect (portrait-friendly)
+                const BOX_W = 170, BOX_H = 150;
+                const dr = Math.min(BOX_W / w, BOX_H / h, 1);
+                cb({ img: dataUrl, w: Math.max(40, Math.round(w * dr)), h: Math.max(20, Math.round(h * dr)) });
+            } catch (err) { if (typeof showToast === 'function') showToast('ປະມວນຮູບບໍ່ສຳເລັດ', 'error'); }
+        };
+        img.onerror = () => { if (typeof showToast === 'function') showToast('ຮູບພາບເສຍ ຫຼື ບໍ່ຮອງຮັບ', 'error'); };
+        img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function openSigBankModal() {
+    let modal = document.getElementById('sigBankModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'sigBankModal';
+        modal.className = 'fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4';
+        modal.innerHTML = `
+          <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[88vh] overflow-y-auto">
+            <div class="flex items-center justify-between px-5 py-4 border-b sticky top-0 bg-white rounded-t-2xl">
+              <h3 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-signature text-indigo-600 mr-2"></i>ຄັງລາຍເຊັນ (Signature Bank)</h3>
+              <button onclick="closeSigBankModal()" class="text-gray-400 hover:text-gray-700 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-5">
+              <div class="flex gap-2 mb-4">
+                <input id="sigBankNewName" type="text" placeholder="ຊື່ ແລະ ນາມສະກຸນ ຜູ້ເຊັນ..." class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
+                <button onclick="ntSigBankAdd()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap"><i class="fa-solid fa-plus mr-1"></i>ເພີ່ມ + ອັບລາຍເຊັນ</button>
+              </div>
+              <p class="text-xs text-gray-500 mb-3">ອັບລາຍເຊັນຂອງແຕ່ລະຄົນເທື່ອດຽວ. ໃນເອກະສານ ກົດ “ຄັງ” ທີ່ຊ່ອງລາຍເຊັນ ແລ້ວເລືອກຊື່ → ລາຍເຊັນຈະຂຶ້ນ ແລະ ປັບຂະໜາດໄດ້.</p>
+              <div id="sigBankList" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+            </div>
+          </div>`;
+        document.body.appendChild(modal);
+    }
+    modal.classList.remove('hidden');
+    renderSigBankList();
+}
+function closeSigBankModal() { const m = document.getElementById('sigBankModal'); if (m) m.classList.add('hidden'); }
+
+function renderSigBankList() {
+    const el = document.getElementById('sigBankList');
+    if (!el) return;
+    if (!nt_sigBank.length) { el.innerHTML = '<p class="text-sm text-gray-400 col-span-full text-center py-6">ຍັງບໍ່ມີລາຍເຊັນໃນຄັງ — ເພີ່ມຄົນທຳອິດ</p>'; return; }
+    el.innerHTML = nt_sigBank.map(s => `
+      <div class="border border-gray-200 rounded-xl p-3 flex flex-col items-center bg-slate-50">
+        <div class="h-20 flex items-center justify-center mb-2">
+          ${s.img ? `<img src="${s.img}" style="max-height:76px; max-width:150px; object-fit:contain;">` : '<span class="text-xs text-gray-400">ບໍ່ມີຮູບ</span>'}
+        </div>
+        <p class="text-sm font-bold text-gray-800 text-center mb-2">${(s.name||'').replace(/</g,'&lt;')}</p>
+        <div class="flex gap-1.5">
+          <button onclick="ntSigBankUpload('${s.id}')" class="text-[11px] bg-indigo-600 text-white px-2 py-1 rounded" title="ປ່ຽນ/ອັບໃໝ່"><i class="fa-solid fa-upload"></i></button>
+          <button onclick="ntSigBankRename('${s.id}')" class="text-[11px] bg-slate-600 text-white px-2 py-1 rounded" title="ປ່ຽນຊື່"><i class="fa-solid fa-pen"></i></button>
+          <button onclick="ntSigBankDelete('${s.id}')" class="text-[11px] bg-rose-500 text-white px-2 py-1 rounded" title="ລົບ"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>`).join('');
+}
+
+function ntSigBankAdd() {
+    const nameEl = document.getElementById('sigBankNewName');
+    const name = (nameEl?.value || '').trim();
+    if (!name) { showToast('ກະລຸນາໃສ່ຊື່ຜູ້ເຊັນກ່ອນ', 'warning'); return; }
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = 'image/*';
+    input.onchange = () => {
+        const file = input.files && input.files[0];
+        if (!file) return;
+        _ntCompressSigFile(file, ({img, w, h}) => {
+            const finish = (finalImg) => {
+                nt_sigBank.push({ id: ntUID('SB_'), name, img: finalImg, w, h });
+                ntSaveSigBank();
+                if (nameEl) nameEl.value = '';
+                renderSigBankList();
+                showToast('ເພີ່ມລາຍເຊັນ "' + name + '" ເຂົ້າຄັງສຳເລັດ', 'success');
+            };
+            if (typeof _ntUploadToStorage === 'function') _ntUploadToStorage(img, (url) => finish(url || img));
+            else finish(img);
+        });
+    };
+    input.click();
+}
+
+function ntSigBankUpload(id) {
+    const entry = nt_sigBank.find(s => s.id === id);
+    if (!entry) return;
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = 'image/*';
+    input.onchange = () => {
+        const file = input.files && input.files[0];
+        if (!file) return;
+        _ntCompressSigFile(file, ({img, w, h}) => {
+            const finish = (finalImg) => {
+                entry.img = finalImg; entry.w = w; entry.h = h;
+                ntSaveSigBank(); renderSigBankList();
+                showToast('ອັບເດດລາຍເຊັນສຳເລັດ', 'success');
+            };
+            if (typeof _ntUploadToStorage === 'function') _ntUploadToStorage(img, (url) => finish(url || img));
+            else finish(img);
+        });
+    };
+    input.click();
+}
+
+function ntSigBankRename(id) {
+    const entry = nt_sigBank.find(s => s.id === id);
+    if (!entry) return;
+    const nn = prompt('ປ່ຽນຊື່ຜູ້ເຊັນ:', entry.name || '');
+    if (nn && nn.trim()) { entry.name = nn.trim(); ntSaveSigBank(); renderSigBankList(); }
+}
+
+function ntSigBankDelete(id) {
+    if (!confirm('ລົບລາຍເຊັນນີ້ອອກຈາກຄັງ?')) return;
+    nt_sigBank = nt_sigBank.filter(s => s.id !== id);
+    ntSaveSigBank(); renderSigBankList();
+}
+
+// Open a picker over a document slot: choose a person → drop their signature into that slot.
+function ntSigBankPick(slotKey) {
+    if (!nt_sigBank.length) {
+        if (confirm('ຄັງລາຍເຊັນຍັງວ່າງ. ເປີດຄັງລາຍເຊັນເພື່ອເພີ່ມບໍ?')) openSigBankModal();
+        return;
+    }
+    let picker = document.getElementById('sigBankPicker');
+    if (picker) picker.remove();
+    picker = document.createElement('div');
+    picker.id = 'sigBankPicker';
+    picker.className = 'fixed inset-0 bg-black/50 z-[70] flex items-center justify-center p-4';
+    picker.innerHTML = `
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto">
+        <div class="flex items-center justify-between px-5 py-3 border-b sticky top-0 bg-white">
+          <h3 class="font-bold text-gray-800"><i class="fa-solid fa-hand-pointer text-indigo-600 mr-2"></i>ເລືອກລາຍເຊັນ</h3>
+          <button onclick="document.getElementById('sigBankPicker').remove()" class="text-gray-400 hover:text-gray-700 text-xl"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="p-4 grid grid-cols-2 gap-3">
+          ${nt_sigBank.map(s => `
+            <button onclick="ntSigBankApply('${s.id}','${slotKey}')" class="border border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 rounded-xl p-3 flex flex-col items-center transition">
+              <div class="h-16 flex items-center justify-center mb-1">${s.img ? `<img src="${s.img}" style="max-height:60px;max-width:130px;object-fit:contain;">` : ''}</div>
+              <span class="text-xs font-bold text-gray-700">${(s.name||'').replace(/</g,'&lt;')}</span>
+            </button>`).join('')}
+        </div>
+        <div class="px-4 pb-4"><button onclick="openSigBankModal()" class="text-xs text-indigo-600 underline">+ ຈັດການຄັງລາຍເຊັນ</button></div>
+      </div>`;
+    document.body.appendChild(picker);
+}
+
+// Apply a bank signature into a document slot (copy image + size into nt_signatures[slotKey]).
+function ntSigBankApply(bankId, slotKey) {
+    const entry = nt_sigBank.find(s => s.id === bankId);
+    if (!entry) return;
+    const sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
+    sigs[slotKey] = { img: entry.img, w: entry.w || 150, h: entry.h || 70, x: 0, y: 0, fromBank: entry.name || '' };
+    const ok = (typeof safeSetLocalStorage === 'function')
+        ? safeSetLocalStorage('nt_signatures', JSON.stringify(sigs))
+        : (function(){ try { localStorage.setItem('nt_signatures', JSON.stringify(sigs)); return true; } catch(_) { return false; } })();
+    if (ok === false) { showToast('ພື້ນທີ່ຈັດເກັບເຕັມ', 'error'); return; }
+    if (typeof triggerSignatureBackup === 'function') try{ triggerSignatureBackup(); }catch(_){}
+    const p = document.getElementById('sigBankPicker'); if (p) p.remove();
+    if (typeof refreshAllViews === 'function') refreshAllViews();
+    showToast('ໃສ່ລາຍເຊັນ "' + (entry.name||'') + '" ສຳເລັດ — ປັບຂະໜາດໄດ້', 'success');
+}
+
 function ntSignatureSlot(role, key) {
     const sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
     const saved = sigs[key];
@@ -9685,7 +10443,7 @@ function ntSignatureSlot(role, key) {
             ${imgHtml}
             <div class="border-t border-gray-400 mt-1 pt-1 text-gray-400">ລາຍເຊັນ & ຊື່</div>
             <div class="no-print absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-white/70">
-                <button onclick="ntUploadSignature('${key}')" class="text-[10px] bg-indigo-600 text-white px-2 py-1 rounded shadow" title="ອັບໂຫຼດລາຍເຊັນ (PNG/JPG)"><i class="fa-solid fa-upload mr-1"></i>ລາຍເຊັນ</button>
+                <button onclick="ntSigBankPick('${key}')" class="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded shadow" title="ເລືອກຈາກຄັງລາຍເຊັນ"><i class="fa-solid fa-signature mr-1"></i>ຄັງ</button><button onclick="ntUploadSignature('${key}')" class="text-[10px] bg-indigo-600 text-white px-2 py-1 rounded shadow ml-1" title="ອັບໂຫຼດລາຍເຊັນ (PNG/JPG)"><i class="fa-solid fa-upload mr-1"></i>ອັບ</button>
                 ${saved && saved.img ? `<button onclick="ntAdjustSignature('${key}')" class="text-[10px] bg-amber-500 text-white px-2 py-1 rounded shadow ml-1" title="ປັບຂະໜາດ"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button><button onclick="ntRemoveSignature('${key}')" class="text-[10px] bg-rose-500 text-white px-2 py-1 rounded shadow ml-1" title="ລົບ"><i class="fa-solid fa-trash"></i></button>` : ''}
             </div>
         </div>
@@ -9708,7 +10466,7 @@ function ntSignatureBlock(roles, areaKey) {
                 ${imgHtml}
                 <div class="border-t border-gray-400 mt-1 pt-1 text-gray-400">ລາຍເຊັນ & ຊື່</div>
                 <div class="no-print absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-white/70">
-                    <button onclick="ntUploadSignature('${key}')" class="text-[10px] bg-indigo-600 text-white px-2 py-1 rounded shadow" title="ອັບໂຫຼດລາຍເຊັນ (PNG/JPG)"><i class="fa-solid fa-upload mr-1"></i>ລາຍເຊັນ</button>
+                    <button onclick="ntSigBankPick('${key}')" class="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded shadow" title="ເລືອກຈາກຄັງລາຍເຊັນ"><i class="fa-solid fa-signature mr-1"></i>ຄັງ</button><button onclick="ntUploadSignature('${key}')" class="text-[10px] bg-indigo-600 text-white px-2 py-1 rounded shadow ml-1" title="ອັບໂຫຼດລາຍເຊັນ (PNG/JPG)"><i class="fa-solid fa-upload mr-1"></i>ອັບ</button>
                     ${saved && saved.img ? `<button onclick="ntAdjustSignature('${key}')" class="text-[10px] bg-amber-500 text-white px-2 py-1 rounded shadow ml-1" title="ປັບຂະໜາດ"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button><button onclick="ntRemoveSignature('${key}')" class="text-[10px] bg-rose-500 text-white px-2 py-1 rounded shadow ml-1" title="ລົບ"><i class="fa-solid fa-trash"></i></button>` : ''}
                 </div>
             </div>
@@ -9769,13 +10527,20 @@ function ntUploadSignature(key) {
                     const dispW = Math.max(40, Math.round(w * dispRatio));
                     const dispH = Math.max(20, Math.round(h * dispRatio));
                     sigs[key] = { img: dataUrl, w: dispW, h: dispH, x: 0, y: 0 };
-                    const okSave = (typeof safeSetLocalStorage === 'function')
-                        ? safeSetLocalStorage('nt_signatures', JSON.stringify(sigs))
-                        : (function(){ try { localStorage.setItem('nt_signatures', JSON.stringify(sigs)); return true; } catch(_) { return false; } })();
-                    if (okSave === false) { showToast('ພື້ນທີ່ຈັດເກັບເຕັມ ລອງຮູບນ້ອຍກວ່າ', 'error'); return; }
-                    if (typeof triggerSignatureBackup === 'function') try{ triggerSignatureBackup(); }catch(_){}
-                    if (typeof refreshAllViews === 'function') refreshAllViews();
-                    showToast('ອັບໂຫຼດລາຍເຊັນສຳເລັດ — ຈະຄ້າງໄວ້ໃນຟອມຈົນກວ່າຈະປ່ຽນໃໝ່', 'success');
+                    const _persistSig = () => {
+                        const okSave = (typeof safeSetLocalStorage === 'function')
+                            ? safeSetLocalStorage('nt_signatures', JSON.stringify(sigs))
+                            : (function(){ try { localStorage.setItem('nt_signatures', JSON.stringify(sigs)); return true; } catch(_) { return false; } })();
+                        if (okSave === false) { showToast('ພື້ນທີ່ຈັດເກັບເຕັມ ລອງຮູບນ້ອຍກວ່າ', 'error'); return; }
+                        if (typeof triggerSignatureBackup === 'function') try{ triggerSignatureBackup(); }catch(_){}
+                        if (typeof refreshAllViews === 'function') refreshAllViews();
+                        showToast('ອັບໂຫຼດລາຍເຊັນສຳເລັດ — ຈະຄ້າງໄວ້ໃນຟອມຈົນກວ່າຈະປ່ຽນໃໝ່', 'success');
+                    };
+                    // Push the signature image to Storage when available (keeps the online signatures
+                    // document tiny → never "full"); otherwise keep the compressed base64 locally.
+                    if (typeof _ntUploadToStorage === 'function') {
+                        _ntUploadToStorage(dataUrl, function(url){ if (url) sigs[key].img = url; _persistSig(); });
+                    } else { _persistSig(); }
                 } catch (err) {
                     console.error('signature upload error', err);
                     showToast('ອັບໂຫຼດລາຍເຊັນບໍ່ສຳເລັດ: ' + (err && err.message || ''), 'error');
@@ -9936,6 +10701,7 @@ function saveStaffDuty(event) {
         duty: document.getElementById('staffDutyText').value.trim(),
         createdAt: new Date().toISOString()
     });
+    if (typeof ntStamp === 'function') ntStamp(nt_staffDuties[nt_staffDuties.length-1]);
     localStorage.setItem('nt_staffDuties', JSON.stringify(nt_staffDuties));
     if (typeof triggerCloudBackup === 'function') try{ triggerCloudBackup(); }catch(_){}
     renderStaffDutyTable();
@@ -10483,6 +11249,7 @@ function savePlLetter() {
         createdAt: existing?.createdAt || new Date().toISOString(),
         updatedAt: new Date().toISOString()
     };
+    if (typeof ntStamp === 'function') ntStamp(pl);
     if (pl_currentId) { const idx = nt_proposalLetters.findIndex(x=>x.id===pl_currentId); if(idx>=0) nt_proposalLetters[idx]=pl; else nt_proposalLetters.push(pl); }
     else nt_proposalLetters.push(pl);
     pl_currentId = pl.id;
@@ -10837,6 +11604,7 @@ function saveQuotation() {
         total, remark: document.getElementById('qtRemark').value,
         status: 'sent', createdAt: new Date().toISOString()
     };
+    if (typeof ntStamp === 'function') ntStamp(qt);
     if (qt_currentId) {
         const idx = nt_quotations.findIndex(x => x.id === qt_currentId);
         if (idx >= 0) nt_quotations[idx] = qt; else nt_quotations.push(qt);
@@ -11701,6 +12469,7 @@ function saveBudgetProposal() {
         receiptImage: bpReceiptImage,
         createdAt: new Date().toISOString()
     };
+    if (typeof ntStamp === 'function') ntStamp(bp);
     if (bp_currentId) { const idx=nt_budgetPropols.findIndex(x=>x.id===bp_currentId); if(idx>=0) nt_budgetPropols[idx]=bp; else nt_budgetPropols.push(bp); }
     else nt_budgetPropols.push(bp);
     bp_currentId = bp.id;
@@ -12358,10 +13127,13 @@ function saveContract(event) {
         const idx = nt_contracts.findIndex(c => c.id === editId);
         if (idx === -1) { showToast('ບໍ່ພົບສັນຍາ','error'); return; }
         nt_contracts[idx] = { ...nt_contracts[idx], ...data, updatedAt: new Date().toISOString() };
+        if (typeof ntStamp === 'function') ntStamp(nt_contracts[idx]);   // bump _lm so this edit wins the merge
         if(typeof showToast==='function') showToast('ອັບເດດສັນຍາສຳເລັດ','success');
     } else {
         // ADD new contract
-        nt_contracts.push({ id:ntUID('CT_'), ...data, createdAt:new Date().toISOString() });
+        const nc = { id:ntUID('CT_'), ...data, createdAt:new Date().toISOString() };
+        if (typeof ntStamp === 'function') ntStamp(nc);
+        nt_contracts.push(nc);
         if(typeof showToast==='function') showToast('ບັນທຶກສັນຍາໃໝ່ສຳເລັດ','success');
     }
     ntSave();
@@ -12646,11 +13418,13 @@ function contractScheduleInvoice(contractId, idx) {
         branchId: c.branchId || '',
         contractId: c.id, contractScheduleIdx: idx
     });
+    if (typeof ntStamp === 'function') ntStamp(invoices[invoices.length-1]);
     safeSetLocalStorage('treasury_invoices_pro', JSON.stringify(invoices));
     // Mark installment invoiced
     s.invoiced = true;
     s.invoicedDate = new Date().toISOString().split('T')[0];
     s.invoiceNo = invNo;
+    if (typeof ntStamp === 'function') ntStamp(c);   // bump contract _lm so this change wins the merge
     ntSave();
     if (typeof renderArApLedgers === 'function') renderArApLedgers();
     ntRenderContractTable();
@@ -12670,6 +13444,7 @@ function contractSchedulePay(contractId, idx) {
         const inv = invoices.find(i => i.invoiceNo === s.invoiceNo && i.type === 'IV');
         if (inv && inv.status !== 'Paid') {
             inv.status = 'Paid';
+            if (typeof ntStamp === 'function') ntStamp(inv);
             if (typeof autoCreateTransactionFromInvoice === 'function') autoCreateTransactionFromInvoice(inv);
             safeSetLocalStorage('treasury_invoices_pro', JSON.stringify(invoices));
         }
@@ -12680,6 +13455,7 @@ function contractSchedulePay(contractId, idx) {
     s.paidDate = new Date().toISOString().split('T')[0];
     c.paidLak = (Number(c.paidLak)||0) + (Number(s.amount)||0);
     c.balanceLak = (Number(c.totalLak)||0) - (Number(c.paidLak)||0);
+    if (typeof ntStamp === 'function') ntStamp(c);   // bump contract _lm so this change wins the merge
     ntSave();
     if (typeof renderArApLedgers === 'function') renderArApLedgers();
     ntRenderContractTable();
@@ -12943,6 +13719,7 @@ function saveAftersales(event){
         notes:document.getElementById('asNotes').value,
         updatedAt:new Date().toISOString()
     };
+    if (typeof ntStamp === 'function') ntStamp(entry);   // bump _lm for both new + edit so the change wins the merge
     if (editingId) {
         const i = nt_aftersales.findIndex(x => x.id === editingId);
         if (i >= 0) nt_aftersales[i] = { ...nt_aftersales[i], ...entry };
@@ -12982,8 +13759,200 @@ function saveContactLog(event){
         type:document.getElementById('clType').value,
         summary:document.getElementById('clSummary').value,
         createdAt:new Date().toISOString()};
+    if (typeof ntStamp === 'function') ntStamp(log);
     nt_contactLogs.push(log); ntSave(); ntRenderContactLogTable(); closeContactLogModal();
     if(typeof showToast==='function') showToast('ບັນທຶກການຕິດຕໍ່ສຳເລັດ','success');
+}
+
+// ============================================================
+// CUSTOMER 360° — aggregate EVERYTHING about one customer across the whole app
+// ============================================================
+function _ntCustFmt(n){ return (Number(n)||0).toLocaleString('en-US'); }
+function _ntCurSum(arr){ const m={LAK:0,THB:0,USD:0}; (arr||[]).forEach(x=>{const c=x.currency||'LAK'; m[c]=(m[c]||0)+(Number(x.amount)||0);}); return m; }
+function _ntCurStr(m){ const parts=[]; if(m.LAK)parts.push(_ntCustFmt(m.LAK)+' ₭'); if(m.THB)parts.push(_ntCustFmt(m.THB)+' ฿'); if(m.USD)parts.push(_ntCustFmt(m.USD)+' $'); return parts.length?parts.join(' · '):'0'; }
+
+function _ntCustomerData(cid){
+    const cust = (typeof customers!=='undefined' && customers[cid]) ? customers[cid] : {};
+    const cname = cust.name || '';
+    const allInv = (typeof invoices!=='undefined' && invoices) ? invoices : [];
+    const myInv = allInv.filter(i => i.customerId===cid);
+    const rv = myInv.filter(i => (i.type||'')==='RV');
+    const iv = myInv.filter(i => (i.type||'')==='IV');
+    const qtAll = myInv.filter(i => (i.type||'')==='QT').concat(((typeof nt_quotations!=='undefined'&&nt_quotations)?nt_quotations:[]).filter(q=>q.customerId===cid));
+    const contracts = ((typeof nt_contracts!=='undefined'&&nt_contracts)?nt_contracts:[]).filter(c=>c.customerId===cid);
+    let costTrackAll=[]; try{ costTrackAll=JSON.parse(localStorage.getItem('nt_costTrack')||'[]'); }catch(_){}
+    const costTrack = costTrackAll.filter(e => (cname && (e.customerName||'')===cname) || (e.customerId||'')===cid);
+    const rvNos = new Set(rv.map(r=>r.invoiceNo).filter(Boolean));
+    const calcs = ((typeof nt_budgetCalcs!=='undefined'&&nt_budgetCalcs)?nt_budgetCalcs:[]).filter(bc => (bc.rvRef && rvNos.has(bc.rvRef)) || (bc.payee && cname && String(bc.payee).indexOf(cname)!==-1));
+    const letters = ((typeof nt_proposalLetters!=='undefined'&&nt_proposalLetters)?nt_proposalLetters:[]).filter(l=>l.customerId===cid);
+    const contacts = ((typeof nt_contactLogs!=='undefined'&&nt_contactLogs)?nt_contactLogs:[]).filter(l=>l.customerId===cid);
+    const aftersales = ((typeof nt_aftersales!=='undefined'&&nt_aftersales)?nt_aftersales:[]).filter(a=>a.customerId===cid);
+    // earliest activity date (since when)
+    const allDates = [].concat(myInv.map(i=>i.date), contracts.map(c=>c.contractDate), letters.map(l=>l.date), contacts.map(c=>c.date)).filter(Boolean).sort();
+    return {cust,cname,myInv,rv,iv,qt:qtAll,contracts,costTrack,calcs,letters,contacts,aftersales,rvNos,
+            rvTotal:_ntCurSum(rv), ivTotal:_ntCurSum(iv), arOut:_ntCurSum(iv.filter(i=>i.status!=='Paid')),
+            since: allDates[0]||null};
+}
+
+function ntRenderCustomerDirectory(){
+    const list=document.getElementById('custDirList'); if(!list) return;
+    const q=(document.getElementById('custDirSearch')?.value||'').trim().toLowerCase();
+    const entries=Object.entries((typeof customers!=='undefined'&&customers)?customers:{});
+    const cntEl=document.getElementById('custDirCount'); if(cntEl) cntEl.textContent='ທັງໝົດ '+entries.length+' ລູກຄ້າ';
+    const filtered=entries.filter(([id,c])=>{ if(!q) return true; const hay=((c.name||'')+' '+(c.taxId||'')+' '+(c.tel||'')).toLowerCase(); return hay.indexOf(q)!==-1; });
+    if(!filtered.length){ list.innerHTML='<p class="text-xs text-gray-400 col-span-full text-center py-6">ບໍ່ພົບລູກຄ້າ</p>'; return; }
+    list.innerHTML=filtered.map(([id,c])=>{
+        const d=_ntCustomerData(id);
+        const rvc=d.rv.length, ivc=d.iv.length, arHas=(d.arOut.LAK||d.arOut.THB||d.arOut.USD);
+        return `<button onclick="ntCustomerDashboard('${id}')" class="text-left border border-gray-200 hover:border-fuchsia-400 hover:bg-fuchsia-50 rounded-xl p-3 transition">
+            <p class="font-bold text-xs text-gray-800 truncate">${(c.name||'(ບໍ່ມີຊື່)').replace(/</g,'&lt;')}</p>
+            <div class="flex gap-2 mt-1 flex-wrap text-[10px]">
+                <span class="text-emerald-600">RV ${rvc}</span>
+                <span class="text-blue-600">IV ${ivc}</span>
+                <span class="text-purple-600">ສັນຍາ ${d.contracts.length}</span>
+                ${arHas?`<span class="text-rose-600 font-bold">ຄ້າງ!</span>`:''}
+            </div>
+        </button>`;
+    }).join('');
+}
+
+function ntCustomerDashboard(cid){
+    const d=_ntCustomerData(cid);
+    let m=document.getElementById('cust360Modal');
+    if(m) m.remove();
+    m=document.createElement('div');
+    m.id='cust360Modal';
+    m.className='fixed inset-0 bg-black/50 z-[80] flex items-start justify-center p-2 sm:p-4 overflow-y-auto';
+    const card=(label,val,color,icon)=>`<div class="bg-white rounded-xl p-3 border border-gray-100 shadow-sm">
+        <p class="text-[10px] text-gray-500"><i class="fa-solid ${icon} mr-1 ${color}"></i>${label}</p>
+        <p class="text-sm font-bold ${color} mt-0.5">${val}</p></div>`;
+    // costs total + paid status
+    const costByCur=_ntCurSum(d.costTrack.map(e=>({currency:e.currency,amount:e.cost})));
+    const profitByCur=_ntCurSum(d.costTrack.map(e=>({currency:e.currency,amount:e.profit})));
+    const calcsPaid=d.calcs.filter(c=>c.status==='paid').length;
+    const calcsPending=d.calcs.length-calcsPaid;
+    // DETAILED cost breakdown (what each cost is) + days outstanding for unpaid
+    const _daysOut=(s)=>{ if(!s) return null; const d0=new Date(s); if(isNaN(d0.getTime())) return null; return Math.max(0, Math.floor((Date.now()-d0.getTime())/86400000)); };
+    let calcsOutstandingTotal=0;
+    d.calcs.forEach(c=>{ if(c.status!=='paid') calcsOutstandingTotal+=(Number(c.total)||0); });
+    const costDetailHtml = d.calcs.length ? d.calcs.map(c=>{
+        const paid=c.status==='paid'; const days=_daysOut(c.date);
+        const items=Array.isArray(c.items)?c.items:[];
+        const itemList=items.length ? items.map(it=>`<div class="flex justify-between gap-2 text-[11px] text-gray-600 px-2.5 py-0.5"><span class="min-w-0 truncate">• ${String(it.name||it.desc||it.item||it.detail||'ລາຍການ').replace(/</g,'&lt;')}</span><span class="font-mono flex-shrink-0">${_ntCustFmt(it.amount||it.total||it.price||it.cost)}</span></div>`).join('') : '<div class="text-[10px] text-gray-400 px-2.5 py-0.5">— ບໍ່ມີລາຍການຍ່ອຍ —</div>';
+        return `<div class="border border-gray-100 rounded-lg mb-2 overflow-hidden">
+            <div class="flex items-center justify-between gap-2 px-2.5 py-1.5 bg-gray-50 flex-wrap">
+                <div class="min-w-0 flex items-center gap-1.5 flex-wrap">
+                    <span class="font-mono text-[11px] text-gray-700">${c.paidNumber||c.number||'-'}</span>
+                    <span class="text-[11px] text-gray-500">${(c.payee||'').replace(/</g,'&lt;')}</span>
+                    <span class="text-[10px] text-gray-400">${c.date||''}</span>
+                </div>
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                    ${(!paid && days!==null) ? `<span class="text-[9px] px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700 font-bold">ຄ້າງ ${days} ມື້</span>` : ''}
+                    ${stBadge(c.status)}
+                    <span class="font-bold text-orange-600 text-xs">${_ntCustFmt(c.total)} ₭</span>
+                </div>
+            </div>
+            <div class="py-1 divide-y divide-gray-50">${itemList}</div>
+        </div>`;
+    }).join('') : '<p class="text-center text-gray-400 text-[11px] py-3">— ບໍ່ມີ —</p>';
+    // services used (from contracts + costTrack)
+    const services=Array.from(new Set([].concat(d.contracts.map(c=>c.serviceItem||c.serviceCategory), d.costTrack.map(e=>e.serviceItem)).filter(Boolean)));
+    const tableRows=(arr,cols)=>arr.length?arr.map(r=>`<tr class="border-b border-gray-50">${cols.map(c=>`<td class="px-2 py-1 ${c.cls||''}">${c.f(r)}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${cols.length}" class="px-2 py-3 text-center text-gray-400 text-[11px]">— ບໍ່ມີ —</td></tr>`;
+    const sec=(title,icon,color,inner)=>`<div class="bg-white rounded-xl border border-gray-100 p-3 mb-3">
+        <h4 class="text-xs font-bold text-gray-700 mb-2"><i class="fa-solid ${icon} mr-1.5 ${color}"></i>${title}</h4>${inner}</div>`;
+    const tbl=(head,rows)=>`<div class="overflow-x-auto"><table class="w-full text-[11px]"><thead><tr class="text-gray-400 border-b border-gray-100">${head.map(h=>`<th class="px-2 py-1 text-left font-semibold">${h}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
+    const stBadge=(s)=>{ const map={paid:'bg-emerald-100 text-emerald-700',approved:'bg-blue-100 text-blue-700',pending:'bg-amber-100 text-amber-700',cancelled:'bg-gray-100 text-gray-500',Paid:'bg-emerald-100 text-emerald-700',Unpaid:'bg-rose-100 text-rose-700'}; return `<span class="text-[9px] px-1.5 py-0.5 rounded-full ${map[s]||'bg-gray-100 text-gray-600'} font-bold">${s||'-'}</span>`; };
+
+    m.innerHTML=`<div class="bg-slate-50 rounded-2xl shadow-2xl w-full max-w-4xl my-2">
+      <div class="flex items-center justify-between px-4 py-3 border-b bg-white rounded-t-2xl sticky top-0 z-10">
+        <div>
+          <h3 class="text-base font-bold text-gray-800"><i class="fa-solid fa-building-user text-fuchsia-600 mr-2"></i>${(d.cname||'(ບໍ່ມີຊື່)').replace(/</g,'&lt;')}</h3>
+          <p class="text-[11px] text-gray-500">${d.cust.taxId?('ພາສີ: '+d.cust.taxId+' · '):''}${d.cust.tel?('☎ '+d.cust.tel+' · '):''}${d.since?('ລູກຄ້າຕັ້ງແຕ່ '+d.since):''}</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="ntPrintCustomer360('${cid}')" class="bg-slate-700 text-white text-xs px-3 py-1.5 rounded-lg no-print"><i class="fa-solid fa-print mr-1"></i>ພິມ</button>
+          <button onclick="document.getElementById('cust360Modal').remove()" class="text-gray-400 hover:text-gray-700 text-xl px-1"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </div>
+      <div class="p-4">
+        <!-- SUMMARY (ລາຍງານແບບລວມ) -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-4">
+          ${card('ລາຍຮັບ (RV)', _ntCurStr(d.rvTotal), 'text-emerald-600','fa-hand-holding-dollar')}
+          ${card('ຮຽກເກັບ (IV)', _ntCurStr(d.ivTotal), 'text-blue-600','fa-file-invoice')}
+          ${card('ຄ້າງຮັບ (AR)', _ntCurStr(d.arOut), 'text-rose-600','fa-clock')}
+          ${card('ຕົ້ນທຶນ', _ntCurStr(costByCur), 'text-orange-600','fa-coins')}
+          ${card('ກຳໄລ', _ntCurStr(profitByCur), 'text-teal-600','fa-chart-line')}
+          ${card('ບໍລິການ', services.length+' ປະເພດ', 'text-purple-600','fa-briefcase')}
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+          ${card('ໃບສະເໜີ (QT)', d.qt.length+' ໃບ', 'text-sky-600','fa-file-lines')}
+          ${card('ສັນຍາ', d.contracts.length+' ສັນຍາ', 'text-indigo-600','fa-file-signature')}
+          ${card('ເອກະສານສົ່ງ', (d.letters.length)+' ໜັງສື', 'text-amber-600','fa-folder-open')}
+          ${card('ໄດ້ພົບ/ຕິດຕໍ່', d.contacts.length+' ຄັ້ງ', 'text-fuchsia-600','fa-handshake')}
+        </div>
+        <canvas id="cust360Chart" height="90" class="mb-4 bg-white rounded-xl border border-gray-100 p-2"></canvas>
+
+        ${services.length?sec('ບໍລິການທີ່ໃຊ້','fa-briefcase','text-purple-500',`<div class="flex flex-wrap gap-1.5">${services.map(s=>`<span class="text-[11px] bg-purple-50 text-purple-700 px-2 py-1 rounded-lg">${String(s).replace(/</g,'&lt;')}</span>`).join('')}</div>`):''}
+
+        ${sec('ໃບຮັບເງິນ (RV) — ລາຍຮັບ','fa-hand-holding-dollar','text-emerald-500',
+          tbl(['ວັນທີ','ເລກທີ','ລາຍການ','ສະກຸນ','ຈຳນວນ'], tableRows(d.rv,[
+            {f:r=>r.date||'-'},{f:r=>r.invoiceNo||'-',cls:'font-mono'},{f:r=>(r.item||'-')},{f:r=>r.currency||'LAK'},{f:r=>_ntCustFmt(r.amount),cls:'text-right font-bold text-emerald-600'}])))}
+
+        ${sec('ໃບຮຽກເກັບເງິນ (IV) — ການຮຽກເກັບ & ສະຖານະ','fa-file-invoice','text-blue-500',
+          tbl(['ວັນທີ','ເລກທີ','ລາຍການ','ຈຳນວນ','ສະຖານະ'], tableRows(d.iv,[
+            {f:r=>r.date||'-'},{f:r=>r.invoiceNo||'-',cls:'font-mono'},{f:r=>(r.item||'-')},{f:r=>_ntCustFmt(r.amount),cls:'text-right font-bold'},{f:r=>stBadge(r.status)}])))}
+
+        ${sec('ຕົ້ນທຶນ & ການຊຳລະ (PV) — ມີຄ່າຫຍັງແດ່ · ຄ້າງຈັກມື້','fa-coins','text-orange-500',
+          costDetailHtml
+          + `<div class="text-[11px] text-gray-600 mt-1.5 border-t pt-1.5">ຊຳລະແລ້ວ ${calcsPaid} ໃບ · ຄ້າງຊຳລະ <b class="text-rose-600">${calcsPending} ໃບ</b> · ຍອດຄ້າງລວມ <b class="text-rose-600">${_ntCustFmt(calcsOutstandingTotal)} ₭</b></div>`)}
+
+        ${sec('ຕິດຕາມຕົ້ນທຶນ-ກຳໄລ (ຕໍ່ RV)','fa-magnifying-glass-chart','text-teal-500',
+          tbl(['RV','ສະກຸນ','ລາຍຮັບ','ຕົ້ນທຶນ','ກຳໄລ'], tableRows(d.costTrack,[
+            {f:r=>r.rvNo||'-',cls:'font-mono'},{f:r=>r.currency||'LAK'},{f:r=>_ntCustFmt(r.revenue),cls:'text-right text-emerald-600'},{f:r=>_ntCustFmt(r.cost),cls:'text-right text-orange-600'},{f:r=>_ntCustFmt(r.profit),cls:'text-right font-bold text-teal-600'}])))}
+
+        ${sec('ສັນຍາ','fa-file-signature','text-indigo-500',
+          tbl(['ວັນທີ','ລາຍການ','ລະດັບ','ຍອດ','ຊຳລະ','ເຫຼືອ'], tableRows(d.contracts,[
+            {f:r=>r.contractDate||'-'},{f:r=>(r.serviceItem||'-')},{f:r=>r.level||'-'},{f:r=>_ntCustFmt(r.totalLak),cls:'text-right'},{f:r=>_ntCustFmt(r.paidLak),cls:'text-right text-emerald-600'},{f:r=>_ntCustFmt(r.balanceLak),cls:'text-right text-rose-600'}])))}
+
+        ${sec('ໃບສະເໜີລາຄາ (QT)','fa-file-lines','text-sky-500',
+          tbl(['ວັນທີ','ເລກທີ','ລາຍການ','ຈຳນວນ'], tableRows(d.qt,[
+            {f:r=>r.date||'-'},{f:r=>(r.quotationNo||r.qtNo||r.invoiceNo||r.number||'-'),cls:'font-mono'},{f:r=>(r.item||(r.items&&r.items[0]&&r.items[0].name)||'-')},{f:r=>_ntCustFmt(r.amount||r.total)}])))}
+
+        ${sec('ເອກະສານ/ໜັງສືທີ່ສົ່ງໃຫ້','fa-folder-open','text-amber-500',
+          tbl(['ວັນທີ','ເລກທີ','ເລື່ອງ'], tableRows(d.letters,[
+            {f:r=>r.date||'-'},{f:r=>(r.number||'-'),cls:'font-mono'},{f:r=>(r.subject||'-')}])))}
+
+        ${sec('ປະຫວັດການພົບ/ຕິດຕໍ່','fa-handshake','text-fuchsia-500',
+          tbl(['ວັນທີ','ຊ່ອງທາງ','ສະຫຼຸບ'], tableRows(d.contacts,[
+            {f:r=>r.date||'-'},{f:r=>(r.channel||r.method||'-')},{f:r=>(r.note||r.summary||r.detail||'-')}])))}
+      </div>
+    </div>`;
+    document.body.appendChild(m);
+    try { if (typeof ntScheduleFit === 'function') ntScheduleFit(); } catch(_) {}   // zoom-to-fit tables in the 360 modal on mobile
+
+    // Chart: monthly revenue (RV) vs cost
+    try {
+        const byMonth={};
+        d.rv.forEach(r=>{ const mo=(r.date||'').slice(0,7); if(mo){byMonth[mo]=byMonth[mo]||{rev:0,cost:0}; byMonth[mo].rev+=Number(r.amount)||0;} });
+        d.costTrack.forEach(e=>{ const mo=(e.date||'').slice(0,7); if(mo){byMonth[mo]=byMonth[mo]||{rev:0,cost:0}; byMonth[mo].cost+=Number(e.cost)||0;} });
+        const months=Object.keys(byMonth).sort();
+        const ctx=document.getElementById('cust360Chart');
+        if(ctx && months.length && typeof Chart!=='undefined'){
+            new Chart(ctx,{type:'bar',data:{labels:months,datasets:[
+                {label:'ລາຍຮັບ',data:months.map(mo=>byMonth[mo].rev),backgroundColor:'#10b981'},
+                {label:'ຕົ້ນທຶນ',data:months.map(mo=>byMonth[mo].cost),backgroundColor:'#f97316'}
+            ]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{labels:{font:{size:10}}}},scales:{x:{ticks:{font:{size:9}}},y:{ticks:{font:{size:9}}}}}});
+        } else if(ctx){ ctx.style.display='none'; }
+    } catch(e){ const ctx=document.getElementById('cust360Chart'); if(ctx)ctx.style.display='none'; }
+}
+
+function ntPrintCustomer360(cid){
+    const modal=document.getElementById('cust360Modal'); if(!modal) return;
+    const body=modal.querySelector('.p-4'); if(!body) return;
+    const d=_ntCustomerData(cid);
+    const w=window.open('','_blank');
+    w.document.write('<html><head><title>ລາຍງານລູກຄ້າ '+(d.cname||'')+'</title><meta charset="utf-8"><scr'+'ipt src="https://cdn.tailwindcss.com"></scr'+'ipt><style>body{font-family:"Noto Sans Lao",sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #eee;padding:4px;font-size:11px;text-align:left;}</style></head><body><h2>'+(d.cname||'')+'</h2>'+body.innerHTML.replace(/<canvas[^>]*>.*?<\/canvas>/g,'')+'<scr'+'ipt>setTimeout(()=>window.print(),500)</scr'+'ipt></body></html>');
+    w.document.close();
 }
 
 function ntRenderAftersales(){
@@ -13320,6 +14289,7 @@ function ntExportAllData(){
         serviceCategories: (typeof nt_serviceCategories !== 'undefined' ? nt_serviceCategories : JSON.parse(localStorage.getItem('nt_serviceCategories')||'[]')),
         fixedExpenses: (typeof nt_fixedExpenses !== 'undefined' ? nt_fixedExpenses : JSON.parse(localStorage.getItem('nt_fixedExpenses')||'[]')),
         signatures: JSON.parse(localStorage.getItem('nt_signatures') || '{}'),
+        sigBank: JSON.parse(localStorage.getItem('nt_sigBank') || '[]'),
         staffDuties: JSON.parse(localStorage.getItem('nt_staffDuties') || '[]'),
         accrualProj: JSON.parse(localStorage.getItem('nt_accrualProj') || '{}'),
         proposalLetters: (typeof nt_proposalLetters !== 'undefined' ? nt_proposalLetters : JSON.parse(localStorage.getItem('nt_proposalLetters')||'[]')),
@@ -13399,6 +14369,7 @@ function ntDoImport(event){
             if (Array.isArray(d.serviceCategories)) { nt_serviceCategories = d.serviceCategories; localStorage.setItem('nt_serviceCategories', JSON.stringify(d.serviceCategories)); }
             if (Array.isArray(d.fixedExpenses)) { nt_fixedExpenses = d.fixedExpenses; localStorage.setItem('nt_fixedExpenses', JSON.stringify(d.fixedExpenses)); }
             if (d.signatures && typeof d.signatures === 'object') localStorage.setItem('nt_signatures', JSON.stringify(d.signatures));
+            if (Array.isArray(d.sigBank)) { localStorage.setItem('nt_sigBank', JSON.stringify(d.sigBank)); if (typeof nt_sigBank !== 'undefined') nt_sigBank = d.sigBank; }
             if (Array.isArray(d.staffDuties)) { nt_staffDuties = d.staffDuties; localStorage.setItem('nt_staffDuties', JSON.stringify(d.staffDuties)); }
             if (d.accrualProj && typeof d.accrualProj==='object') { nt_accrualProj = d.accrualProj; localStorage.setItem('nt_accrualProj', JSON.stringify(d.accrualProj)); }
             if (Array.isArray(d.proposalLetters)) { nt_proposalLetters = d.proposalLetters; localStorage.setItem('nt_proposalLetters', JSON.stringify(d.proposalLetters)); }
@@ -13921,6 +14892,8 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
+    <!-- ============ MOBILE / TABLET BOTTOM TABS (< lg) ============ -->
+    <nav id="mobileBottomTabs" class="fixed bottom-0 left-0 w-full z-40 bg-slate-800 border-t border-slate-700 flex overflow-x-auto no-print lg:hidden"></nav>
 
 </body>
 </html>
