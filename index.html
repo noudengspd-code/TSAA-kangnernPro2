@@ -276,6 +276,20 @@
         @media screen and (max-width: 1023px) {
             main, .max-w-7xl { overflow-x: hidden; }   /* ກັນບໍ່ໃຫ້ໜ້າເລື່ອນຊ້າຍ-ຂວາ */
         }
+
+        /* ===== ໃບເອກະສານ: ກັນລາຍເຊັນ/ກາ ບໍ່ໃຫ້ລົ້ນກອບ + ຫົວເອກະສານບໍ່ໃຫ້ກອງກັນ ===== */
+        .nt-sig-slot img { max-width: 100% !important; max-height: 110px !important; object-fit: contain; }
+        .nt-signature-block { flex-wrap: wrap; }                /* ຖ້າຄໍລຳບໍ່ພໍ → ຕັດແຖວ ແທນທີ່ຈະລົ້ນ */
+        .nt-signature-block > * { min-width: 120px; }
+        /* A4 ເວລາພິມ: ໃຫ້ມືຖືພິມອອກມາເຕັມໜ້າ A4 ຄືກັບຄອມພິວເຕີ */
+        @page { size: A4; margin: 10mm; }
+        @media print {
+            .print-active-area { width: 100% !important; }
+            .nt-sig-slot img { max-height: 80px !important; }
+            /* ຫົວເອກະສານ: ໃຫ້ຂໍ້ມູນບໍລິສັດ ກັບ ວັນທີ/ເລກທີ ຢູ່ຄົນລະຂ້າງ ບໍ່ກອງກັນ */
+            .print-active-area .flex.flex-col.md\:flex-row,
+            .print-active-area .nt-doc-header { flex-direction: row !important; flex-wrap: nowrap !important; align-items: flex-start !important; }
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
@@ -486,7 +500,7 @@
         </aside>
 
         <!-- Main Content Area -->
-        <main class="flex-1 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-24 lg:pb-8 max-w-7xl mx-auto w-full overflow-hidden">
+        <main class="flex-1 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 lg:pt-8 pb-28 lg:pb-8 max-w-7xl mx-auto w-full overflow-hidden">
             
             <!-- ALERT BANNER FOR BRANCH LEVEL VIEW -->
             <div id="branchAlertBanner" class="hidden mb-6 bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl flex items-center gap-3 no-print">
@@ -856,6 +870,112 @@
 
                         <!-- Official Signing block at bottom (uploadable PNG signatures) -->
                         <div class="nt-sig-slot-area mt-12" data-key="dailydoc" data-roles="ຜູ້ອຳນວຍການ (ຜອ),ຄະນະບໍລິຫານ,ຄັງເງິນ / ນັກການເງິນ"></div>
+                    </div>
+                </div>
+
+                <!-- ===== ຕາຕະລາງຕິດຕາມຍອດເງິນທະນາຄານ (standalone reconciliation, not linked to program data) ===== -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-building-columns mr-2 text-cyan-600"></i>ຕາຕະລາງຕິດຕາມຍອດເງິນທະນາຄານ</h3>
+                            <p class="text-xs text-gray-500">ລະບົບແຍກຕ່າງຫາກ (ບໍ່ກ່ຽວກັບຂໍ້ມູນໂປຣແກຣມ) — ນຳເຂົ້າ/ບັນທຶກ ເພື່ອຄິດໄລ່ ແລະ ສົມທຽບກັບຍອດເງິນຕົວຈິງໃນທະນາຄານ</p>
+                        </div>
+                        <div class="flex gap-2 flex-wrap no-print">
+                            <label class="bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer">
+                                <i class="fa-solid fa-file-import"></i> ນຳເຂົ້າຟາຍ
+                                <input type="file" accept=".xlsx,.xls,.csv" onchange="ntBankTrackImport(event)" class="hidden">
+                            </label>
+                            <button onclick="ntBankTrackTemplate()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2"><i class="fa-solid fa-download"></i> ແບບຟອມ</button>
+                            <button onclick="ntBankTrackToggleForm()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2"><i class="fa-solid fa-plus"></i> ເພີ່ມແຖວ</button>
+                            <button onclick="ntBankTrackClear()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2"><i class="fa-solid fa-trash"></i> ລ້າງ</button>
+                            <button onclick="showExportMenu('printBankTrackArea','ຕິດຕາມຍອດທະນາຄານ')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2"><i class="fa-solid fa-print"></i> ພິມ</button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 mb-4 no-print">
+                        <label class="text-xs font-bold text-gray-700 flex-shrink-0"><i class="fa-solid fa-code-branch mr-1 text-cyan-600"></i>ສາຂາ:</label>
+                        <select id="bankTrackBranch" onchange="ntBankTrackSwitchBranch()" class="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium flex-1 max-w-xs focus:outline-none focus:border-cyan-500"></select>
+                        <span class="text-[11px] text-gray-400">ແຕ່ລະສາຂາ ມີຍອດ/ລາຍການ ແຍກກັນ</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 no-print">
+                        <div class="bg-slate-50 border border-gray-200 rounded-xl p-3">
+                            <label class="block text-[11px] font-bold text-gray-600 mb-1">ຍອດຍົກມາ (ຕົ້ນງວດ)</label>
+                            <input type="number" id="bankTrackOpening" oninput="ntSetBankOpening(this.value)" placeholder="0" class="w-full bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-right font-mono">
+                        </div>
+                        <div class="bg-cyan-50 border border-cyan-200 rounded-xl p-3">
+                            <label class="block text-[11px] font-bold text-gray-600 mb-1">ຍອດຄິດໄລ່ (ຕາມຕາຕະລາງ)</label>
+                            <p id="bankTrackComputed" class="text-sm font-bold text-cyan-700 text-right font-mono">0</p>
+                        </div>
+                        <div class="bg-slate-50 border border-gray-200 rounded-xl p-3">
+                            <label class="block text-[11px] font-bold text-gray-600 mb-1">ຍອດຕົວຈິງ (ທະນາຄານ)</label>
+                            <input type="number" id="bankTrackActual" oninput="ntSetBankActual(this.value)" placeholder="0" class="w-full bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-right font-mono">
+                        </div>
+                        <div id="bankTrackDiffBox" class="bg-emerald-50 border border-emerald-200 rounded-xl p-3">
+                            <label class="block text-[11px] font-bold text-gray-600 mb-1">ຜົນຕ່າງ</label>
+                            <p id="bankTrackDiff" class="text-sm font-bold text-emerald-700 text-right font-mono">0</p>
+                        </div>
+                    </div>
+
+                    <div id="bankTrackForm" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-3 mb-4 no-print">
+                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
+                            <input type="date" id="btfDate" class="border border-gray-200 rounded-lg px-2 py-1.5 text-xs" title="ວັນທີ">
+                            <input type="text" id="btfContract" placeholder="ເລກສັນຍາ" class="border border-gray-200 rounded-lg px-2 py-1.5 text-xs">
+                            <input type="text" id="btfContent" placeholder="ເນື້ອໃນ" class="border border-gray-200 rounded-lg px-2 py-1.5 text-xs">
+                            <input type="text" id="btfType" placeholder="ປະເພດທຸລະກຳ" class="border border-gray-200 rounded-lg px-2 py-1.5 text-xs">
+                            <input type="text" id="btfCode" placeholder="ລະຫັດຊຳລະ" class="border border-gray-200 rounded-lg px-2 py-1.5 text-xs">
+                            <input type="number" id="btfDebit" placeholder="ໜີ້ (ຈ່າຍ)" class="border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-right">
+                            <input type="number" id="btfCredit" placeholder="ມີ (ຮັບ)" class="border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-right">
+                        </div>
+                        <div class="flex justify-end mt-2">
+                            <button onclick="ntBankTrackAddManual()" class="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold"><i class="fa-solid fa-check mr-1"></i>ເພີ່ມ</button>
+                        </div>
+                    </div>
+
+                    <div id="printBankTrackArea" class="print-active-area">
+                        <div class="flex justify-between items-start border-b-2 border-slate-800 pb-3 mb-4 nt-doc-header">
+                            <div class="flex items-center gap-3">
+                                <img id="bankTrackLogo" src="" class="h-12 hidden" alt="">
+                                <div>
+                                    <p id="bankTrackCoName" class="font-bold text-slate-800 text-base">ບໍລິສັດ</p>
+                                    <p class="text-[11px] text-slate-500">ຕາຕະລາງຕິດຕາມຍອດເງິນທະນາຄານ</p>
+                                </div>
+                            </div>
+                            <div class="text-right text-slate-500 text-[11px]">
+                                <p>ວັນທີພິມ: <span id="bankTrackPrintDate">-</span></p>
+                            </div>
+                        </div>
+                        <div class="text-center mb-4">
+                            <h2 class="text-lg font-bold text-slate-900">ຕາຕະລາງຕິດຕາມຍອດເງິນທະນາຄານ</h2>
+                            <p class="text-xs text-gray-600">Bank Balance Tracking</p>
+                        </div>
+                        <table class="w-full border-collapse border border-gray-300 text-[11px] text-left min-w-[900px]">
+                            <thead>
+                                <tr class="bg-gray-100 text-slate-800 text-center font-bold">
+                                    <th class="border border-gray-300 py-2 px-2 w-10">ລ/ດ</th>
+                                    <th class="border border-gray-300 py-2 px-2">ວັນທີເດືອນປີ</th>
+                                    <th class="border border-gray-300 py-2 px-2">ເລກສັນຍາ</th>
+                                    <th class="border border-gray-300 py-2 px-3">ເນື້ອໃນ</th>
+                                    <th class="border border-gray-300 py-2 px-2">ປະເພດທຸລະກຳ</th>
+                                    <th class="border border-gray-300 py-2 px-2">ລະຫັດຊຳລະເງິນ</th>
+                                    <th class="border border-gray-300 py-2 px-2 text-right">ໜີ້</th>
+                                    <th class="border border-gray-300 py-2 px-2 text-right">ມີ</th>
+                                    <th class="border border-gray-300 py-2 px-2 text-right">ຍອດຄົງເຫຼືອ</th>
+                                    <th class="border border-gray-300 py-2 px-2 no-print w-8"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="bankTrackTableBody" class="divide-y divide-gray-200"></tbody>
+                            <tfoot>
+                                <tr class="bg-slate-100 font-bold text-slate-900">
+                                    <td colspan="6" class="border border-gray-300 py-2 px-2 text-right">ລວມ</td>
+                                    <td id="bankTrackTotalDebit" class="border border-gray-300 py-2 px-2 text-right text-rose-700">0</td>
+                                    <td id="bankTrackTotalCredit" class="border border-gray-300 py-2 px-2 text-right text-emerald-700">0</td>
+                                    <td id="bankTrackTotalBalance" class="border border-gray-300 py-2 px-2 text-right text-cyan-700">0</td>
+                                    <td class="border border-gray-300 no-print"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <div class="nt-sig-slot-area mt-12" data-key="banktrack" data-roles="ຜູ້ບັນທຶກ,ຫົວໜ້າບັນຊີ,ຜູ້ອຳນວຍການ"></div>
                     </div>
                 </div>
             </div>
@@ -2066,6 +2186,21 @@
                     </div>
                 </div>
 
+                <!-- ===== ໜີ້ລໍຖ້າສັ່ງຊຳລະ (ແຍກຕາມແຂວງ/ສາຂາ) — ອະນຸມັດແລ້ວ ລໍຜູ້ບໍລິຫານສັ່ງຊຳລະ ===== -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-hand-holding-dollar mr-2 text-rose-600"></i>ໜີ້ລໍຖ້າສັ່ງຊຳລະ</h3>
+                            <p class="text-xs text-gray-500">ໃບຄິດໄລ່ທີ່ <b>ອະນຸມັດແລ້ວ</b> ຈະມາລໍຢູ່ນີ້ (ແຍກຕາມແຂວງ/ສາຂາ) — ກົດເບິ່ງລາຍລະອຽດ ແລະ ໃຫ້ຜູ້ບໍລິຫານກົດ "ຊຳລະ" ຈຶ່ງບັນທຶກເຂົ້າລາຍຮັບ-ລາຍຈ່າຍ. ຍັງບໍ່ຊຳລະ = ຍອດຍົກໄປ</p>
+                        </div>
+                        <div class="bg-rose-50 border border-rose-200 rounded-xl px-4 py-2 text-center">
+                            <span class="block text-[10px] text-rose-500 font-bold uppercase">ລວມໜີ້ລໍຊຳລະ</span>
+                            <span class="text-lg font-bold text-rose-700"><span id="payablesGrandTotal">0</span> <span class="text-xs">ກີບ</span></span>
+                        </div>
+                    </div>
+                    <div id="payablesQueueBody"></div>
+                </div>
+
                 <!-- Print area -->
                 <div id="printBudgetCalcArea" class="bg-white border border-gray-200 rounded-2xl p-8 shadow-inner">
                     <div id="budgetCalcPrintPreview">
@@ -3143,6 +3278,10 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">ຮູບ QR Code ຂອງສາຂານີ້</label>
                         <input type="file" id="branchFormQrFile" accept="image/*" onchange="uploadBase64Image(event,'branchQr')" class="text-xs w-full">
+                        <div class="flex items-center gap-1 mt-2">
+                            <span class="text-[10px] text-gray-400 flex-shrink-0"><i class="fa-solid fa-link"></i> ຫຼື ວາງລິ້ງ:</span>
+                            <input type="url" id="branchFormQrLink" oninput="ntSetBranchQrLink(this.value)" placeholder="https://... (ລິ້ງຮູບ QR)" class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-[11px] font-mono">
+                        </div>
                         <img id="previewBranchQr" src="" class="max-h-20 mt-2 rounded border hidden mx-auto">
                     </div>
                 </div>
@@ -4436,8 +4575,19 @@
             });
         }
         function _ntPrintRestore(){ _ntPrintHidden.forEach(c=>c.classList.remove('nt-printhide')); _ntPrintHidden=[]; }
-        window.addEventListener('beforeprint', _ntPrintHideEmpty);
-        window.addEventListener('afterprint', _ntPrintRestore);
+        // The on-screen zoom-to-fit (transform:scale) must NOT shrink the printout — reset to full size for print,
+        // so printing from a phone produces the same full A4 page as printing from a computer.
+        function _ntPrintResetFit(){
+            try {
+                document.querySelectorAll('table').forEach(function(tb){
+                    if(tb.style.transform && tb.style.transform!=='none'){ tb.setAttribute('data-nt-pfit','1'); tb.style.transform='none'; tb.style.marginBottom=''; }
+                    var p=tb.parentElement; if(p && p.style.overflowX==='hidden'){ p.setAttribute('data-nt-povx','1'); p.style.overflowX=''; }
+                });
+            } catch(e){}
+        }
+        function _ntPrintReapplyFit(){ try { if(typeof ntScheduleFit==='function') ntScheduleFit(); } catch(e){} }
+        window.addEventListener('beforeprint', function(){ _ntPrintResetFit(); _ntPrintHideEmpty(); });
+        window.addEventListener('afterprint', function(){ _ntPrintRestore(); _ntPrintReapplyFit(); });
 
         // Build the mobile/tablet bottom tab bar from the sidebar menu items (equal-width buttons).
         function ntBuildBottomTabs(){
@@ -4452,9 +4602,9 @@
                 const iconHtml = icon ? icon.outerHTML.replace(/\bw-5\b/,'').replace(/text-(left|right|center)/,'') : '<i class="fa-solid fa-circle"></i>';
                 let label = (b.textContent||'').trim().replace(/\s+/g,' ').replace(/Live$/,'');
                 if(label.length>9) label = label.slice(0,8)+'…';
-                return `<button onclick="switchTab('${tabId}')" id="bbtn-${tabId}" class="bottom-tab flex flex-col items-center justify-center gap-1 flex-shrink-0 w-[4.5rem] py-2 text-slate-400 hover:text-white transition">
-                    <span class="text-lg leading-none">${iconHtml}</span>
-                    <span class="text-[9px] leading-tight text-center w-full px-0.5">${label}</span>
+                return `<button onclick="switchTab('${tabId}')" id="bbtn-${tabId}" class="bottom-tab flex flex-col items-center justify-center gap-1 flex-shrink-0 w-20 py-3 text-slate-400 hover:text-white transition">
+                    <span class="text-2xl leading-none">${iconHtml}</span>
+                    <span class="text-[11px] leading-tight text-center w-full px-0.5">${label}</span>
                 </button>`;
             }).join('');
             // set initial active highlight
@@ -4721,6 +4871,7 @@
             safe('ntRenderQuotationList');
             safe('ntRenderBudgetCalcList');
             safe('ntRenderBudgetCalcPending');
+            safe('ntRenderPayablesQueue');
             safe('ntRenderBudgetProposalList');
             safe('ntRenderContractTable');
             safe('ntRenderDocTracker');
@@ -4737,6 +4888,7 @@
             safe('renderPlTracking');
             safe('renderStaffDutyTable');
             safe('ntApplyFormalLayouts');
+            safe('ntBankTrackInit');
         }
 
         function clearDashboardFilter() {
@@ -6605,6 +6757,8 @@
             if (formId) formId.disabled = false;
             const qrPreview = document.getElementById('previewBranchQr');
             if (qrPreview) { qrPreview.src=''; qrPreview.classList.add('hidden'); }
+            const qrLinkEl = document.getElementById('branchFormQrLink');
+            if (qrLinkEl) qrLinkEl.value = '';
             window._uploadedBranchQr = null;
 
             if (id) {
@@ -6619,6 +6773,7 @@
                 f('branchFormLocation', b.location); f('branchFormTel', b.tel);
                 f('branchFormBankName', b.bankName); f('branchFormBankAccount', b.bankAccount);
                 if (b.qrImage && qrPreview) { qrPreview.src=b.qrImage; qrPreview.classList.remove('hidden'); }
+                if (b.qrImage && /^https?:\/\//.test(b.qrImage) && qrLinkEl) qrLinkEl.value = b.qrImage;   // show the link if it's a URL
             } else {
                 const title = document.getElementById('branchModalTitle');
                 if (title) title.innerText = "ເພີ່ມສາຂາໃໝ່";
@@ -6628,6 +6783,16 @@
         function closeBranchModal() {
             const modal = document.getElementById('branchModal');
             if (modal) modal.classList.add('hidden');
+        }
+
+        function ntSetBranchQrLink(url){
+            url = (url||'').trim();
+            window._uploadedBranchQr = url || null;   // a link is stored directly (no upload needed)
+            const prev = document.getElementById('previewBranchQr');
+            if (prev) {
+                if (url) { prev.src = url; prev.classList.remove('hidden'); }
+                else { prev.src=''; prev.classList.add('hidden'); }
+            }
         }
 
         function saveBranchConfig(event) {
@@ -10598,6 +10763,174 @@ function ntApplyFormalLayouts() {
     });
 }
 
+// ============================================================
+// ຕາຕະລາງຕິດຕາມຍອດເງິນທະນາຄານ — ແຍກຕາມສາຂາ, STANDALONE (ບໍ່ sync, ບໍ່ກ່ຽວກັບຂໍ້ມູນໂປຣແກຣມ)
+// ໂຄງສ້າງ: nt_bankData = { branchId: { rows:[], opening:0, actual:0 } }
+// ============================================================
+function _ntBNum(v){ if(v===null||v===undefined||v==='') return 0; var n=parseFloat(String(v).replace(/[, ]/g,'')); return isNaN(n)?0:n; }
+function _ntBFmt(n){ return (Number(n)||0).toLocaleString('en-US'); }
+var nt_bankData = {};
+try { nt_bankData = JSON.parse(localStorage.getItem('nt_bankData') || '{}'); } catch(e){ nt_bankData = {}; }
+// migrate any old flat data once
+(function(){ try {
+    if(!nt_bankData.__migrated){
+        var old = JSON.parse(localStorage.getItem('nt_bankTrack')||'[]');
+        if(old && old.length){ nt_bankData['_all'] = { rows:old, opening:_ntBNum(localStorage.getItem('nt_bankTrackOpening')||'0'), actual:_ntBNum(localStorage.getItem('nt_bankTrackActual')||'0') }; }
+        nt_bankData.__migrated = 1;
+        localStorage.setItem('nt_bankData', JSON.stringify(nt_bankData));
+    }
+} catch(e){} })();
+function ntBankDataSave(){ try { localStorage.setItem('nt_bankData', JSON.stringify(nt_bankData)); } catch(e){} }
+function _ntBankBranchId(){ var s=document.getElementById('bankTrackBranch'); if(s && s.value) return s.value; var k=Object.keys(nt_bankData).filter(function(x){return x!=='__migrated';}); return k[0]||'_all'; }
+function _ntBankCur(){ var id=_ntBankBranchId()||'_all'; if(!nt_bankData[id] || typeof nt_bankData[id]!=='object') nt_bankData[id]={rows:[],opening:0,actual:0}; if(!Array.isArray(nt_bankData[id].rows)) nt_bankData[id].rows=[]; return nt_bankData[id]; }
+
+function ntBankTrackPopulateBranches(){
+    var sel=document.getElementById('bankTrackBranch'); if(!sel) return;
+    var cur=sel.value, opts='';
+    if(typeof branches!=='undefined' && branches){ Object.keys(branches).forEach(function(id){ opts+='<option value="'+id+'">'+((branches[id]&&branches[id].name)||id)+'</option>'; }); }
+    if(!opts) opts='<option value="_all">ສຳນັກງານໃຫຍ່</option>';
+    sel.innerHTML=opts;
+    if(cur && Array.from(sel.options).some(function(o){return o.value===cur;})) sel.value=cur;
+}
+function ntBankTrackSwitchBranch(){
+    var cur=_ntBankCur();
+    var op=document.getElementById('bankTrackOpening'); if(op) op.value=cur.opening||'';
+    var ac=document.getElementById('bankTrackActual'); if(ac) ac.value=cur.actual||'';
+    ntRenderBankTrack();
+}
+
+function ntRenderBankTrack(){
+    var tbody = document.getElementById('bankTrackTableBody');
+    if(!tbody) return;
+    var cur=_ntBankCur(), rows=cur.rows||[];
+    var run = _ntBNum(cur.opening), totD=0, totC=0;
+    if(!rows.length){
+        tbody.innerHTML = '<tr><td colspan="10" class="border border-gray-300 py-4 text-center text-gray-400 text-xs">ຍັງບໍ່ມີຂໍ້ມູນ — ກົດ "ນຳເຂົ້າຟາຍ" ຫຼື "ເພີ່ມແຖວ"</td></tr>';
+    } else {
+        tbody.innerHTML = rows.map(function(r, i){
+            var d=_ntBNum(r.debit), c=_ntBNum(r.credit);
+            run = run + c - d; totD+=d; totC+=c;
+            var esc=function(s){ return String(s==null?'':s).replace(/</g,'&lt;'); };
+            return '<tr>'
+                + '<td class="border border-gray-300 py-1.5 px-2 text-center">'+(i+1)+'</td>'
+                + '<td class="border border-gray-300 py-1.5 px-2">'+esc(r.date)+'</td>'
+                + '<td class="border border-gray-300 py-1.5 px-2">'+esc(r.contractNo)+'</td>'
+                + '<td class="border border-gray-300 py-1.5 px-3">'+esc(r.content)+'</td>'
+                + '<td class="border border-gray-300 py-1.5 px-2">'+esc(r.txnType)+'</td>'
+                + '<td class="border border-gray-300 py-1.5 px-2">'+esc(r.payCode)+'</td>'
+                + '<td class="border border-gray-300 py-1.5 px-2 text-right text-rose-700">'+(d?_ntBFmt(d):'')+'</td>'
+                + '<td class="border border-gray-300 py-1.5 px-2 text-right text-emerald-700">'+(c?_ntBFmt(c):'')+'</td>'
+                + '<td class="border border-gray-300 py-1.5 px-2 text-right font-bold">'+_ntBFmt(run)+'</td>'
+                + '<td class="border border-gray-300 text-center no-print"><button onclick="ntBankTrackDelete('+i+')" class="text-rose-500 hover:text-rose-700 text-xs" title="ລົບ"><i class="fa-solid fa-xmark"></i></button></td>'
+                + '</tr>';
+        }).join('');
+    }
+    var e;
+    if((e=document.getElementById('bankTrackTotalDebit'))) e.textContent=_ntBFmt(totD);
+    if((e=document.getElementById('bankTrackTotalCredit'))) e.textContent=_ntBFmt(totC);
+    if((e=document.getElementById('bankTrackTotalBalance'))) e.textContent=_ntBFmt(run);
+    if((e=document.getElementById('bankTrackComputed'))) e.textContent=_ntBFmt(run);
+    if((e=document.getElementById('bankTrackPrintDate'))) e.textContent=(new Date()).toLocaleDateString('en-GB');
+    try {
+        var bid=_ntBankBranchId(); var bname=(typeof branches!=='undefined'&&branches[bid])?branches[bid].name:'';
+        if((e=document.getElementById('bankTrackCoName')) && typeof companyInfo!=='undefined' && companyInfo.name) e.textContent=companyInfo.name + (bname?(' — ສາຂາ '+bname):'');
+        if((e=document.getElementById('bankTrackLogo')) && typeof companyInfo!=='undefined' && companyInfo.logoImage){ e.src=companyInfo.logoImage; e.classList.remove('hidden'); }
+    } catch(_){}
+    ntBankTrackUpdateDiff();
+}
+function ntBankTrackUpdateDiff(){
+    var compEl=document.getElementById('bankTrackComputed');
+    var comp=_ntBNum(compEl?compEl.textContent:'0');
+    var actual=_ntBNum(_ntBankCur().actual);
+    var diff=actual-comp;
+    var de=document.getElementById('bankTrackDiff'), box=document.getElementById('bankTrackDiffBox');
+    if(de) de.textContent=_ntBFmt(diff);
+    if(box){
+        box.className='border rounded-xl p-3 '+(Math.round(diff)===0?'bg-emerald-50 border-emerald-200':'bg-amber-50 border-amber-200');
+        if(de) de.className='text-sm font-bold text-right font-mono '+(Math.round(diff)===0?'text-emerald-700':'text-amber-700');
+    }
+}
+function ntSetBankOpening(v){ _ntBankCur().opening=_ntBNum(v); ntBankDataSave(); ntRenderBankTrack(); }
+function ntSetBankActual(v){ _ntBankCur().actual=_ntBNum(v); ntBankDataSave(); ntBankTrackUpdateDiff(); }
+function ntBankTrackToggleForm(){ var f=document.getElementById('bankTrackForm'); if(f) f.classList.toggle('hidden'); }
+function ntBankTrackAddManual(){
+    var g=function(id){ var e=document.getElementById(id); return e?e.value:''; };
+    var row={ date:g('btfDate'), contractNo:g('btfContract'), content:g('btfContent'), txnType:g('btfType'), payCode:g('btfCode'), debit:_ntBNum(g('btfDebit')), credit:_ntBNum(g('btfCredit')) };
+    if(!row.date && !row.content && !row.debit && !row.credit){ if(typeof showToast==='function') showToast('ກະລຸນາໃສ່ຂໍ້ມູນ','warning'); return; }
+    _ntBankCur().rows.push(row); ntBankDataSave(); ntRenderBankTrack();
+    ['btfDate','btfContract','btfContent','btfType','btfCode','btfDebit','btfCredit'].forEach(function(id){ var e=document.getElementById(id); if(e) e.value=''; });
+    if(typeof showToast==='function') showToast('ເພີ່ມແຖວສຳເລັດ');
+}
+function ntBankTrackDelete(i){ _ntBankCur().rows.splice(i,1); ntBankDataSave(); ntRenderBankTrack(); }
+function ntBankTrackClear(){ if(!confirm('ລ້າງຂໍ້ມູນຕາຕະລາງສາຂານີ້ທັງໝົດ?')) return; _ntBankCur().rows=[]; ntBankDataSave(); ntRenderBankTrack(); }
+function _ntBCell(row, idx){ return (idx>=0 && row[idx]!==undefined) ? String(row[idx]) : ''; }
+function _ntBankMapHeader(headerRow){
+    var map={date:-1,contractNo:-1,content:-1,txnType:-1,payCode:-1,debit:-1,credit:-1};
+    headerRow.forEach(function(c,idx){
+        var h=String(c).toLowerCase().trim();
+        if(map.date<0 && /ວັນທີ|date/.test(h)) map.date=idx;
+        else if(map.contractNo<0 && /ສັນຍາ|contract/.test(h)) map.contractNo=idx;
+        else if(map.content<0 && /ເນື້ອ|ລາຍລະອຽດ|ລາຍການ|content|desc/.test(h)) map.content=idx;
+        else if(map.txnType<0 && /ປະເພດ|type|ທຸລະກຳ/.test(h)) map.txnType=idx;
+        else if(map.payCode<0 && /ລະຫັດ|code|ref|ອ້າງອີງ/.test(h)) map.payCode=idx;
+        else if(map.debit<0 && /ໜີ້|debit|ຈ່າຍ|ຖອນ|withdraw/.test(h)) map.debit=idx;
+        else if(map.credit<0 && /ມີ|credit|ຮັບ|ຝາກ|deposit/.test(h)) map.credit=idx;
+    });
+    return map;
+}
+function ntBankTrackImport(event){
+    var file = event.target.files && event.target.files[0];
+    if(!file) return;
+    if(typeof XLSX==='undefined'){ if(typeof showToast==='function') showToast('ບໍ່ສາມາດໂຫຼດ XLSX','error'); return; }
+    var reader = new FileReader();
+    reader.onload = function(e){
+        try {
+            var wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+            var sheet = wb.Sheets[wb.SheetNames[0]];
+            var rows = XLSX.utils.sheet_to_json(sheet, {header:1, raw:false, defval:''});
+            if(!rows || !rows.length){ if(typeof showToast==='function') showToast('ຟາຍວ່າງເປົ່າ','warning'); return; }
+            var startIdx=0, colMap=null;
+            var first=rows[0].map(function(c){return String(c).toLowerCase();}).join(' ');
+            if(/ວັນທີ|date|ສັນຍາ|contract|ເນື້ອ|content|ໜີ້|debit|ມີ|credit|ຍອດ|balance|ປະເພດ|ລະຫັດ/.test(first)){
+                colMap=_ntBankMapHeader(rows[0]); startIdx=1;
+            }
+            var added=0, cur=_ntBankCur();
+            for(var i=startIdx;i<rows.length;i++){
+                var row=rows[i];
+                if(!row || row.every(function(c){return String(c).trim()===''; })) continue;
+                var rec = colMap
+                    ? { date:_ntBCell(row,colMap.date), contractNo:_ntBCell(row,colMap.contractNo), content:_ntBCell(row,colMap.content), txnType:_ntBCell(row,colMap.txnType), payCode:_ntBCell(row,colMap.payCode), debit:_ntBNum(_ntBCell(row,colMap.debit)), credit:_ntBNum(_ntBCell(row,colMap.credit)) }
+                    : { date:String(row[0]||''), contractNo:String(row[1]||''), content:String(row[2]||''), txnType:String(row[3]||''), payCode:String(row[4]||''), debit:_ntBNum(row[5]), credit:_ntBNum(row[6]) };
+                if(!rec.date && !rec.content && !rec.debit && !rec.credit) continue;
+                cur.rows.push(rec); added++;
+            }
+            ntBankDataSave(); ntRenderBankTrack();
+            if(typeof showToast==='function') showToast('ນຳເຂົ້າ '+added+' ແຖວ (ສາຂາປັດຈຸບັນ) ສຳເລັດ');
+        } catch(err){
+            if(typeof showToast==='function') showToast('ນຳເຂົ້າຜິດພາດ: '+(err&&err.message||err),'error');
+        }
+        event.target.value='';
+    };
+    reader.readAsArrayBuffer(file);
+}
+function ntBankTrackTemplate(){
+    if(typeof XLSX==='undefined') return;
+    var ws = XLSX.utils.aoa_to_sheet([
+        ['ວັນທີເດືອນປີ','ເລກສັນຍາ','ເນື້ອໃນ','ປະເພດທຸລະກຳ','ລະຫັດຊຳລະເງິນ','ໜີ້','ມີ','ຍອດຄົງເຫຼືອ'],
+        ['2026-01-15','CT-001','ຮັບເງິນຄ່າບໍລິການ','ໂອນເຂົ້າ','REF123','',5000000,''],
+        ['2026-01-16','','ຄ່າທຳນຽມທະນາຄານ','ຄ່າທຳນຽມ','REF124',50000,'','']
+    ]);
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'BankTracking');
+    XLSX.writeFile(wb, 'bank_tracking_template.xlsx');
+}
+function ntBankTrackInit(){
+    ntBankTrackPopulateBranches();
+    ntBankTrackSwitchBranch();
+}
+
+
+
 
 var nt_contactLogs   = JSON.parse(localStorage.getItem('nt_contactLogs')   || '[]');
 var nt_aftersales    = JSON.parse(localStorage.getItem('nt_aftersales')    || '[]');
@@ -11933,8 +12266,9 @@ function saveBudgetCalc() {
 
     ntSave();
     ntRenderBudgetCalcList(); ntRenderBudgetCalcPending(); ntRenderBudgetCalcPrint(bc);
+    if (typeof ntRenderPayablesQueue === 'function') ntRenderPayablesQueue();
     if (typeof refreshAllViews === 'function') refreshAllViews();
-    if(typeof showToast==='function') showToast(`ບັນທຶກ ${autoNo} ສຳເລັດ${bc.status==='paid'?' → ບັນທຶກໃບລາຍງານຮັບຈ່າຍ':bc.status==='approved'?' → ເພີ່ມເຂົ້າໜີ້ຕ້ອງສົ່ງ':''}`, 'success');
+    if(typeof showToast==='function') showToast(`ບັນທຶກ ${autoNo} ສຳເລັດ${bc.status==='paid'?' → ບັນທຶກໃບລາຍງານຮັບຈ່າຍ':bc.status==='approved'?' → ເພີ່ມເຂົ້າໜີ້ລໍຖ້າຊຳລະ':''}`, 'success');
 }
 
 // Create/refresh an AP entry from an approved calc
@@ -12308,46 +12642,149 @@ function ntApproveBc(id) {
     }
     bc.status = 'approved';
     bc.approvedAt = new Date().toISOString();
-
-    // Push EACH line item as a separate transaction (daily report split)
-    const today = new Date().toISOString().split('T')[0];
-    const typeMap = { cost: 'ຕົ້ນທຶນ', cost_expense: 'ຕົ້ນທຶນ', admin: 'ລາຍຈ່າຍ', service: 'ລາຍຈ່າຍ' };
-    const txnType = typeMap[bc.type] || 'ລາຍຈ່າຍ';
-    let n = 0;
-    (bc.items || []).forEach((item, idx) => {
-        const amt = Number(item.amount) || 0;
-        if (!amt) return;
-        // Skip duplicate (already pushed this exact line)
-        if (transactions.some(t => t.pvNo === bc.number && t.item === (item.name||item.desc) && t.amount === amt)) return;
-        transactions.push({
-            id: 'T_BC_' + Date.now() + '_' + idx,
-            date: today,
-            branch: bc.branchId,
-            type: txnType,
-            category: item.category || item.name || item.desc || (bc.type==='cost'?'ຕົ້ນທຶນອື່ນໆ':'ລາຍຈ່າຍບໍລິຫານອື່ນໆ'),
-            item: item.name || item.desc || bc.payee || 'ລາຍການງົບ',
-            amount: amt,
-            currency: 'LAK',
-            note: `ອະນຸມັດໃບສັ່ງຈ່າຍ ${bc.number} — ${bc.payee||''} | ຊື່ບໍລິສັດ/ຜູ້ຮັບ: ${bc.payee||'-'}`,
-            image: '',
-            pvNo: bc.number, pvDate: today,
-            rvNo: bc.rvRef || '', rvDate: '',
-            paymentMethod: 'ເງິນໂອນ',
-            // Track for expense allocation rendering
-            supplierName: bc.payee || '-'
-        });
-        n++;
-    });
-    safeSetLocalStorage('treasury_transactions_pro', JSON.stringify(transactions));
+    // ===== NEW FLOW: approve only QUEUES it as a payable (ໜີ້ລໍຖ້າສັ່ງຊຳລະ).
+    // It does NOT touch income/expense or P&L yet — that happens when ຜູ້ບໍລິຫານ presses ຊຳລະ. =====
+    if (bc.isFixedExpense && !bc.accrualMonth) {
+        bc.accrualMonth = (bc.date || new Date().toISOString().split('T')[0]).substring(0, 7);
+    }
+    if (!bc.isCostSettlement && typeof applyCalcToAP === 'function') applyCalcToAP(bc);
+    if (typeof ntStamp === 'function') ntStamp(bc);
     ntSave();
     ntRenderBudgetCalcList();
     ntRenderBudgetCalcPending();
+    if (typeof ntRenderPayablesQueue === 'function') ntRenderPayablesQueue();
     if (typeof refreshAllViews === 'function') refreshAllViews();
-    if(typeof showToast==='function') showToast(`ອະນຸມັດ & ບັນທຶກ ${n} ລາຍການເຂົ້າໃບລາຍງານປະຈຳວັນ`,'success');
+    if(typeof showToast==='function') showToast('ອະນຸມັດແລ້ວ → ສົ່ງເຂົ້າ "ໜີ້ລໍຖ້າສັ່ງຊຳລະ" (ລໍຜູ້ບໍລິຫານສັ່ງຊຳລະ)','success');
+}
+
+// ຜູ້ບໍລິຫານ ກົດ "ຊຳລະ" → ບັນທຶກເຂົ້າລາຍຮັບ-ລາຍຈ່າຍ ແລະ ຜົນປະກອບການ (P&L) ຕາມປົກກະຕິ
+function ntPayBc(id) {
+    const bc = nt_budgetCalcs.find(x=>x.id===id);
+    if (!bc) return;
+    if (bc.status === 'paid') { showToast('ລາຍການນີ້ຊຳລະແລ້ວ','warning'); return; }
+    if (bc.status !== 'approved') { showToast('ຕ້ອງອະນຸມັດກ່ອນ ຈຶ່ງສັ່ງຊຳລະໄດ້','warning'); return; }
+    bc.status = 'paid';
+    bc.paidAt = new Date().toISOString();
+    if (!bc.paidNumber && typeof ntGenNo === 'function') {
+        bc.paidNumber = ntGenNo('PV', bc.branchId, nt_budgetCalcs.filter(x=>x.paidNumber), bc.date);
+    }
+    if (typeof applyPvPaymentToDaily === 'function') applyPvPaymentToDaily(bc);   // → transactions → P&L
+    if (typeof removeCalcFromAP === 'function') removeCalcFromAP(bc.id);          // leaves the payables queue
+    if (typeof ntStamp === 'function') ntStamp(bc);
+    ntSave();
+    ntRenderBudgetCalcList();
+    ntRenderBudgetCalcPending();
+    if (typeof ntRenderPayablesQueue === 'function') ntRenderPayablesQueue();
+    if (typeof refreshAllViews === 'function') refreshAllViews();
+    const m = document.getElementById('payableDetailModal'); if (m) m.classList.add('hidden');
+    if(typeof showToast==='function') showToast('ຊຳລະແລ້ວ '+(bc.paidNumber||'')+' → ບັນທຶກເຂົ້າລາຍຮັບ-ລາຍຈ່າຍ & ຜົນປະກອບການ','success');
 }
 function ntCancelBc(id) {
     const bc = nt_budgetCalcs.find(x=>x.id===id);
-    if (bc) { bc.status='cancelled'; ntSave(); ntRenderBudgetCalcList(); ntRenderBudgetCalcPending(); if(typeof showToast==='function') showToast('ຍົກເລີກ','warning'); }
+    if (bc) { bc.status='cancelled'; ntSave(); ntRenderBudgetCalcList(); ntRenderBudgetCalcPending(); if(typeof ntRenderPayablesQueue==='function') ntRenderPayablesQueue(); if(typeof showToast==='function') showToast('ຍົກເລີກ','warning'); }
+}
+
+// ===== ໜີ້ລໍຖ້າສັ່ງຊຳລະ — ໃບຄິດໄລ່ທີ່ "ອະນຸມັດແລ້ວ ແຕ່ຍັງບໍ່ຊຳລະ" ຈັດກຸ່ມຕາມແຂວງ/ສາຂາ =====
+function _ntBranchNameOf(bid){ try { return (typeof branches!=='undefined' && branches[bid] && branches[bid].name) ? branches[bid].name : (bid||'ບໍ່ລະບຸສາຂາ'); } catch(e){ return bid||'-'; } }
+function ntRenderPayablesQueue() {
+    const host = document.getElementById('payablesQueueBody');
+    if (!host) return;
+    const tl = { cost:'ງົບຕົ້ນທຶນ', admin:'ງົບບໍລິຫານ', service:'ງົບບໍລິການ' };
+    const queue = (typeof nt_budgetCalcs!=='undefined' ? nt_budgetCalcs : []).filter(b => b.status === 'approved');
+    const grandEl = document.getElementById('payablesGrandTotal');
+    if (!queue.length) {
+        host.innerHTML = '<div class="text-center text-gray-400 py-8 text-sm"><i class="fa-solid fa-circle-check text-2xl mb-2 text-emerald-300"></i><br>ບໍ່ມີໜີ້ລໍຖ້າຊຳລະ — ທຸກລາຍການອະນຸມັດໄດ້ຖືກຊຳລະແລ້ວ</div>';
+        if (grandEl) grandEl.textContent = '0';
+        return;
+    }
+    // group by branch
+    const groups = {};
+    queue.forEach(bc => { const b = bc.branchId || '_'; (groups[b] = groups[b] || []).push(bc); });
+    let grand = 0;
+    let html = '';
+    Object.keys(groups).forEach(bid => {
+        const items = groups[bid];
+        let subtotal = 0;
+        const rows = items.map(bc => {
+            const amt = Number(bc.total) || 0; subtotal += amt;
+            return `<tr class="border-b border-rose-100 hover:bg-rose-50 cursor-pointer text-xs" onclick="ntPayableDetail('${bc.id}')">
+                <td class="p-2 font-bold text-indigo-700">${bc.number||''}</td>
+                <td class="p-2">${bc.date||''}</td>
+                <td class="p-2">${tl[bc.type]||bc.type||''}</td>
+                <td class="p-2">${bc.payee||'-'}</td>
+                <td class="p-2 text-right font-bold">${ntFmt(amt)}</td>
+                <td class="p-2 text-center no-print" onclick="event.stopPropagation()">
+                    <button onclick="ntPayableDetail('${bc.id}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] px-2 py-1 rounded mr-1" title="ເບິ່ງລາຍລະອຽດ"><i class="fa-solid fa-eye"></i></button>
+                    <button onclick="ntPayBc('${bc.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold px-2 py-1 rounded"><i class="fa-solid fa-money-bill-wave mr-1"></i>ຊຳລະ</button>
+                </td></tr>`;
+        }).join('');
+        grand += subtotal;
+        html += `<div class="mb-5 border border-gray-200 rounded-xl overflow-hidden">
+            <div class="bg-slate-800 text-white px-4 py-2 flex justify-between items-center">
+                <span class="font-bold text-sm"><i class="fa-solid fa-location-dot mr-2 text-amber-300"></i>${_ntBranchNameOf(bid)}</span>
+                <span class="text-xs">ລໍຊຳລະ <b class="text-amber-300">${items.length}</b> ລາຍການ · ລວມ <b class="text-amber-300">${ntFmt(subtotal)}</b> ກີບ</span>
+            </div>
+            <div class="overflow-x-auto"><table class="w-full text-left">
+                <thead><tr class="bg-gray-50 text-[11px] text-gray-500 uppercase">
+                    <th class="p-2">ເລກທີ່</th><th class="p-2">ວັນທີ</th><th class="p-2">ປະເພດ</th><th class="p-2">ຜູ້ຮັບ/ຜູ້ສະໜອງ</th><th class="p-2 text-right">ຈຳນວນ</th><th class="p-2 text-center no-print">ຄຳສັ່ງ</th>
+                </tr></thead>
+                <tbody>${rows}</tbody>
+            </table></div>
+        </div>`;
+    });
+    host.innerHTML = html;
+    if (grandEl) grandEl.textContent = ntFmt(grand);
+}
+
+function ntPayableDetail(id) {
+    const bc = (typeof nt_budgetCalcs!=='undefined' ? nt_budgetCalcs : []).find(x=>x.id===id);
+    if (!bc) return;
+    const tl = { cost:'ງົບຕົ້ນທຶນ', admin:'ງົບບໍລິຫານ', service:'ງົບບໍລິການ' };
+    const itemRows = (bc.items||[]).map((it,i)=>{
+        const amt = Number(it.amount) || (Number(it.qty)||1)*(Number(it.price)||0);
+        return `<tr class="border-b border-gray-100 text-xs">
+            <td class="p-2 text-center">${i+1}</td>
+            <td class="p-2">${(it.name||it.desc||'ລາຍການ')}${it.note?` <span class="text-gray-400">(${it.note})</span>`:''}</td>
+            <td class="p-2 text-center">${it.qty||1}</td>
+            <td class="p-2 text-right">${ntFmt(Number(it.price)||amt)}</td>
+            <td class="p-2 text-right font-bold">${ntFmt(amt)}</td></tr>`;
+    }).join('') || '<tr><td colspan="5" class="p-3 text-center text-gray-400 text-xs">ບໍ່ມີລາຍການ</td></tr>';
+
+    let modal = document.getElementById('payableDetailModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'payableDetailModal';
+        modal.className = 'fixed inset-0 z-[120] bg-black/50 flex items-center justify-center p-3 sm:p-4';
+        document.body.appendChild(modal);
+    }
+    modal.classList.remove('hidden');
+    modal.innerHTML = `<div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center px-5 py-3 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl">
+            <h3 class="font-bold text-gray-800"><i class="fa-solid fa-file-invoice-dollar mr-2 text-indigo-600"></i>ລາຍລະອຽດໃບຄິດໄລ່ ${bc.number||''}</h3>
+            <button onclick="document.getElementById('payableDetailModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-700 text-xl"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="p-5">
+            <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+                <div><span class="text-gray-400 text-xs block">ສາຂາ/ແຂວງ</span><b>${_ntBranchNameOf(bc.branchId)}</b></div>
+                <div><span class="text-gray-400 text-xs block">ວັນທີ</span><b>${bc.date||'-'}</b></div>
+                <div><span class="text-gray-400 text-xs block">ປະເພດງົບ</span><b>${tl[bc.type]||bc.type||'-'}</b></div>
+                <div><span class="text-gray-400 text-xs block">ຜູ້ຮັບ/ຜູ້ສະໜອງ</span><b>${bc.payee||'-'}</b></div>
+                ${bc.rvRef?`<div><span class="text-gray-400 text-xs block">ອ້າງອີງ RV</span><b>${bc.rvRef}</b></div>`:''}
+                <div><span class="text-gray-400 text-xs block">ສະຖານະ</span><span class="bg-amber-100 text-amber-700 text-[11px] px-2 py-0.5 rounded-full font-bold">ລໍຖ້າສັ່ງຊຳລະ</span></div>
+            </div>
+            <table class="w-full border border-gray-200 rounded-lg overflow-hidden mb-4">
+                <thead><tr class="bg-gray-50 text-[11px] text-gray-500 uppercase">
+                    <th class="p-2 w-8">#</th><th class="p-2 text-left">ລາຍການ</th><th class="p-2">ຈຳນວນ</th><th class="p-2 text-right">ລາຄາ</th><th class="p-2 text-right">ລວມ</th>
+                </tr></thead>
+                <tbody>${itemRows}</tbody>
+                <tfoot><tr class="bg-slate-100 font-bold"><td colspan="4" class="p-2 text-right">ລວມທັງໝົດ</td><td class="p-2 text-right text-indigo-700">${ntFmt(Number(bc.total)||0)} ກີບ</td></tr></tfoot>
+            </table>
+            <div class="flex justify-end gap-2">
+                <button onclick="document.getElementById('payableDetailModal').classList.add('hidden')" class="px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 hover:bg-gray-200 text-gray-700">ປິດ</button>
+                <button onclick="ntPayBc('${bc.id}')" class="px-5 py-2 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white"><i class="fa-solid fa-money-bill-wave mr-1"></i>ສັ່ງຊຳລະ (ບັນທຶກເຂົ້າລາຍຮັບ-ລາຍຈ່າຍ)</button>
+            </div>
+        </div>
+    </div>`;
 }
 
 function ntNtoW(n) {
