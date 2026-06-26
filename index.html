@@ -1693,26 +1693,30 @@
                             <div class="grid grid-cols-3 gap-2">
                                 <div>
                                     <label class="block text-[10px] font-bold text-indigo-700 mb-1"><i class="fa-solid fa-image mr-1"></i>ໂລໂກ້ບໍລິສັດ</label>
-                                    <input type="file" id="setupCompanyLogoFile" accept="image/*" onchange="uploadBase64Image(event, 'companyLogo')" class="text-xs">
+                                    <input type="file" id="setupCompanyLogoFile" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" onchange="uploadBase64Image(event, 'companyLogo')" class="text-xs">
+                                    <input type="url" id="setupCompanyLogoUrl" oninput="ntSetCompanyImageUrl('logoImage', this.value)" placeholder="ຫຼື ວາງລິ້ງ https://..." class="w-full mt-1 bg-gray-50 border border-gray-200 rounded px-1.5 py-1 text-[10px] font-mono">
                                     <div class="mt-2 text-center">
-                                        <img id="previewCompanyLogo" src="" class="max-h-16 mx-auto rounded border hidden">
+                                        <img id="previewCompanyLogo" src="" class="max-h-16 mx-auto rounded border hidden" onerror="this.classList.add('hidden')">
                                     </div>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold text-gray-600 mb-1">QR Code (ຮັບເງິນ)</label>
-                                    <input type="file" id="setupCompanyQrFile" accept="image/*" onchange="uploadBase64Image(event, 'companyQr')" class="text-xs">
+                                    <input type="file" id="setupCompanyQrFile" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" onchange="uploadBase64Image(event, 'companyQr')" class="text-xs">
+                                    <input type="url" id="setupCompanyQrUrl" oninput="ntSetCompanyImageUrl('qrImage', this.value)" placeholder="ຫຼື ວາງລິ້ງ https://..." class="w-full mt-1 bg-gray-50 border border-gray-200 rounded px-1.5 py-1 text-[10px] font-mono">
                                     <div class="mt-2 text-center">
-                                        <img id="previewCompanyQr" src="" class="max-h-16 mx-auto rounded border hidden">
+                                        <img id="previewCompanyQr" src="" class="max-h-16 mx-auto rounded border hidden" onerror="this.classList.add('hidden')">
                                     </div>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold text-gray-600 mb-1">ຮູບລາຍເຊັນ</label>
-                                    <input type="file" id="setupCompanySignFile" accept="image/*" onchange="uploadBase64Image(event, 'companySignature')" class="text-xs">
+                                    <input type="file" id="setupCompanySignFile" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" onchange="uploadBase64Image(event, 'companySignature')" class="text-xs">
+                                    <input type="url" id="setupCompanySignUrl" oninput="ntSetCompanyImageUrl('signatureImage', this.value)" placeholder="ຫຼື ວາງລິ້ງ https://..." class="w-full mt-1 bg-gray-50 border border-gray-200 rounded px-1.5 py-1 text-[10px] font-mono">
                                     <div class="mt-2 text-center">
-                                        <img id="previewCompanySign" src="" class="max-h-16 mx-auto rounded border hidden">
+                                        <img id="previewCompanySign" src="" class="max-h-16 mx-auto rounded border hidden" onerror="this.classList.add('hidden')">
                                     </div>
                                 </div>
                             </div>
+                            <p class="text-[10px] text-gray-400 -mt-1">ຮອງຮັບ PNG/JPG/GIF/WEBP. ຮູບຈາກ iPhone (HEIC) ບາງເຄື່ອງສະແດງບໍ່ໄດ້ — ໃຫ້ໃຊ້ການ <b>ວາງລິ້ງ</b> (ອັບຮູບຂຶ້ນເວັບ ເຊັ່ນ imgur/Google Drive ແບບ public ແລ້ວ copy ລິ້ງມາວາງ) ຈະຊົວ ແລະ ສະແດງໄດ້ທຸກເຄື່ອງ.</p>
                             <div class="md:col-span-2 flex justify-end">
                                 <button type="submit" id="btn-save-company" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow-md transition">
                                     <i class="fa-solid fa-floppy-disk mr-1"></i> ບັນທຶກຂໍ້ມູນບໍລິສັດ
@@ -2109,6 +2113,15 @@
                             <label class="block text-xs font-bold text-gray-600 mb-1">ອີງຕາມຂໍ້ຕົກລົງເລກທີ່</label>
                             <input type="text" id="bcRvRef" placeholder="ຕ.ຢ: ສັນຍາ/ຂໍ້ຕົກລົງ ເລກທີ່..." class="w-full bg-white border border-gray-200 rounded-lg px-2 py-2 text-xs">
                         </div>
+                    </div>
+                    <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-2 flex flex-wrap items-center gap-2">
+                        <label class="text-[11px] font-bold text-indigo-700"><i class="fa-solid fa-link mr-1"></i>ດຶງຕົ້ນທຶນຈາກສັນຍາ:</label>
+                        <select id="bcContractLink" onchange="ntBcContractChange()" class="flex-1 min-w-[160px] bg-white border border-indigo-200 rounded-lg px-2 py-1.5 text-xs">
+                            <option value="">— ເລືອກສັນຍາ (ບໍ່ບັງຄັບ) —</option>
+                        </select>
+                        <button type="button" onclick="ntBcLoadContractCosts()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] px-2.5 py-1.5 rounded-lg font-bold"><i class="fa-solid fa-download mr-1"></i>ໂຫຼດລາຍການຕົ້ນທຶນທັງໝົດ</button>
+                        <datalist id="bcContractCostList"></datalist>
+                        <p class="w-full text-[10px] text-indigo-400">ເລືອກສັນຍາ → ກົດ "ໂຫຼດ" ເພື່ອດຶງລາຍການຕົ້ນທຶນທັງໝົດ, ຫຼື ພິມໃນຊ່ອງ "ລາຍການ" ແລ້ວເລືອກຈາກລາຍການທີ່ເດັ້ງຂຶ້ນ</p>
                     </div>
                     <!-- Cost line items -->
                     <div>
@@ -3882,6 +3895,19 @@
             if (!localStorage.getItem("treasury_company_info")) localStorage.setItem("treasury_company_info", JSON.stringify(defaultCompanyInfo));
             companyInfo = JSON.parse(localStorage.getItem("treasury_company_info"));
 
+            // Restore big images (logo / QR / signature + branch QRs) from IndexedDB back into memory,
+            // then refresh the UI so they appear. (They live in IndexedDB to avoid the localStorage quota
+            // that was wiping them on refresh.)
+            try {
+                if (typeof ntHydrateCompanyImages === 'function') ntHydrateCompanyImages(function(){
+                    if (typeof updateAllLogos === 'function') updateAllLogos();
+                    if (typeof refreshAllViews === 'function') refreshAllViews();
+                });
+                if (typeof ntHydrateBranchQrs === 'function') ntHydrateBranchQrs(function(){
+                    if (typeof refreshAllViews === 'function') refreshAllViews();
+                });
+            } catch(e){ logError('image hydrate: '+e.message,'warn'); }
+
             // CLEAN GHOST COST DATA on every startup
             // Remove cost entries that have no rvId, or rvId pointing to deleted invoices,
             // or no items, or all items with empty name & 0 price
@@ -4045,7 +4071,7 @@
                             if (data.customers)    { customers = ntMergeObjById(customers, data.customers, protectLocal); localStorage.setItem("treasury_customers_pro", JSON.stringify(customers)); }
                             if (data.invoices)     { invoices = ntMergeById(invoices, data.invoices, protectLocal); localStorage.setItem("treasury_invoices_pro", JSON.stringify(invoices)); }
                             if (data.aps)          { aps = ntMergeById(aps, data.aps, protectLocal); localStorage.setItem("treasury_aps_pro", JSON.stringify(aps)); }
-                            if (data.companyInfo)  { companyInfo = (typeof _ntKeepImages==='function') ? _ntKeepImages(data.companyInfo, companyInfo) : data.companyInfo; localStorage.setItem("treasury_company_info", JSON.stringify(companyInfo)); }
+                            if (data.companyInfo)  { companyInfo = (typeof _ntKeepImages==='function') ? _ntKeepImages(data.companyInfo, companyInfo) : data.companyInfo; ntFlushCompanyInfo(); }
                             if (typeof nt_quotations !== 'undefined') {
                                 if (data.nt_quotations)    { nt_quotations    = ntMergeById(nt_quotations, data.nt_quotations, protectLocal);    localStorage.setItem('nt_quotations',    JSON.stringify(nt_quotations)); }
                                 if (data.nt_budgetCalcs)   { nt_budgetCalcs   = ntMergeById(nt_budgetCalcs, data.nt_budgetCalcs, protectLocal);   localStorage.setItem('nt_budgetCalcs',   JSON.stringify(nt_budgetCalcs)); }
@@ -4300,7 +4326,7 @@
             }).join('') || '<tr><td colspan="7" style="text-align:center;color:#888">ບໍ່ມີຂໍ້ມູນ</td></tr>';
 
             const ci = companyInfo || {};
-            const logoHtml = ci.logoImage ? `<img src="${ci.logoImage}" style="height:58px;object-fit:contain">` : '';
+            const logoHtml = ci.logoImage ? `<img src="${ci.logoImage}" style="height:58px;object-fit:contain" onerror="this.onerror=null;this.style.display='none'">` : '';
             const win = window.open('', '_blank');
             if (!win) { showToast('Pop-up ຖືກ block — ອະນຸຍາດ pop-up','warning'); return; }
             win.document.write(`<!DOCTYPE html><html lang="lo"><head><meta charset="UTF-8">
@@ -4395,6 +4421,11 @@
                 logoPreview.src = companyInfo.logoImage;
                 logoPreview.classList.remove('hidden');
             }
+            // Show the current link in the URL box if the stored image is an https link
+            const _isUrl = (v) => typeof v === 'string' && v.slice(0,4) === 'http';
+            const logoUrlBox = document.getElementById('setupCompanyLogoUrl'); if (logoUrlBox) logoUrlBox.value = _isUrl(companyInfo.logoImage) ? companyInfo.logoImage : '';
+            const qrUrlBox = document.getElementById('setupCompanyQrUrl'); if (qrUrlBox) qrUrlBox.value = _isUrl(companyInfo.qrImage) ? companyInfo.qrImage : '';
+            const signUrlBox = document.getElementById('setupCompanySignUrl'); if (signUrlBox) signUrlBox.value = _isUrl(companyInfo.signatureImage) ? companyInfo.signatureImage : '';
             const qrPreview = document.getElementById('previewCompanyQr');
             if (qrPreview && companyInfo.qrImage) {
                 qrPreview.src = companyInfo.qrImage;
@@ -4415,11 +4446,26 @@
             if (typeof updateAllLogos === 'function') updateAllLogos();
         }
 
+        // Central safe image renderer for documents: returns '' for empty/invalid refs, and attaches
+        // an onerror so a broken image (e.g. an unreachable URL or unsupported HEIC) HIDES instead of
+        // showing the ugly broken-image icon. Use this for every logo/QR/signature on documents.
+        function ntSafeImg(src, cls, style) {
+            if (!src || typeof src !== 'string') return '';
+            const s = src.trim();
+            if (s.slice(0,4) !== 'http' && s.slice(0,11) !== 'data:image/') return '';   // not a usable image ref
+            return '<img src="' + s.replace(/"/g,'&quot;') + '"' +
+                   (cls ? (' class="' + cls + '"') : '') +
+                   (style ? (' style="' + style + '"') : '') +
+                   ' onerror="this.onerror=null;this.style.display=\'none\'">';
+        }
+
         // Update all logo containers throughout the app
         function updateAllLogos() {
             const logo = companyInfo.logoImage || '';
+            const valid = typeof logo === 'string' && (logo.slice(0,4) === 'http' || logo.slice(0,11) === 'data:image/');
             document.querySelectorAll('.app-company-logo').forEach(el => {
-                if (logo) {
+                if (logo && valid) {
+                    el.onerror = function(){ this.onerror=null; this.classList.add('hidden'); };   // hide if it fails to load
                     el.src = logo;
                     el.classList.remove('hidden');
                 } else {
@@ -4446,7 +4492,7 @@
             companyInfo.address = document.getElementById('setupCompanyAddress').value.trim();
             companyInfo.contact = document.getElementById('setupCompanyContact').value.trim();
 
-            localStorage.setItem("treasury_company_info", JSON.stringify(companyInfo));
+            ntFlushCompanyInfo();
             triggerCloudBackup();
             fillCompanySetupForm();
             updateAppView();
@@ -4576,9 +4622,14 @@
         function uploadBase64Image(event, targetProp) {
             const file = event.target.files[0];
             if (!file) return;
-            // Logos/QR can be a touch sharper; receipts (often photos) compress harder.
+            // Company logo / QR / signature / branch QR → store COMPRESSED BASE64 so the image ALWAYS
+            // displays on this device. (A Firebase Storage URL can render as a BROKEN image if Storage
+            // rules/links are unavailable.) Receipts keep Storage since they aren't shown on documents.
             const isReceipt = (targetProp === 'bcReceipt' || targetProp === 'bpReceipt');
-            _ntProcessImage(file, isReceipt ? 1100 : 700, isReceipt ? 0.7 : 0.8, function(dataUrl, toCloud) {
+            const runProcessor = isReceipt
+                ? (cb) => _ntProcessImage(file, 1100, 0.7, (d) => cb(d))
+                : (cb) => _ntCompressImage(file, 700, 0.85, (d) => cb(d));
+            runProcessor(function(dataUrl) {
                 const e = { target: { result: dataUrl } };
                 if (targetProp === 'branchQr') {
                     window._uploadedBranchQr = e.target.result;
@@ -4596,27 +4647,52 @@
                     if (prev) { prev.src = e.target.result; prev.classList.remove('hidden'); }
                     showToast("ອັບໂຫຼດໃບເຊັດສຳເລັດ!");
                 } else if (targetProp === 'companyLogo') {
-                    // Prefer a Firebase Storage URL (small string → syncs across devices + always displays).
-                    // Fall back to the base64 locally if Storage is off (kept on-device, stripped from cloud).
-                    const _applyLogo = (ref) => {
-                        companyInfo.logoImage = ref;
-                        safeSetLocalStorage("treasury_company_info", JSON.stringify(companyInfo));
-                        triggerCloudBackup();
-                        fillCompanySetupForm();
-                        if (typeof updateAllLogos === 'function') updateAllLogos();
-                        showToast("ອັບໂຫຼດໂລໂກ້ສຳເລັດ!");
-                    };
-                    if (typeof _ntUploadToStorage === 'function') {
-                        _ntUploadToStorage(e.target.result, function(url){ _applyLogo(url || e.target.result); });
-                    } else { _applyLogo(e.target.result); }
-                } else {
-                    companyInfo[targetProp === 'companyQr' ? 'qrImage' : 'signatureImage'] = e.target.result;
-                    safeSetLocalStorage("treasury_company_info", JSON.stringify(companyInfo));
+                    // dataUrl here is already compressed + (when possible) a Storage URL from _ntProcessImage.
+                    companyInfo.logoImage = e.target.result;
+                    ntFlushCompanyInfo();
                     triggerCloudBackup();
-                    fillCompanySetupForm();
+                    const prev = document.getElementById('previewCompanyLogo');
+                    if (prev) { prev.src = e.target.result; prev.classList.remove('hidden'); }
+                    if (typeof updateAllLogos === 'function') updateAllLogos();
+                    _ntWarnIfUndisplayable(e.target.result);
+                    showToast("ອັບໂຫຼດໂລໂກ້ສຳເລັດ!");
+                } else {
+                    const field = (targetProp === 'companyQr') ? 'qrImage' : 'signatureImage';
+                    companyInfo[field] = e.target.result;
+                    ntFlushCompanyInfo();
+                    triggerCloudBackup();
+                    const prevId = (field === 'qrImage') ? 'previewCompanyQr' : 'previewCompanySign';
+                    const prev = document.getElementById(prevId);
+                    if (prev) { prev.src = e.target.result; prev.classList.remove('hidden'); }
+                    if (typeof updateAllLogos === 'function') updateAllLogos();
+                    _ntWarnIfUndisplayable(e.target.result);
                     showToast("ອັບໂຫຼດຮູບພາບສຳເລັດ!");
                 }
             });
+        }
+
+        // Warn the user if the stored image is a format the browser can't render (e.g. iPhone HEIC),
+        // and point them to the reliable "paste link" option.
+        function _ntWarnIfUndisplayable(ref) {
+            if (typeof ref !== 'string') return;
+            if (ref.slice(0,4) === 'http') return;                       // URL — fine
+            if (/^data:image\/(jpeg|jpg|png|gif|webp|bmp);/i.test(ref)) return;  // displayable base64
+            if (ref.slice(0,5) === 'data:') {
+                showToast('ຮູບນີ້ອາດສະແດງບໍ່ໄດ້ໃນບາງເຄື່ອງ (ເຊັ່ນ HEIC ຈາກ iPhone). ແນະນຳໃຫ້ໃຊ້ຊ່ອງ "ວາງລິ້ງ" ແທນ.', 'warning');
+            }
+        }
+
+        // Set a company image (logo/qr/signature) directly from a pasted URL — the most reliable
+        // cross-device method (a short https link always displays and syncs everywhere).
+        function ntSetCompanyImageUrl(field, url) {
+            url = (url || '').trim();
+            companyInfo[field] = url;
+            ntFlushCompanyInfo();
+            triggerCloudBackup();
+            const map = { logoImage:'previewCompanyLogo', qrImage:'previewCompanyQr', signatureImage:'previewCompanySign' };
+            const prev = document.getElementById(map[field]);
+            if (prev) { if (url) { prev.src = url; prev.classList.remove('hidden'); } else { prev.src=''; prev.classList.add('hidden'); } }
+            if (typeof updateAllLogos === 'function') updateAllLogos();
         }
 
         function populateBranchSelectors() {
@@ -5820,10 +5896,10 @@
             // QR: prefer branch QR, fallback company QR
             const qrSrc = i.qrImage || b.qrImage || companyInfo.qrImage || '';
             const qrImageHtml = qrSrc
-                ? `<div class="text-center space-y-1"><p class="text-[9px] font-bold text-slate-500">Scan to Pay / 扫码支付</p><img src="${qrSrc}" class="max-h-36 mx-auto border rounded p-1" style="width:auto"></div>`
+                ? `<div class="text-center space-y-1"><p class="text-[9px] font-bold text-slate-500">Scan to Pay / 扫码支付</p>${ntSafeImg(qrSrc,'max-h-36 mx-auto border rounded p-1','width:auto')}</div>`
                 : `<div class="text-center p-6 border border-dashed rounded text-[10px] text-gray-400">ບໍ່ມີ QR — ໄປ ຕັ້ງຄ່າ → ສາຂາ</div>`;
             const signImageHtml = companyInfo.signatureImage
-                ? `<img src="${companyInfo.signatureImage}" class="max-h-12 mx-auto object-contain">` : `<br><br><br>`;
+                ? (ntSafeImg(companyInfo.signatureImage,'max-h-12 mx-auto object-contain') || `<br><br><br>`) : `<br><br><br>`;
 
             // Multi-item rows
             const items = i.items && i.items.length ? i.items : [{ desc:i.item, unit:'-', qty:1, price:i.amount }];
@@ -5850,7 +5926,7 @@
                 </div>
                 <div class="flex flex-col md:flex-row justify-between items-start mb-5 text-[11px] leading-relaxed border-b pb-4">
                     <div class="text-left space-y-1 flex items-start gap-3">
-                        ${companyInfo.logoImage ? `<img src="${companyInfo.logoImage}" class="h-16 w-16 object-contain">` : ''}
+                        ${ntSafeImg(companyInfo.logoImage,'h-16 w-16 object-contain')}
                         <div class="space-y-1">
                             <h4 class="font-bold text-slate-900 text-sm">${companyInfo.name}</h4>
                             <p><strong>${b.name}</strong></p>
@@ -6837,7 +6913,7 @@
                         ? `<span class="font-mono font-bold text-slate-800">${b.bankAccount}</span>`
                         : `<span class="text-rose-500 italic text-[11px]">⚠ ຍັງບໍ່ມີ</span>`;
                     const qrDisplay = b.qrImage
-                        ? `<img src="${b.qrImage}" class="h-10 w-10 object-contain border rounded mx-auto" title="ກົດແກ້ໄຂເພື່ອປ່ຽນ">`
+                        ? `<img src="${b.qrImage}" class="h-10 w-10 object-contain border rounded mx-auto" title="ກົດແກ້ໄຂເພື່ອປ່ຽນ" onerror="this.onerror=null;this.style.display='none'">`
                         : `<span class="text-rose-500 italic text-[11px]">⚠ ຍັງບໍ່ມີ</span>`;
                     tr.innerHTML = `
                         <td class="py-3 px-4 font-bold text-slate-800 uppercase font-mono">${bId}</td>
@@ -6972,7 +7048,10 @@
                 showToast("ເພີ່ມສາຂາໃໝ່ສຳເລັດ!");
             }
 
-            localStorage.setItem("treasury_branches_pro", JSON.stringify(branches));
+            const finalBranchId = editId || id;
+            // Offload the (possibly large) QR image to IndexedDB so it never overflows localStorage
+            // (which would make it vanish after refresh). Persists branches with a light marker.
+            ntFlushBranchQr(finalBranchId);
             triggerCloudBackup();
             closeBranchModal();
             populateBranchSelectors();
@@ -8563,6 +8642,82 @@ ${metrics.netMargin > 20 ? 'ທຸລະກຳຂອງທ່ານມີອັ�
                 logError('localStorage parse error for key [' + key + ']: ' + e.message, 'warn');
                 return fallback;
             }
+        }
+
+        // ============================================================
+        // IndexedDB image store — keeps large base64 images OUT of localStorage.
+        // localStorage has a small (~5MB) quota and was overflowing, so uploaded logos/QRs
+        // failed to save and vanished after refresh. IndexedDB has a far larger quota.
+        // Company logo/QR/signature + branch QRs are stored here; localStorage keeps only
+        // a light "__IDB__" marker. The cloud copy still strips images (small docs → reliable sync).
+        // ============================================================
+        var _ntImgDB = null;
+        function _ntOpenImgDB() {
+            return new Promise(function(resolve){
+                if (_ntImgDB) { resolve(_ntImgDB); return; }
+                try {
+                    if (typeof indexedDB === 'undefined') { resolve(null); return; }
+                    var req = indexedDB.open('tsaa_images_db', 1);
+                    req.onupgradeneeded = function(ev){ var db = ev.target.result; if (!db.objectStoreNames.contains('imgs')) db.createObjectStore('imgs'); };
+                    req.onsuccess = function(ev){ _ntImgDB = ev.target.result; resolve(_ntImgDB); };
+                    req.onerror = function(){ resolve(null); };
+                } catch(e){ resolve(null); }
+            });
+        }
+        function ntImgStore(key, dataUrl) {
+            return _ntOpenImgDB().then(function(db){
+                if (!db) return false;
+                return new Promise(function(resolve){
+                    try { var tx = db.transaction('imgs','readwrite'); tx.objectStore('imgs').put(dataUrl, key); tx.oncomplete=function(){resolve(true);}; tx.onerror=function(){resolve(false);}; }
+                    catch(e){ resolve(false); }
+                });
+            });
+        }
+        function ntImgLoad(key) {
+            return _ntOpenImgDB().then(function(db){
+                if (!db) return null;
+                return new Promise(function(resolve){
+                    try { var tx = db.transaction('imgs','readonly'); var r = tx.objectStore('imgs').get(key); r.onsuccess=function(){resolve(r.result||null);}; r.onerror=function(){resolve(null);}; }
+                    catch(e){ resolve(null); }
+                });
+            });
+        }
+        function _ntIsStorableBig(v){ return typeof v === 'string' && v.length > 2000 && v.slice(0,5) === 'data:'; }
+
+        // Save companyInfo to localStorage with big base64 images offloaded to IndexedDB.
+        var NT_CI_IMG_FIELDS = ['logoImage','qrImage','signatureImage'];
+        function ntFlushCompanyInfo() {
+            var light = Object.assign({}, companyInfo);
+            NT_CI_IMG_FIELDS.forEach(function(f){
+                if (_ntIsStorableBig(companyInfo[f])) { ntImgStore('ci_'+f, companyInfo[f]); light[f] = '__IDB__'; }
+            });
+            try { localStorage.setItem('treasury_company_info', JSON.stringify(light)); return true; }
+            catch(e){ logError('company info save: '+e.message,'warn'); return false; }
+        }
+        // On startup: swap any '__IDB__' markers back to the real image from IndexedDB, then refresh logos.
+        function ntHydrateCompanyImages(cb) {
+            var pending = NT_CI_IMG_FIELDS.length;
+            var done = function(){ if(--pending<=0){ if(typeof updateAllLogos==='function') updateAllLogos(); if(cb) cb(); } };
+            NT_CI_IMG_FIELDS.forEach(function(f){
+                if (companyInfo[f] === '__IDB__') { ntImgLoad('ci_'+f).then(function(v){ companyInfo[f] = v || ''; done(); }); }
+                else { done(); }
+            });
+        }
+        // Branch QRs → IndexedDB too (keyed by branch id).
+        function ntFlushBranchQr(branchId) {
+            if (!branches[branchId]) return;
+            if (_ntIsStorableBig(branches[branchId].qrImage)) { ntImgStore('branchqr_'+branchId, branches[branchId].qrImage); branches[branchId].qrImage = '__IDB__'; }
+            try { localStorage.setItem('treasury_branches_pro', JSON.stringify(branches)); } catch(e){ logError('branch save: '+e.message,'warn'); }
+        }
+        function ntHydrateBranchQrs(cb) {
+            var ids = Object.keys(branches || {});
+            var pending = ids.length;
+            if (!pending) { if(cb) cb(); return; }
+            var done = function(){ if(--pending<=0){ if(cb) cb(); } };
+            ids.forEach(function(id){
+                if (branches[id] && branches[id].qrImage === '__IDB__') { ntImgLoad('branchqr_'+id).then(function(v){ branches[id].qrImage = v || ''; done(); }); }
+                else { done(); }
+            });
         }
 
         // --- Global JS error catcher ---
@@ -10441,7 +10596,7 @@ async function printFullBookPDF() {
             <p style="font-weight:900;text-transform:uppercase;font-size:12px">ສາທາລະນະລັດ ປະຊາທິປະໄຕ ປະຊາຊົນລາວ</p>
             <p style="font-size:11px">ສັນຕິພາບ ເອກະລາດ ປະຊາທິປະໄຕ ເອກະພາບ ວັດທະນະຖາວອນ</p>
             <hr style="margin:6px 0">
-            ${companyInfo.logoImage ? `<img src="${companyInfo.logoImage}" style="height:60px;object-fit:contain;margin:4px auto;display:block">` : ''}
+            ${companyInfo.logoImage ? `<img src="${companyInfo.logoImage}" style="height:60px;object-fit:contain;margin:4px auto;display:block" onerror="this.onerror=null;this.style.display='none'">` : ''}
             <p style="font-weight:900;font-size:13px">${companyInfo.name||''}</p>
             <h1 style="font-size:16px;font-weight:900;margin:6px 0">ປື້ມສະຫຼຸບປະຈຳເດືອນ ${d.mo}</h1>
             <p style="font-size:11px">ສາຂາ: ${d.b==='all'?'ທຸກສາຂາ':bn(d.b)}</p>
@@ -10514,7 +10669,7 @@ function printMonthlyReport(month, branchId) {
     <p style="font-weight:900;text-transform:uppercase">ສາທາລະນະລັດ ປະຊາທິປະໄຕ ປະຊາຊົນລາວ</p>
     <p>ສັນຕິພາບ ເອກະລາດ ປະຊາທິປະໄຕ ເອກະພາບ ວັດທະນະຖາວອນ</p>
     <hr style="margin:4px 0">
-    ${ci.logoImage ? `<img src="${ci.logoImage}" style="height:60px;object-fit:contain;margin:6px auto;display:block">` : ''}
+    ${ci.logoImage ? `<img src="${ci.logoImage}" style="height:60px;object-fit:contain;margin:6px auto;display:block" onerror="this.onerror=null;this.style.display='none'">` : ''}
     <p style="font-weight:900">${ci.name||''}</p>
     <h1>ລາຍງານການເງິນ ປະຈຳເດືອນ ${mo}</h1>
     <p>ສາຂາ: ${b==='all'?'ທຸກສາຂາ':(branches[b]?.name||b)}</p>
@@ -10605,7 +10760,7 @@ var nt_proposalLetters = JSON.parse(localStorage.getItem('nt_proposalLetters') |
 function ntFormalHeader(title, opts) {
     opts = opts || {};
     const ci = (typeof companyInfo !== 'undefined' && companyInfo) ? companyInfo : {};
-    const logo = ci.logoImage ? `<img src="${ci.logoImage}" class="h-16 w-16 object-contain">` : '<div class="h-16 w-16"></div>';
+    const logo = ci.logoImage ? `<img src="${ci.logoImage}" class="h-16 w-16 object-contain" onerror="this.onerror=null;this.style.display='none'">` : '<div class="h-16 w-16"></div>';
     const reportNo = opts.no || '';
     const period = opts.period || '';
     return `
@@ -11850,7 +12005,7 @@ function renderPlPrint(pl) {
     if (!el) return;
     if (!pl) { el.innerHTML = '<div class="text-center text-gray-400 py-12"><p>ບໍ່ມີຂໍ້ມູນ</p></div>'; return; }
     const ci = companyInfo || {};
-    const logoHtml = ci.logoImage ? `<img src="${ci.logoImage}" class="h-16 w-16 object-contain">` : '';
+    const logoHtml = ci.logoImage ? `<img src="${ci.logoImage}" class="h-16 w-16 object-contain" onerror="this.onerror=null;this.style.display='none'">` : '';
     const refsHtml = (pl.refs||'').split('\n').filter(r=>r.trim()).map(r=>`<p class="ml-4">- <b>ອີງຕາມ</b> : ${r.trim()}</p>`).join('');
     const dParts = (pl.date||'').split('-');
     const dateStr = dParts.length===3 ? `${dParts[2]}/${dParts[1]}/${dParts[0]}` : pl.date;
@@ -12268,7 +12423,7 @@ function ntRenderQuotationPrint(qt) {
         <td class="border p-1.5 text-right font-bold">${ntFmt((item.qty||1)*(item.price||0))}</td></tr>`).join('');
     el.innerHTML = `<div class="text-center text-xs mb-3"><p class="font-bold uppercase">ສາທາລະນະລັດ ປະຊາທິປະໄຕ ປະຊາຊົນລາວ</p><p>ສັນຕິພາບ ເອກະລາດ ປະຊາທິປະໄຕ ເອກະພາບ ວັດທະນະຖາວອນ</p><div class="w-20 h-px bg-gray-400 mx-auto my-1"></div></div>
         <div class="flex justify-between text-xs mb-4">
-          <div class="flex items-start gap-2">${ci.logoImage ? `<img src="${ci.logoImage}" class="h-14 w-14 object-contain">` : ''}<div><p class="font-bold">${ci.name||'ບໍລິສັດ...'}</p><p>${ci.address||''}</p><p>${ci.contact||''}</p></div></div>
+          <div class="flex items-start gap-2">${ci.logoImage ? `<img src="${ci.logoImage}" class="h-14 w-14 object-contain" onerror="this.onerror=null;this.style.display='none'">` : ''}<div><p class="font-bold">${ci.name||'ບໍລິສັດ...'}</p><p>${ci.address||''}</p><p>${ci.contact||''}</p></div></div>
           <div class="text-right"><p class="font-extrabold text-violet-700 text-sm">ໃບສະເໜີລາຄາ</p><p class="font-bold">ເລກທີ: ${qt.number}</p><p>ວັນທີ: ${qt.date}</p><p>ສ·ປ: ${qt.validity||30} ວັນ</p></div>
         </div>
         <div class="bg-gray-50 p-2 rounded text-xs mb-3"><p class="font-bold">ເຖິງ: ${qt.customerName||'-'}</p></div>
@@ -12308,6 +12463,9 @@ function newBudgetCalc() {
     if (document.getElementById('bcBpRef')) document.getElementById('bcBpRef').value = '';
     document.getElementById('bcType').value = 'cost';
     document.getElementById('bcStatus').value = 'pending';
+    if (typeof ntPopulateBcContractLink === 'function') ntPopulateBcContractLink('');   // contracts for the cost-pull picker
+    const _bccl = document.getElementById('bcContractLink'); if (_bccl) _bccl.value = '';
+    const _bcdl = document.getElementById('bcContractCostList'); if (_bcdl) _bcdl.innerHTML = '';
     ntRenderBcItems();
     autoBcNumber();   // auto-fill the number immediately (picks single/staff branch if applicable)
     ntRenderBudgetCalcPrint(null);
@@ -12326,6 +12484,65 @@ function bcPopulateBpRefs() {
 }
 
 function addBcItem() { bc_items.push({ name:'', category:'', unit:'', qty:1, price:0, amount:0, note:'' }); ntRenderBcItems(); }
+
+// ===== ດຶງຕົ້ນທຶນຈາກສັນຍາ ເຂົ້າໃບຄິດໄລ່ຕົ້ນທຶນ (item 11) =====
+function ntPopulateBcContractLink(selectedId){
+    var sel = document.getElementById('bcContractLink');
+    if (!sel) return;
+    var list = (typeof nt_contracts!=='undefined' && nt_contracts) ? nt_contracts : [];
+    var opts = '<option value="">— ເລືອກສັນຍາ (ບໍ່ບັງຄັບ) —</option>';
+    list.forEach(function(c){
+        var label = (c.contractNo||c.serviceItem||'ສັນຍາ') + ' · ' + (c.contractYear||'') + ' · ' + (c.customerName||'');
+        opts += '<option value="'+c.id+'"'+(c.id===selectedId?' selected':'')+'>'+label+'</option>';
+    });
+    sel.innerHTML = opts;
+}
+var _ntBcCostMap = {};
+function ntBcBuildCostList(c){
+    _ntBcCostMap = {};
+    var dl = document.getElementById('bcContractCostList');
+    if (!dl) return;
+    if (!c){ dl.innerHTML=''; return; }
+    var items = Array.isArray(c.costItems) ? c.costItems : [];
+    var opts='';
+    items.forEach(function(ci){
+        var nm = ci.name||ci.desc||'ຕົ້ນທຶນ';
+        var label = nm + ' — ' + (Number(ci.amount)||Number(ci.price)||0).toLocaleString() + ' ກີບ' + (ci.note?(' ('+ci.note+')'):'');
+        var rec = { name:nm, category:(ci.category||''), unit:(ci.unit||'ຄັ້ງ'), qty:(Number(ci.qty)||1), price:(Number(ci.amount)||Number(ci.price)||0), note:(ci.note||'') };
+        _ntBcCostMap[label] = rec; _ntBcCostMap[nm] = rec;   // match by full label or bare name
+        opts += '<option value="'+label.replace(/"/g,'&quot;')+'"></option>';
+    });
+    dl.innerHTML = opts;
+}
+function ntBcContractChange(){
+    var sel = document.getElementById('bcContractLink');
+    if (!sel) return;
+    var c = (typeof nt_contracts!=='undefined'?nt_contracts:[]).find(function(x){return x.id===sel.value;});
+    if (c){
+        var payee=document.getElementById('bcPayee'); if(payee && !payee.value) payee.value = c.customerName||'';
+        var ref=document.getElementById('bcRvRef'); if(ref) ref.value = (c.contractNo||'') + (c.contractYear?(' / '+c.contractYear):'');
+    }
+    ntBcBuildCostList(c||null);
+}
+function ntBcLoadContractCosts(){
+    var sel = document.getElementById('bcContractLink');
+    var c = sel ? (typeof nt_contracts!=='undefined'?nt_contracts:[]).find(function(x){return x.id===sel.value;}) : null;
+    if (!c){ showToast('ເລືອກສັນຍາກ່ອນ','warning'); return; }
+    var items = Array.isArray(c.costItems) ? c.costItems : [];
+    if (!items.length){ showToast('ສັນຍານີ້ບໍ່ມີລາຍການຕົ້ນທຶນ','warning'); return; }
+    var rows = items.map(function(ci){ return { name:(ci.name||ci.desc||'ຕົ້ນທຶນ'), category:(ci.category||''), unit:(ci.unit||'ຄັ້ງ'), qty:(Number(ci.qty)||1), price:(Number(ci.amount)||Number(ci.price)||0), amount:0, note:(ci.note||'') }; });
+    if (bc_items.length===1 && !bc_items[0].name) bc_items = rows;   // replace the empty starter row
+    else bc_items = bc_items.concat(rows);
+    ntRenderBcItems();
+    showToast('ໂຫຼດ '+rows.length+' ລາຍການຕົ້ນທຶນຈາກສັນຍາ ສຳເລັດ','success');
+}
+function ntBcItemNamePicked(idx, val){
+    if (_ntBcCostMap && _ntBcCostMap[val] && bc_items[idx]){
+        var it=_ntBcCostMap[val];
+        bc_items[idx].name=it.name; bc_items[idx].category=it.category; bc_items[idx].unit=it.unit; bc_items[idx].qty=it.qty; bc_items[idx].price=it.price; bc_items[idx].note=it.note;
+        ntRenderBcItems();
+    } else if (bc_items[idx]) { bc_items[idx].name = val; }
+}
 
 // Clickable unit list for budget-calc items. Persists on this device; defaults cover common units.
 var nt_units = (function(){
@@ -12388,7 +12605,7 @@ function ntRenderBcItems() {
         total += amount;
         return `<tr class="border-b border-gray-100">
             <td class="p-1 text-center text-gray-400 text-xs">${i+1}</td>
-            <td class="p-1"><input type="text" value="${(item.name||'').replace(/"/g,'&quot;')}" onchange="bc_items[${i}].name=this.value" placeholder="ລາຍການ" class="w-full border-b border-gray-200 px-1 py-1 text-xs bg-transparent focus:outline-none"></td>
+            <td class="p-1"><input type="text" value="${(item.name||'').replace(/"/g,'&quot;')}" list="bcContractCostList" onchange="ntBcItemNamePicked(${i}, this.value)" placeholder="ລາຍການ (ພິມ ຫຼື ເລືອກຈາກສັນຍາ)" class="w-full border-b border-gray-200 px-1 py-1 text-xs bg-transparent focus:outline-none"></td>
             <td class="p-1"><select onchange="bcCategoryChanged(${i}, this)" class="w-full border-b border-gray-200 px-1 py-1 text-xs bg-transparent focus:outline-none">${catOpts(item.category)}</select></td>
             <td class="p-1"><select onchange="bcUnitChanged(${i}, this)" class="w-full border-b border-gray-200 px-1 py-1 text-xs text-center bg-transparent focus:outline-none">${ntUnitOpts(item.unit)}</select></td>
             <td class="p-1"><input type="number" value="${qty}" min="1" onchange="bc_items[${i}].qty=+this.value;ntRenderBcItems()" class="w-full border-b border-gray-200 px-1 py-1 text-xs text-center bg-transparent focus:outline-none"></td>
@@ -13050,7 +13267,7 @@ function ntRenderBudgetCalcPrint(bc) {
     if (!bc) { el.innerHTML='<div class="text-center text-gray-400 py-12"><i class="fa-solid fa-file-circle-plus text-5xl mb-3 block"></i><p>ເລືອກ ຫຼື ສ້າງໃບສັ່ງຈ່າຍ</p></div>'; return; }
     const ci=companyInfo||{};
     const tl={cost:'ງົບຄ່າຕົ້ນທຶນ', cost_expense:'ງົບລາຍຈ່າຍຕົ້ນທຶນ', admin:'ງົບຄ່າບໍລິຫານ', service:'ງົບບໍລິການ'};
-    const logoHtml = ci.logoImage ? `<img src="${ci.logoImage}" class="h-16 w-16 object-contain inline-block mr-3 align-middle">` : '';
+    const logoHtml = ci.logoImage ? `<img src="${ci.logoImage}" class="h-16 w-16 object-contain inline-block mr-3 align-middle" onerror="this.onerror=null;this.style.display='none'">` : '';
     const rows=(bc.items||[]).map((item,i)=>`<tr><td class="border p-1.5 text-center">${i+1}</td><td class="border p-1.5">${item.name||''}</td><td class="border p-1.5 text-center">${item.category||'-'}</td><td class="border p-1.5 text-center">${item.unit||'-'}</td><td class="border p-1.5 text-center">${item.qty||1}</td><td class="border p-1.5 text-right">${ntFmt(item.price)}</td><td class="border p-1.5 text-right font-bold">${ntFmt(item.amount)}</td><td class="border p-1.5">${item.note||''}</td></tr>`).join('');
     const receiptHtml = bc.receiptImage ? `<div class="mt-4 border-t pt-3"><p class="text-xs font-bold text-gray-600 mb-2"><i class="fa-solid fa-paperclip mr-1"></i>ໃບເຊັດ/ຫຼັກຖານອ້າງອີງ:</p><img src="${bc.receiptImage}" class="max-w-md max-h-80 object-contain border rounded"></div>` : '';
     el.innerHTML=`<div class="text-center text-xs mb-3"><p class="font-bold uppercase">ສາທາລະນະລັດ ປະຊາທິປະໄຕ ປະຊາຊົນລາວ</p><p>ສັນຕິພາບ ເອກະລາດ ປະຊາທິປະໄຕ ເອກະພາບ ວັດທະນະຖາວອນ</p><div class="w-20 h-px bg-gray-400 mx-auto my-1"></div></div>
@@ -13274,7 +13491,7 @@ function ntRenderBudgetProposalPrint(bp) {
     const el=document.getElementById('budgetProposalPrintPreview'); if(!el) return;
     if(!bp){el.innerHTML='<div class="text-center text-gray-400 py-12"><i class="fa-solid fa-file-signature text-5xl mb-3 block"></i><p>ເລືອກໃບສະເໜີ</p></div>';return;}
     const ci=companyInfo||{}; const sc={submitted:'ສົ່ງແລ້ວ',approved:'ອະນຸມັດ',rejected:'ປະຕິເສດ',carry_forward:'ຍົກຍອດ'};
-    const logoHtml = ci.logoImage ? `<img src="${ci.logoImage}" class="h-16 w-16 object-contain inline-block mr-3 align-middle">` : '';
+    const logoHtml = ci.logoImage ? `<img src="${ci.logoImage}" class="h-16 w-16 object-contain inline-block mr-3 align-middle" onerror="this.onerror=null;this.style.display='none'">` : '';
     const receiptHtml = bp.receiptImage ? `<div class="mt-4 border-t pt-3"><p class="text-xs font-bold text-gray-600 mb-2"><i class="fa-solid fa-paperclip mr-1"></i>ໃບເຊັດ/ຫຼັກຖານອ້າງອີງ:</p><img src="${bp.receiptImage}" class="max-w-md max-h-80 object-contain border rounded"></div>` : '';
     el.innerHTML=`<div class="text-center text-xs mb-3"><p class="font-bold uppercase">ສາທາລະນະລັດ ປະຊາທິປະໄຕ ປະຊາຊົນລາວ</p><p>ສັນຕິພາບ ເອກະລາດ ປະຊາທິປະໄຕ ເອກະພາບ ວັດທະນະຖາວອນ</p><div class="w-20 h-px bg-gray-400 mx-auto my-1"></div></div>
         <div class="flex justify-between text-xs mb-5">
@@ -15287,7 +15504,7 @@ function ntDoImport(event){
             }
             if (d.companyInfo && typeof d.companyInfo === 'object') {
                 companyInfo = (typeof _ntKeepImages==='function') ? _ntKeepImages(d.companyInfo, companyInfo) : d.companyInfo;
-                localStorage.setItem('treasury_company_info', JSON.stringify(companyInfo));
+                ntFlushCompanyInfo();
             }
 
             // ===== Restore NT module data =====
@@ -15412,7 +15629,7 @@ function ntRestoreSnapshot(dateKey) {
         if (s.customers)    { customers = s.customers; safeSetLocalStorage('treasury_customers_pro', JSON.stringify(customers)); }
         if (s.branches)     { branches = s.branches; localStorage.setItem('treasury_branches_pro', JSON.stringify(branches)); }
         if (s.categories)   { categories = s.categories; localStorage.setItem('treasury_categories_pro', JSON.stringify(categories)); }
-        if (s.companyInfo)  { companyInfo = (typeof _ntKeepImages==='function') ? _ntKeepImages(s.companyInfo, companyInfo) : s.companyInfo; localStorage.setItem('treasury_company_info', JSON.stringify(companyInfo)); }
+        if (s.companyInfo)  { companyInfo = (typeof _ntKeepImages==='function') ? _ntKeepImages(s.companyInfo, companyInfo) : s.companyInfo; ntFlushCompanyInfo(); }
         if (s.nt_quotations)    nt_quotations    = s.nt_quotations;
         if (s.nt_budgetCalcs)   nt_budgetCalcs   = s.nt_budgetCalcs;
         if (s.nt_budgetPropols) nt_budgetPropols = s.nt_budgetPropols;
