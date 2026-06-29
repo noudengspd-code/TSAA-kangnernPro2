@@ -471,14 +471,14 @@
 <button onclick="switchTab('budget-proposal')" id="btn-budget-proposal" class="menu-btn flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-700 hover:text-white w-full text-left">
     <i class="fa-solid fa-file-signature w-5 text-lime-400"></i> ໃບສະເໜີຂໍງົບປະມານ
 </button>
-<button onclick="switchTab('proposal-letter')" id="btn-proposal-letter" class="menu-btn flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-700 hover:text-white w-full text-left">
-    <i class="fa-solid fa-envelope-open-text w-5 text-teal-400"></i> ໜັງສືສະເໜີ
-</button>
 <button onclick="switchTab('doc-tracker')" id="btn-doc-tracker" class="menu-btn flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-700 hover:text-white w-full text-left">
     <i class="fa-solid fa-table-list w-5 text-sky-400"></i> ຕິດຕາມໃບ IV, RV
 </button>
 <button onclick="switchTab('contract-track')" id="btn-contract-track" class="menu-btn flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-700 hover:text-white w-full text-left">
     <i class="fa-solid fa-handshake w-5 text-rose-400"></i> ສັນຍາ & ລະດັບລູກຄ້າ
+</button>
+<button onclick="switchTab('contract-builder')" id="btn-contract-builder" class="menu-btn flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-700 hover:text-white w-full text-left">
+    <i class="fa-solid fa-file-signature w-5 text-indigo-400"></i> ສ້າງສັນຍາ
 </button>
 <button onclick="switchTab('aftersales')" id="btn-aftersales" class="menu-btn flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-700 hover:text-white w-full text-left">
     <i class="fa-solid fa-headset w-5 text-fuchsia-400"></i> ບໍລິການຫຼັງການຂາຍ
@@ -873,111 +873,6 @@
                     </div>
                 </div>
 
-                <!-- ===== ຕາຕະລາງຕິດຕາມຍອດເງິນທະນາຄານ (standalone reconciliation, not linked to program data) ===== -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-                        <div>
-                            <h3 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-building-columns mr-2 text-cyan-600"></i>ຕາຕະລາງຕິດຕາມຍອດເງິນທະນາຄານ</h3>
-                            <p class="text-xs text-gray-500">ລະບົບແຍກຕ່າງຫາກ (ບໍ່ກ່ຽວກັບຂໍ້ມູນໂປຣແກຣມ) — ນຳເຂົ້າ/ບັນທຶກ ເພື່ອຄິດໄລ່ ແລະ ສົມທຽບກັບຍອດເງິນຕົວຈິງໃນທະນາຄານ</p>
-                        </div>
-                        <div class="flex gap-2 flex-wrap no-print">
-                            <label class="bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer">
-                                <i class="fa-solid fa-file-import"></i> ນຳເຂົ້າຟາຍ
-                                <input type="file" accept=".xlsx,.xls,.csv" onchange="ntBankTrackImport(event)" class="hidden">
-                            </label>
-                            <button onclick="ntBankTrackTemplate()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2"><i class="fa-solid fa-download"></i> ແບບຟອມ</button>
-                            <button onclick="ntBankTrackToggleForm()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2"><i class="fa-solid fa-plus"></i> ເພີ່ມແຖວ</button>
-                            <button onclick="ntBankTrackClear()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2"><i class="fa-solid fa-trash"></i> ລ້າງ</button>
-                            <button onclick="showExportMenu('printBankTrackArea','ຕິດຕາມຍອດທະນາຄານ')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2"><i class="fa-solid fa-print"></i> ພິມ</button>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2 mb-4 no-print">
-                        <label class="text-xs font-bold text-gray-700 flex-shrink-0"><i class="fa-solid fa-code-branch mr-1 text-cyan-600"></i>ສາຂາ:</label>
-                        <select id="bankTrackBranch" onchange="ntBankTrackSwitchBranch()" class="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium flex-1 max-w-xs focus:outline-none focus:border-cyan-500"></select>
-                        <span class="text-[11px] text-gray-400">ແຕ່ລະສາຂາ ມີຍອດ/ລາຍການ ແຍກກັນ</span>
-                    </div>
-
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 no-print">
-                        <div class="bg-slate-50 border border-gray-200 rounded-xl p-3">
-                            <label class="block text-[11px] font-bold text-gray-600 mb-1">ຍອດຍົກມາ (ຕົ້ນງວດ)</label>
-                            <input type="number" id="bankTrackOpening" oninput="ntSetBankOpening(this.value)" placeholder="0" class="w-full bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-right font-mono">
-                        </div>
-                        <div class="bg-cyan-50 border border-cyan-200 rounded-xl p-3">
-                            <label class="block text-[11px] font-bold text-gray-600 mb-1">ຍອດຄິດໄລ່ (ຕາມຕາຕະລາງ)</label>
-                            <p id="bankTrackComputed" class="text-sm font-bold text-cyan-700 text-right font-mono">0</p>
-                        </div>
-                        <div class="bg-slate-50 border border-gray-200 rounded-xl p-3">
-                            <label class="block text-[11px] font-bold text-gray-600 mb-1">ຍອດຕົວຈິງ (ທະນາຄານ)</label>
-                            <input type="number" id="bankTrackActual" oninput="ntSetBankActual(this.value)" placeholder="0" class="w-full bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-right font-mono">
-                        </div>
-                        <div id="bankTrackDiffBox" class="bg-emerald-50 border border-emerald-200 rounded-xl p-3">
-                            <label class="block text-[11px] font-bold text-gray-600 mb-1">ຜົນຕ່າງ</label>
-                            <p id="bankTrackDiff" class="text-sm font-bold text-emerald-700 text-right font-mono">0</p>
-                        </div>
-                    </div>
-
-                    <div id="bankTrackForm" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-3 mb-4 no-print">
-                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
-                            <input type="date" id="btfDate" class="border border-gray-200 rounded-lg px-2 py-1.5 text-xs" title="ວັນທີ">
-                            <input type="text" id="btfContract" placeholder="ເລກສັນຍາ" class="border border-gray-200 rounded-lg px-2 py-1.5 text-xs">
-                            <input type="text" id="btfContent" placeholder="ເນື້ອໃນ" class="border border-gray-200 rounded-lg px-2 py-1.5 text-xs">
-                            <input type="text" id="btfType" placeholder="ປະເພດທຸລະກຳ" class="border border-gray-200 rounded-lg px-2 py-1.5 text-xs">
-                            <input type="text" id="btfCode" placeholder="ລະຫັດຊຳລະ" class="border border-gray-200 rounded-lg px-2 py-1.5 text-xs">
-                            <input type="number" id="btfDebit" placeholder="ໜີ້ (ຈ່າຍ)" class="border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-right">
-                            <input type="number" id="btfCredit" placeholder="ມີ (ຮັບ)" class="border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-right">
-                        </div>
-                        <div class="flex justify-end mt-2">
-                            <button onclick="ntBankTrackAddManual()" class="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold"><i class="fa-solid fa-check mr-1"></i>ເພີ່ມ</button>
-                        </div>
-                    </div>
-
-                    <div id="printBankTrackArea" class="print-active-area">
-                        <div class="flex justify-between items-start border-b-2 border-slate-800 pb-3 mb-4 nt-doc-header">
-                            <div class="flex items-center gap-3">
-                                <img id="bankTrackLogo" src="" class="h-12 hidden" alt="">
-                                <div>
-                                    <p id="bankTrackCoName" class="font-bold text-slate-800 text-base">ບໍລິສັດ</p>
-                                    <p class="text-[11px] text-slate-500">ຕາຕະລາງຕິດຕາມຍອດເງິນທະນາຄານ</p>
-                                </div>
-                            </div>
-                            <div class="text-right text-slate-500 text-[11px]">
-                                <p>ວັນທີພິມ: <span id="bankTrackPrintDate">-</span></p>
-                            </div>
-                        </div>
-                        <div class="text-center mb-4">
-                            <h2 class="text-lg font-bold text-slate-900">ຕາຕະລາງຕິດຕາມຍອດເງິນທະນາຄານ</h2>
-                            <p class="text-xs text-gray-600">Bank Balance Tracking</p>
-                        </div>
-                        <table class="w-full border-collapse border border-gray-300 text-[11px] text-left min-w-[900px]">
-                            <thead>
-                                <tr class="bg-gray-100 text-slate-800 text-center font-bold">
-                                    <th class="border border-gray-300 py-2 px-2 w-10">ລ/ດ</th>
-                                    <th class="border border-gray-300 py-2 px-2">ວັນທີເດືອນປີ</th>
-                                    <th class="border border-gray-300 py-2 px-2">ເລກສັນຍາ</th>
-                                    <th class="border border-gray-300 py-2 px-3">ເນື້ອໃນ</th>
-                                    <th class="border border-gray-300 py-2 px-2">ປະເພດທຸລະກຳ</th>
-                                    <th class="border border-gray-300 py-2 px-2">ລະຫັດຊຳລະເງິນ</th>
-                                    <th class="border border-gray-300 py-2 px-2 text-right">ໜີ້</th>
-                                    <th class="border border-gray-300 py-2 px-2 text-right">ມີ</th>
-                                    <th class="border border-gray-300 py-2 px-2 text-right">ຍອດຄົງເຫຼືອ</th>
-                                    <th class="border border-gray-300 py-2 px-2 no-print w-8"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="bankTrackTableBody" class="divide-y divide-gray-200"></tbody>
-                            <tfoot>
-                                <tr class="bg-slate-100 font-bold text-slate-900">
-                                    <td colspan="6" class="border border-gray-300 py-2 px-2 text-right">ລວມ</td>
-                                    <td id="bankTrackTotalDebit" class="border border-gray-300 py-2 px-2 text-right text-rose-700">0</td>
-                                    <td id="bankTrackTotalCredit" class="border border-gray-300 py-2 px-2 text-right text-emerald-700">0</td>
-                                    <td id="bankTrackTotalBalance" class="border border-gray-300 py-2 px-2 text-right text-cyan-700">0</td>
-                                    <td class="border border-gray-300 no-print"></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                        <div class="nt-sig-slot-area mt-12" data-key="banktrack" data-roles="ຜູ້ບັນທຶກ,ຫົວໜ້າບັນຊີ,ຜູ້ອຳນວຍການ"></div>
-                    </div>
-                </div>
             </div>
 
             <!-- TAB: LAO GAAP PERFORMANCE STATEMENT -->
@@ -1638,30 +1533,6 @@
                         <button onclick="openSigBankModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold no-print whitespace-nowrap"><i class="fa-solid fa-folder-open mr-1"></i>ຈັດການຄັງລາຍເຊັນ</button>
                     </div>
                 </div>
-                <!-- STAFF ROLES / DUTIES (add-only: cannot edit or delete) -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <div class="nt-header-slot" data-title="ໜ້າທີ່ຂອງພະນັກງານ (Staff Duties)"></div>
-                    <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
-                        <p class="text-xs text-gray-500"><i class="fa-solid fa-circle-info mr-1 text-indigo-500"></i>ບັນທຶກໜ້າທີ່ຮັບຜິດຊອບຂອງພະນັກງານ. ສາມາດ <b>ເພີ່ມໄດ້</b> ເທົ່ານັ້ນ — ບໍ່ສາມາດແກ້ໄຂ ຫຼື ລົບ (ເພື່ອຮັກສາຄວາມໂປ່ງໃສ).</p>
-                        <button onclick="openStaffDutyModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold no-print"><i class="fa-solid fa-plus mr-1"></i>ເພີ່ມພະນັກງານ</button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-xs border-collapse min-w-[700px]">
-                            <thead><tr class="bg-slate-800 text-white">
-                                <th class="p-2 text-center w-10">ລ/ດ</th>
-                                <th class="p-2 text-left">ຊື່ ແລະ ນາມສະກຸນ</th>
-                                <th class="p-2 text-left">ຕຳແໜ່ງ</th>
-                                <th class="p-2 text-left">ສາຂາ</th>
-                                <th class="p-2 text-left">ໜ້າທີ່ຮັບຜິດຊອບ</th>
-                                <th class="p-2 text-center">ວັນທີ່ບັນທຶກ</th>
-                            </tr></thead>
-                            <tbody id="staffDutyTableBody">
-                                <tr><td colspan="6" class="text-center text-gray-400 py-6">ຍັງບໍ່ມີຂໍ້ມູນ</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="nt-sig-slot-area" data-key="staffduty" data-roles="ຜູ້ບັນທຶກ,ຫົວໜ້າພະແນກ,ຜູ້ອຳນວຍການ"></div>
-                </div>
 
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-8">
                     
@@ -2167,6 +2038,7 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-600 mb-1"><i class="fa-solid fa-paperclip mr-1 text-cyan-600"></i>ໃບເຊັດ/ຫຼັກຖານອ້າງອີງ (ຮູບ)</label>
                         <input type="file" id="bcReceiptFile" accept="image/*" onchange="uploadBase64Image(event,'bcReceipt')" class="text-xs w-full bg-white border border-gray-200 rounded-lg px-2 py-1.5">
+                        <div class="flex items-center gap-1 mt-1"><span class="text-[10px] text-gray-400 flex-shrink-0"><i class="fa-solid fa-link"></i> ຫຼື ລິ້ງ/Drive:</span><input type="url" oninput="ntSetUploadedImageUrl('bcReceipt', this.value)" placeholder="https://... ຫຼື ລິ້ງ Google Drive" class="flex-1 bg-gray-50 border border-gray-200 rounded px-2 py-1 text-[11px] font-mono"></div>
                         <img id="bcReceiptPreview" class="max-h-32 mt-2 rounded border hidden" alt="">
                     </div>
                     <div class="flex gap-2 justify-end">
@@ -2375,6 +2247,7 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-600 mb-1"><i class="fa-solid fa-paperclip mr-1 text-lime-600"></i>ໃບເຊັດ/ຫຼັກຖານອ້າງອີງ (ຮູບ)</label>
                         <input type="file" id="bpReceiptFile" accept="image/*" onchange="uploadBase64Image(event,'bpReceipt')" class="text-xs w-full bg-white border border-gray-200 rounded-lg px-2 py-1.5">
+                        <div class="flex items-center gap-1 mt-1"><span class="text-[10px] text-gray-400 flex-shrink-0"><i class="fa-solid fa-link"></i> ຫຼື ລິ້ງ/Drive:</span><input type="url" oninput="ntSetUploadedImageUrl('bpReceipt', this.value)" placeholder="https://... ຫຼື ລິ້ງ Google Drive" class="flex-1 bg-gray-50 border border-gray-200 rounded px-2 py-1 text-[11px] font-mono"></div>
                         <img id="bpReceiptPreview" class="max-h-32 mt-2 rounded border hidden" alt="">
                     </div>
                     <div class="flex gap-2 justify-end">
@@ -2457,125 +2330,75 @@
 <!-- ============================================================ -->
 <!-- TAB: PROPOSAL LETTER (ໜັງສືສະເໜີ)                          -->
 <!-- ============================================================ -->
-<div id="tab-proposal-letter" class="tab-content hidden space-y-6">
-    <div class="bg-gradient-to-r from-teal-800 to-slate-900 text-white p-6 rounded-2xl shadow-sm">
-        <h2 class="text-lg font-bold"><i class="fa-solid fa-envelope-open-text mr-2"></i>ໜັງສືສະເໜີ</h2>
-        <p class="text-xs text-teal-200 mt-1">ສ້າງໜັງສືສະເໜີຂໍອະນຸມັດງົບປະມານ — ເຊື່ອມຍອດເງິນຈາກໃບຄິດໄລ່ໂດຍເລືອກເລກທີ</p>
-    </div>
+            <div id="tab-contract-builder" class="tab-content hidden space-y-6">
+                <style>.cb-in{width:100%;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:5px 8px;font-size:12px}</style>
+                <div class="bg-gradient-to-r from-indigo-800 to-slate-900 text-white p-6 rounded-2xl shadow-lg flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-xl font-bold"><i class="fa-solid fa-file-signature mr-2"></i>ສ້າງສັນຍາ</h2>
+                        <p class="text-xs text-indigo-200">ສ້າງເອກະສານສັນຍາ — ພິມຊ່ອງດຽວ (ປີ/ຊື່ບໍລິສັດ) ເຕີມໃຫ້ທຸກບ່ອນອັດຕະໂນມັດ · ແຍກຕາມປະເພດ ແລະ ພາສາ</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <select id="cbTypeSel" onchange="ntCBSwitchType(this.value)" class="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-xs text-white"></select>
+                        <div id="cbLangBtns" class="flex gap-1"></div>
+                        <button onclick="ntCBNew()" class="bg-white/15 hover:bg-white/25 px-3 py-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>ໃໝ່</button>
+                        <button onclick="ntCBSave()" class="bg-emerald-500 hover:bg-emerald-600 px-3 py-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-floppy-disk mr-1"></i>ບັນທຶກ</button>
+                        <button onclick="ntCBPrint()" class="bg-amber-500 hover:bg-amber-600 px-3 py-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>ພິມ/PDF</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-3" style="max-height:80vh;overflow-y:auto">
+                        <h3 class="font-bold text-slate-800 text-sm border-b pb-2"><i class="fa-solid fa-pen-to-square mr-1 text-indigo-500"></i>ຂໍ້ມູນສັນຍາ</h3>
+                        <div>
+                            <label class="text-[11px] text-gray-500">ສາຂາ (ສຳລັບລັນເລກທີ)</label>
+                            <select id="cb_branch" class="cb-in"></select>
+                        </div>
+                        <div class="flex gap-1 items-end">
+                            <div class="flex-1"><label class="text-[11px] text-gray-500">ເລກທີ (ລັນອັດຕະໂນມັດ: ສາຂາ+ປປດດ+ລຳດັບ)</label><input id="cb_contractNo" oninput="ntCBRender()" placeholder="B1-2506-001" class="cb-in"></div>
+                            <button onclick="ntCBGenNumber()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>ສ້າງເລກ</button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div><label class="text-[11px] text-gray-500">ປະຈຳປີ</label><select id="cb_year" onchange="ntCBRender()" class="cb-in"></select></div>
+                            <div><label class="text-[11px] text-gray-500">ວັນທີສ້າງ</label><input type="date" id="cb_createdDate" onchange="ntCBRender()" class="cb-in"></div>
+                            <div><label class="text-[11px] text-emerald-600 font-bold">ມື້ເຊັນສັນຍາ</label><input type="date" id="cb_signDate" onchange="ntCBRender()" class="cb-in" style="border-color:#6ee7b7"></div>
+                        </div>
+                        <p class="text-[10px] text-emerald-600">* ໃສ່ "ມື້ເຊັນສັນຍາ" ແລ້ວບັນທຶກ → ສັນຍາຈະຖືກໝາຍ "ເຊັນແລ້ວ" ແລະ ແລ່ນເຂົ້າຕາຕະລາງຕິດຕາມ</p>
+                        <p class="text-xs font-bold text-gray-600 pt-1 border-t">ຝ່າຍ ຂ (ລູກຄ້າ)</p>
+                        <div><label class="text-[11px] text-gray-500">ຊື່ບໍລິສັດ <span class="text-indigo-400">(ເລືອກຈາກລາຍຊື່ລູກຄ້າ)</span></label><input id="cb_clientCompany" list="cbCustomerDL" oninput="ntCBClientPicked()" placeholder="ພິມ ຫຼື ເລືອກ..." class="cb-in"><datalist id="cbCustomerDL"></datalist></div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="text-[11px] text-gray-500">ຕ່າງໜ້າໂດຍ ທ່ານ</label><input id="cb_clientRep" oninput="ntCBRender()" class="cb-in"></div>
+                            <div><label class="text-[11px] text-gray-500">ຕຳແໜ່ງ (ຜູ້...)</label><input id="cb_clientPosition" oninput="ntCBRender()" placeholder="ອຳນວຍການ" class="cb-in"></div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div><label class="text-[11px] text-gray-500">ບ້ານ</label><input id="cb_clientVillage" oninput="ntCBRender()" class="cb-in"></div>
+                            <div><label class="text-[11px] text-gray-500">ເມືອງ</label><input id="cb_clientDistrict" oninput="ntCBRender()" class="cb-in"></div>
+                            <div><label class="text-[11px] text-gray-500">ແຂວງ</label><input id="cb_clientProvince" oninput="ntCBRender()" class="cb-in"></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div><label class="text-[11px] text-gray-500">ຜູ້ປະສານງານ (ທ່ານ)</label><input id="cb_clientCoord" oninput="ntCBRender()" class="cb-in"></div>
+                            <div><label class="text-[11px] text-gray-500">ເບີໂທຜູ້ປະສານງານ</label><input id="cb_clientCoordPhone" oninput="ntCBRender()" placeholder="020 ..." class="cb-in"></div>
+                        </div>
+                        <p class="text-xs font-bold text-gray-600 pt-1 border-t flex items-center justify-between">ຄ່າບໍລິການ <span class="font-normal text-[10px] text-gray-400">ອມພ 10% + ລວມ ຄິດອັດຕະໂນມັດ</span><button onclick="ntCBAddCostRow()" class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-[11px] font-bold"><i class="fa-solid fa-plus"></i> ເພີ່ມແຖວ</button></p>
+                        <div id="cbCostRows"></div>
+                        <div class="pt-1 border-t">
+                            <div class="flex items-center justify-between">
+                                <p class="text-xs font-bold text-gray-600">ຂັ້ນຕອນຊຳລະ (%)</p>
+                                <button onclick="ntCBAddPayRow()" class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-[11px] font-bold"><i class="fa-solid fa-plus"></i> ເພີ່ມແຖວ</button>
+                            </div>
+                            <div class="flex gap-1 items-center my-1">
+                                <select id="cbPayPresetSel" onchange="ntCBApplyPayPreset(this.value)" class="flex-1 bg-white border border-gray-200 rounded px-2 py-1 text-xs"></select>
+                                <button onclick="ntCBSavePayPreset()" class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-[11px] font-bold whitespace-nowrap" title="ບັນທຶກຊຸດປັດຈຸບັນໄວ້ໃຊ້ຄືນ"><i class="fa-solid fa-floppy-disk"></i> ບັນທຶກຊຸດ</button>
+                            </div>
+                            <div id="cbPayRows"></div>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-sm border-b pb-2 pt-2"><i class="fa-solid fa-list-check mr-1 text-amber-500"></i>ຕາຕະລາງຕິດຕາມ (ແຍກປະເພດ/ປີ)</h3>
+                        <div id="cbSavedList" class="space-y-1"></div>
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded-2xl border border-gray-200" style="max-height:80vh;overflow-y:auto">
+                        <div id="cbPreview" class="bg-white shadow p-8 rounded mx-auto" style="max-width:800px"></div>
+                    </div>
+                </div>
+            </div>
 
-    <!-- DATA ENTRY FORM -->
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <h3 class="text-sm font-bold text-slate-800 mb-4 uppercase tracking-wider"><i class="fa-solid fa-pen-to-square mr-2 text-teal-600"></i>ຄີຂໍ້ມູນໜັງສືສະເໜີ</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div>
-                <label class="block text-xs font-bold text-gray-600 mb-1">ສາຂາ <span class="text-rose-500">*</span></label>
-                <select id="plBranch" onchange="plOnBranchChange()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs"><option value="">-- ເລືອກສາຂາ --</option></select>
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-gray-600 mb-1">ເລກທີ (ລັນອັດຕະໂນມັດ)</label>
-                <input type="text" id="plNumber" readonly class="w-full bg-slate-100 border border-gray-200 rounded-lg px-3 py-2 text-xs font-bold text-teal-700">
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-gray-600 mb-1">ວັນທີ <span class="text-rose-500">*</span></label>
-                <input type="date" id="plDate" onchange="plRefreshNumber()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs">
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-gray-600 mb-1">ສະຖານທີ່ (ທີ່,...)</label>
-                <input type="text" id="plPlace" placeholder="ຕ.ຢ: ຈຳປາສັກ" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs">
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-gray-600 mb-1">ພະແນກ</label>
-                <input type="text" id="plDept" value="ບໍລິຫານ" placeholder="ຕ.ຢ: ບໍລິຫານ" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs">
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-gray-600 mb-1">ຮຽນ (ຫາໃຜ)</label>
-                <input type="text" id="plTo" value="ທ່ານ ຜູ້ອຳນວຍການ TSAA ຈຳກັດ" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs">
-            </div>
-            <div class="md:col-span-3">
-                <label class="block text-xs font-bold text-gray-600 mb-1">ເລື່ອງ</label>
-                <input type="text" id="plSubject" value="ຂໍອະນຸມັດງົບປະມານ" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs">
-            </div>
-            <div class="md:col-span-3">
-                <label class="block text-xs font-bold text-gray-600 mb-1">ອີງຕາມ (ແຕ່ລະຂໍ້ ຂຶ້ນແຖວໃໝ່)</label>
-                <textarea id="plRefs" rows="3" placeholder="ຕ.ຢ:&#10;ກົດລະບຽບບໍລິສັດ.&#10;ຂໍ້ຕົກລົງແຕ່ງຕັ້ງຫົວໜ້າຄະນະບໍລິຫານ ສະບັບເລກທີ 2511001TSAA ລົງວັນທີ 14/11/2025" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs"></textarea>
-            </div>
-            <div class="md:col-span-3">
-                <label class="block text-xs font-bold text-gray-600 mb-1">ເນື້ອໃນ / ລາຍລະອຽດ</label>
-                <textarea id="plBody" rows="3" placeholder="ຕ.ຢ: ແຕ່ງຕັ້ງທີມງານ ພະນັກງານຂຶ້ນມາເຮັດວຽກປິດບັນຊີ ຢູ່ນະຄອນຫຼວງວຽງຈັນ" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs"></textarea>
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-gray-600 mb-1">ເຊື່ອມຈາກໃບຄິດໄລ່ (ດຶງຍອດເງິນ)</label>
-                <select id="plCalcRef" onchange="plPullCalcTotal()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-2 py-2 text-xs"><option value="">-- ບໍ່ເຊື່ອມ / ໃສ່ເອງ --</option></select>
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-gray-600 mb-1">ຈຳນວນເງິນ <span class="text-rose-500">*</span></label>
-                <input type="number" id="plAmount" placeholder="6200000" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs font-extrabold">
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-gray-600 mb-1">ສະກຸນ</label>
-                <select id="plCurrency" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-2 py-2 text-xs">
-                    <option value="LAK">ກີບ (LAK)</option>
-                    <option value="THB">ບາດ (THB)</option>
-                    <option value="USD">ໂດລາ (USD)</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-gray-600 mb-1">ສະຖານະ</label>
-                <select id="plStatus" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-2 py-2 text-xs">
-                    <option value="pending">ລໍຖ້າອະນຸມັດ</option>
-                    <option value="approved">ອະນຸມັດແລ້ວ</option>
-                    <option value="rejected">ບໍ່ອະນຸມັດ</option>
-                </select>
-            </div>
-        </div>
-        <div class="flex gap-2 mt-4 flex-wrap">
-            <button onclick="savePlLetter()" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm"><i class="fa-solid fa-floppy-disk mr-1"></i>ບັນທຶກ</button>
-            <button onclick="resetPlForm()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2 rounded-xl text-xs font-bold"><i class="fa-solid fa-eraser mr-1"></i>ລ້າງຟອມ</button>
-            <button onclick="showExportMenu('plPrintArea','ໜັງສືສະເໜີ')" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm no-print"><i class="fa-solid fa-print mr-1"></i>ພິມ/ສົ່ງອອກ</button>
-        </div>
-    </div>
-
-    <!-- PRINT PREVIEW -->
-    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-        <div id="plPrintArea"><div class="text-center text-gray-400 py-12"><i class="fa-solid fa-envelope-open-text text-5xl mb-3 block"></i><p>ຄີຂໍ້ມູນ ແລ້ວກົດ "ບັນທຶກ" ເພື່ອເບິ່ງຕົວຢ່າງ</p></div></div>
-    </div>
-
-    <!-- TRACKING TABLE -->
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-            <h3 class="text-base font-bold text-gray-800"><i class="fa-solid fa-table-list mr-2 text-teal-600"></i>ຕາຕະລາງຕິດຕາມໜັງສືສະເໜີ</h3>
-            <div class="flex gap-2 flex-wrap">
-                <input type="month" id="plTrackMonth" onchange="renderPlTracking()" class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 no-print">
-                <select id="plTrackBranch" onchange="renderPlTracking()" class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 no-print"><option value="all">ທຸກສາຂາ</option></select>
-                <button onclick="showExportMenu('plTrackingArea','ຕິດຕາມໜັງສືສະເໜີ')" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded-lg no-print"><i class="fa-solid fa-download mr-1"></i>ສົ່ງອອກ / ພິມ</button>
-            </div>
-        </div>
-        <div id="plTrackingArea">
-            <div class="nt-header-slot" data-title="ໃບລາຍງານ ຕິດຕາມໜັງສືສະເໜີ"></div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs border-collapse min-w-[900px]">
-                    <thead><tr class="bg-slate-800 text-white">
-                        <th class="border border-gray-200 p-1.5">ລ/ດ</th>
-                        <th class="border border-gray-200 p-1.5 text-left">ເລກທີ</th>
-                        <th class="border border-gray-200 p-1.5 text-center">ວັນທີ</th>
-                        <th class="border border-gray-200 p-1.5 text-left">ເລື່ອງ</th>
-                        <th class="border border-gray-200 p-1.5 text-left">ເນື້ອໃນ</th>
-                        <th class="border border-gray-200 p-1.5 text-left">ໃບຄິດໄລ່</th>
-                        <th class="border border-gray-200 p-1.5 text-right">ຈຳນວນເງິນ</th>
-                        <th class="border border-gray-200 p-1.5 text-center">ສະຖານະ</th>
-                        <th class="border border-gray-200 p-1.5 text-center no-print">ຈັດການ</th>
-                    </tr></thead>
-                    <tbody id="plTrackingBody"><tr><td colspan="9" class="text-center text-gray-400 py-6">ຍັງບໍ່ມີຂໍ້ມູນ</td></tr></tbody>
-                </table>
-            </div>
-            <div class="nt-sig-slot-area" data-key="pltrack" data-roles="ຜູ້ສະເໜີ,ຫົວໜ້າພະແນກ,ຜູ້ອຳນວຍການ"></div>
-        </div>
-    </div>
-</div>
-
-<!-- ============================================================ -->
-<!-- TAB: DOCUMENT TRACKER (ຕາຕະລາງຕິດຕາມໃບເອກະສານ)           -->
-<!-- ============================================================ -->
 <div id="tab-doc-tracker" class="tab-content hidden space-y-6">
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
@@ -2685,6 +2508,15 @@
                     <i class="fa-solid fa-print"></i> ພິມ
                 </button>
             </div>
+        </div>
+
+        <!-- Contract documents from the Contract Builder -->
+        <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 mb-6">
+            <div class="flex items-center justify-between mb-2">
+                <h4 class="font-bold text-indigo-800 text-sm"><i class="fa-solid fa-file-signature mr-1"></i>ເອກະສານສັນຍາ (ຈາກໂມດູນສ້າງສັນຍາ)</h4>
+                <button onclick="switchTab('contract-builder')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>ສ້າງສັນຍາໃໝ່</button>
+            </div>
+            <div id="cbDocTrackerInContract" class="space-y-1"></div>
         </div>
 
         <!-- Level legend -->
@@ -3008,9 +2840,9 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 mb-1">ລິ້ງສັນຍາ <span class="text-[10px] font-normal text-gray-400">(ບໍ່ບັງຄັບ — ສຳລັບຫັກລົບ/ຕິດຕາມ)</span></label>
-                        <select id="invFormContractLink" onchange="ntInvContractLinkChange()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-2 py-2 text-xs">
-                            <option value="">— ບໍ່ລິ້ງສັນຍາ —</option>
-                        </select>
+                        <input type="text" id="invFormContractLink" list="invContractDL" oninput="ntInvContractLinkChange()" placeholder="ພິມເພື່ອຄົ້ນ/ກອງ ສັນຍາ... (ຫຼື ປະວ່າງ = ບໍ່ລິ້ງ)" autocomplete="off" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-2 py-2 text-xs">
+                        <datalist id="invContractDL"></datalist>
+                        <input type="hidden" id="invFormContractLinkId" value="">
                         <datalist id="invContractItemsList"></datalist>
                     </div>
                     <div>
@@ -3226,6 +3058,7 @@
                         <i class="fa-solid fa-cloud-arrow-up text-gray-400 text-2xl mb-1"></i>
                         <p class="text-xs text-gray-400">ກົດເພື່ອອັບໂຫຼດ ຫຼື ຖ່າຍຮູບໃບບິນ</p>
                         <input type="file" id="formImage" accept="image/*" class="hidden" onchange="previewImage(event)">
+                        <div class="flex items-center gap-1 mt-1 no-print"><span class="text-[10px] text-gray-400 flex-shrink-0"><i class="fa-solid fa-link"></i> ຫຼື ລິ້ງ/Drive:</span><input type="url" oninput="ntSetUploadedImageUrl('txn', this.value)" placeholder="https://... ຫຼື ລິ້ງ Google Drive" class="flex-1 bg-gray-50 border border-gray-200 rounded px-2 py-1 text-[11px] font-mono"></div>
                         <div id="imagePreviewContainer" class="hidden mt-2 flex justify-center">
                             <img id="imagePreview" src="" class="max-h-24 rounded shadow-sm border">
                         </div>
@@ -3603,7 +3436,7 @@
         // snapshot lacks it), deletions must be tracked explicitly so they still propagate across
         // devices. nt_deletions maps a record id → the time it was deleted. A record is removed
         // only when a tombstone is at least as new as the record's last edit.
-        var nt_deletions = (function(){ try { return JSON.parse(localStorage.getItem('nt_deletions')||'{}'); } catch(_) { return {}; } })();
+        var nt_deletions = (function(){ try { return _ntJP('nt_deletions', {}); } catch(_) { return {}; } })();
         function ntMarkDeleted(ids) {
             const list = Array.isArray(ids) ? ids : [ids];
             const now = Date.now();
@@ -3647,7 +3480,26 @@
         // single document exactly as before. When it grows large, the big record arrays overflow into
         // extra documents (main_data_o1, _o2, …) so no single document is ever too big → "full" can't
         // happen on the cloud side, no matter how much data accumulates (ideal for the Blaze plan).
-        var NT_SHARD_MAX = 850000;                  // ~850 KB ceiling per document (safe under 1 MiB)
+        // Safe localStorage JSON parse: never throws (a corrupt/truncated value — e.g. from a past
+        // quota-full write — would otherwise throw at load and blank the entire app). Self-heals by
+        // clearing the bad value; the cloud sync restores it on next snapshot.
+        function _ntJP(key, fallback) {
+            var raw;
+            try { raw = localStorage.getItem(key); } catch (e) { return fallback; }
+            if (raw === null || raw === undefined || raw === '') return fallback;
+            try { var v = JSON.parse(raw); return (v === null || v === undefined) ? fallback : v; }
+            catch (e) {
+                try { console.warn('NT: corrupt localStorage[' + key + '] cleared'); } catch (_) {}
+                try { localStorage.removeItem(key); } catch (_) {}
+                return fallback;
+            }
+        }
+        var NT_SHARD_MAX = 800000;                  // ~800 KB ceiling per document, measured in UTF-8 BYTES (safe under Firestore's 1,048,576-byte limit, with margin for shard wrappers + the _ovf field)
+        // Firestore's 1 MiB limit is in UTF-8 BYTES, not JS string length. Lao text is 1 JS char but 3
+        // UTF-8 bytes, so JSON.stringify(x).length badly UNDER-counts for Lao-heavy data → a doc measured
+        // as "850 KB" was really ~1.05 MB and got rejected. Always measure real byte size.
+        function _ntByteLen(s){ try { return new TextEncoder().encode(s).length; } catch(_) { try { return unescape(encodeURIComponent(s)).length; } catch(e){ return (s||'').length; } } }
+        function _ntJBytes(o){ try { return _ntByteLen(JSON.stringify(o)); } catch(_) { return Infinity; } }
         var NT_SHARD_COLS = ['transactions','invoices','aps','nt_quotations','nt_budgetCalcs','nt_budgetPropols','nt_contracts','nt_contactLogs','nt_aftersales','nt_costTrack','nt_proposalLetters','nt_staffDuties'];
         function _ntShrinkRecord(rec) {
             // Last-resort: a single record must never exceed the per-document cap on its own.
@@ -3655,12 +3507,12 @@
             if (!rec || typeof rec !== 'object') return rec;
             let copy = Object.assign({}, rec);
             let guard = 0;
-            while (JSON.stringify(copy).length >= NT_SHARD_MAX && guard++ < 60) {
+            while (_ntJBytes(copy) >= NT_SHARD_MAX && guard++ < 60) {
                 let bigK = null, bigL = 0;
                 for (const k in copy) {
                     if (k === 'id' || k === '_lm') continue;
                     const v = copy[k];
-                    const l = (typeof v === 'string') ? v.length : (v && typeof v === 'object' ? JSON.stringify(v).length : 0);
+                    const l = (typeof v === 'string') ? _ntByteLen(v) : (v && typeof v === 'object' ? _ntJBytes(v) : 0);
                     if (l > bigL) { bigL = l; bigK = k; }
                 }
                 if (!bigK) break;
@@ -3670,35 +3522,58 @@
         }
         function _ntSplitPayload(payload) {
             const main = Object.assign({}, payload);
-            if (JSON.stringify(main).length < NT_SHARD_MAX) { main._ovf = 0; return { main: main, shards: [] }; }
-            // Pull the big collections out, then greedily refill main + overflow shards up to the cap.
-            const pools = {};
-            NT_SHARD_COLS.forEach(c => { pools[c] = Array.isArray(main[c]) ? main[c] : []; main[c] = []; });
+            if (_ntJBytes(main) < NT_SHARD_MAX) { main._ovf = 0; return { main: main, shards: [] }; }
+            // Pull EVERY large field out (arrays by element, keyed objects by key), then greedily refill
+            // main + overflow shards up to the cap. Nothing is ever wiped → all data reaches the cloud.
+            const META = { _ovf:1, _updatedBy:1, _stamp:1, updatedAt:1 };
+            const arrayPools = {};   // field -> array of records
+            const objPools = {};     // field -> array of [key, value] pairs
+            Object.keys(main).forEach(k => {
+                if (META[k]) return;
+                const v = main[k];
+                if (Array.isArray(v)) { arrayPools[k] = v; main[k] = []; }
+                else if (v && typeof v === 'object' && _ntJBytes(v) > 50000) { objPools[k] = Object.keys(v).map(kk => [kk, v[kk]]); main[k] = {}; }
+            });
             const shards = [];
             let cur = null;                          // null → still filling main
-            const fits = (obj) => JSON.stringify(obj).length < NT_SHARD_MAX;
-            NT_SHARD_COLS.forEach(col => {
-                pools[col].forEach(rec => {
-                    // Safety: never let a single oversized record block the shard (would exceed 1 MiB alone).
-                    if (JSON.stringify(rec).length >= NT_SHARD_MAX) rec = _ntShrinkRecord(rec);
+            const fits = (obj) => _ntJBytes(obj) < NT_SHARD_MAX;
+            const startShard = () => { cur = { _records: {}, _objRecords: {} }; shards.push(cur); };
+            // 1) Array collections — split by element
+            Object.keys(arrayPools).forEach(col => {
+                arrayPools[col].forEach(rec => {
+                    if (_ntJBytes(rec) >= NT_SHARD_MAX) rec = _ntShrinkRecord(rec);  // single huge record
                     if (cur === null) {
                         main[col].push(rec);
-                        if (!fits(main)) { main[col].pop(); cur = { _records: {} }; cur._records[col] = [rec]; shards.push(cur); }
+                        if (!fits(main)) { main[col].pop(); startShard(); cur._records[col] = [rec]; }
                     } else {
                         if (!cur._records[col]) cur._records[col] = [];
                         cur._records[col].push(rec);
-                        if (!fits(cur) && cur._records[col].length > 1) { cur._records[col].pop(); cur = { _records: {} }; cur._records[col] = [rec]; shards.push(cur); }
+                        if (!fits(cur) && cur._records[col].length > 1) { cur._records[col].pop(); startShard(); cur._records[col] = [rec]; }
                     }
                 });
             });
-            // Final safety: if main itself is still over the cap (a huge non-collection field), shrink it.
+            // 2) Large keyed objects (customers, branches, categories, tombstones...) — split by key
+            Object.keys(objPools).forEach(col => {
+                objPools[col].forEach(pair => {
+                    let val = pair[1];
+                    if (_ntJBytes(val) >= NT_SHARD_MAX && typeof _ntStripImages === 'function' && val && typeof val === 'object') val = _ntStripImages(val);
+                    if (cur === null) {
+                        main[col][pair[0]] = val;
+                        if (!fits(main)) { delete main[col][pair[0]]; startShard(); cur._objRecords[col] = {}; cur._objRecords[col][pair[0]] = val; }
+                    } else {
+                        if (!cur._objRecords[col]) cur._objRecords[col] = {};
+                        cur._objRecords[col][pair[0]] = val;
+                        if (!fits(cur) && Object.keys(cur._objRecords[col]).length > 1) { delete cur._objRecords[col][pair[0]]; startShard(); cur._objRecords[col] = {}; cur._objRecords[col][pair[0]] = val; }
+                    }
+                });
+            });
+            // 3) Last-resort: if main is STILL over the cap (many medium scalar fields), shrink big scalars.
             if (!fits(main)) {
                 for (const k in main) {
-                    if (NT_SHARD_COLS.indexOf(k) >= 0 || k === '_ovf' || k === '_updatedBy' || k === '_stamp') continue;
+                    if (META[k] || arrayPools[k] || objPools[k]) continue;
                     const v = main[k];
-                    if ((typeof v === 'string' && v.length > 40000) || (v && typeof v === 'object' && JSON.stringify(v).length > 200000)) {
-                        main[k] = (typeof v === 'string') ? '' : (Array.isArray(v) ? [] : {});
-                    }
+                    if (typeof v === 'string' && v.length > 40000) main[k] = '';
+                    else if (v && typeof v === 'object' && _ntJBytes(v) > 50000) { objPools[k] = Object.keys(v).map(kk => [kk, v[kk]]); main[k] = {}; objPools[k].forEach(pair => { if (cur === null) startShard(); if (!cur._objRecords[k]) cur._objRecords[k] = {}; cur._objRecords[k][pair[0]] = pair[1]; }); }
                 }
             }
             main._ovf = shards.length;
@@ -3712,6 +3587,12 @@
                     Object.keys(od._records).forEach(col => {
                         if (!Array.isArray(full[col])) full[col] = [];
                         full[col] = full[col].concat(od._records[col] || []);
+                    });
+                }
+                if (od && od._objRecords) {
+                    Object.keys(od._objRecords).forEach(col => {
+                        if (!full[col] || typeof full[col] !== 'object' || Array.isArray(full[col])) full[col] = {};
+                        Object.assign(full[col], od._objRecords[col]);
                     });
                 }
             });
@@ -3732,22 +3613,115 @@
         // Return a shallow copy of a record with only LARGE base64 images removed (for writing to the
         // cloud). Storage URLs (short https links) are KEPT so images now sync across devices; only
         // heavy embedded base64 (the fallback when Storage is off) is stripped to protect doc size.
-        function _ntStripImages(rec) {
+        // Remove lone/unpaired UTF-16 surrogates so the string is valid UTF-8 for Firestore. Keeps
+        // valid surrogate PAIRS (real emoji) intact. Uses only lookahead (widely supported), no lookbehind.
+        function _ntCleanSurrogates(s) {
+            try {
+                return String(s)
+                    .replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])/g, '')        // high surrogate not followed by a low → drop
+                    .replace(/(^|[^\uD800-\uDBFF])([\uDC00-\uDFFF])/g, '$1');  // low surrogate not preceded by a high → drop
+            } catch(_) { return ''; }
+        }
+        function _ntStripImages(rec, _depth) {
             if (!rec || typeof rec !== 'object') return rec;
+            _depth = _depth || 0;
+            if (_depth > 18) return null;                    // guard against circular refs / pathological depth (would crash the sync)
             let copy = null;
             for (const k in rec) {
+                if (!Object.prototype.hasOwnProperty.call(rec, k)) continue;
                 const v = rec[k];
                 if (_ntIsBigDataUrl(v) || _ntIsHugeString(v)) {
                     if (!copy) copy = Object.assign({}, rec);
                     delete copy[k];
                 } else if (v && typeof v === 'object') {
-                    const sv = _ntStripImages(v);            // recurse into nested objects/arrays (e.g. items[].image)
+                    const sv = _ntStripImages(v, _depth + 1);            // recurse into nested objects/arrays (e.g. items[].image)
                     if (sv !== v) { if (!copy) copy = Object.assign({}, rec); copy[k] = sv; }
                 }
             }
             return copy || rec;
         }
-        function _ntStripImagesArr(arr) { return Array.isArray(arr) ? arr.map(_ntStripImages) : arr; }
+        function _ntStripImagesArr(arr) { return Array.isArray(arr) ? arr.map(r => _ntStripImages(r, 0)) : arr; }
+
+        // Make a value safe for Firestore. Firestore REJECTS the whole write with "invalid-argument"
+        // (which our status mislabels as "data too large") if ANY field is NaN, Infinity, undefined,
+        // or a function. A single bad number (e.g. amount = parseFloat('') → NaN) anywhere in the data
+        // breaks EVERY sync. This recursively coerces those to safe values without changing valid data.
+        function _ntFirestoreSafe(v, _depth) {
+            _depth = _depth || 0;
+            if (_depth > 18) return null;                                   // Firestore max nesting ~20; also guards circular refs
+            if (v === null) return null;
+            const t = typeof v;
+            if (t === 'number') return isFinite(v) ? v : 0;                 // NaN / ±Infinity → 0
+            if (t === 'boolean') return v;
+            if (t === 'string') {
+                // Firestore stores strings as UTF-8 and REJECTS the whole write ("invalid-argument") if a
+                // string contains a lone/unpaired UTF-16 surrogate (e.g. a truncated emoji or corrupted
+                // paste). JSON round-trip does NOT fix this. Fast-path: only clean strings that contain a
+                // surrogate-range char; valid emoji (paired surrogates) are preserved.
+                return /[\uD800-\uDFFF]/.test(v) ? _ntCleanSurrogates(v) : v;
+            }
+            if (t === 'function' || t === 'symbol' || t === 'bigint' || v === undefined) return null;
+            if (v instanceof Date) return isNaN(v.getTime()) ? null : v;    // Invalid Date → null
+            if (Array.isArray(v)) {
+                return v.map(x => {
+                    if (Array.isArray(x)) {                                  // Firestore FORBIDS array-in-array → wrap as a map
+                        const m = { _ntArr: 1 }; x.forEach((e, i) => { m['i' + i] = _ntFirestoreSafe(e, _depth + 1); }); return m;
+                    }
+                    const s = _ntFirestoreSafe(x, _depth + 1);
+                    return s === undefined ? null : s;
+                });
+            }
+            if (t === 'object') {
+                // Plain data only. A File / Blob / Map / Set / DOM node (which can sneak in from an image
+                // <input>) has no serializable OWN enumerable fields → becomes {} here, which Firestore
+                // accepts. The depth guard above stops circular structures (e.g. DOM nodes) safely.
+                const o = {};
+                for (const k in v) {
+                    if (!Object.prototype.hasOwnProperty.call(v, k)) continue;
+                    const val = v[k];
+                    if (val === undefined || typeof val === 'function' || typeof val === 'symbol' || typeof val === 'bigint') continue;
+                    // Sanitize the KEY too. Firestore rejects field names that are empty, that match the
+                    // reserved __...__ pattern, or that contain . ~ * / [ ] — any one breaks the whole write.
+                    let sk = (k === '' || k == null) ? '_blank' : String(k);
+                    if (/^__.*__$/.test(sk)) sk = 'u_' + sk;
+                    if (/[.~*/\[\]]/.test(sk)) sk = sk.replace(/[.~*/\[\]]/g, '_');
+                    o[sk] = _ntFirestoreSafe(val, _depth + 1);
+                }
+                return o;
+            }
+            return null;
+        }
+        // Diagnostic: scan a would-be Firestore document for ANY invalid construct. Returns [{path,issue}].
+        // Used as a safety net + to tell us EXACTLY what (if anything) is wrong, instead of guessing.
+        function _ntFsValidate(v, path, issues, depth) {
+            path = path || 'root'; issues = issues || []; depth = depth || 0;
+            if (issues.length > 60) return issues;
+            if (depth > 18) { issues.push({ path: path, issue: 'too-deep(>18)' }); return issues; }
+            if (v === null) return issues;
+            const t = typeof v;
+            if (t === 'number') { if (!isFinite(v)) issues.push({ path, issue: 'NaN/Infinity' }); return issues; }
+            if (t === 'string') { if (/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(^|[^\uD800-\uDBFF])[\uDC00-\uDFFF]/.test(v)) issues.push({ path, issue: 'lone-surrogate' }); return issues; }
+            if (t === 'boolean') return issues;
+            if (t === 'undefined' || t === 'function' || t === 'symbol' || t === 'bigint') { issues.push({ path, issue: t }); return issues; }
+            if (v instanceof Date) { if (isNaN(v.getTime())) issues.push({ path, issue: 'Invalid Date' }); return issues; }
+            if (Array.isArray(v)) {
+                v.forEach((x, i) => { if (Array.isArray(x)) issues.push({ path: path + '[' + i + ']', issue: 'nested-array' }); else _ntFsValidate(x, path + '[' + i + ']', issues, depth + 1); });
+                return issues;
+            }
+            if (t === 'object') {
+                const proto = Object.getPrototypeOf(v);
+                if (proto !== null && proto !== Object.getPrototypeOf({})) { issues.push({ path, issue: 'non-plain:' + (v.constructor && v.constructor.name) }); return issues; }
+                for (const k in v) {
+                    if (!Object.prototype.hasOwnProperty.call(v, k)) continue;
+                    if (k === '') issues.push({ path, issue: 'empty-key' });
+                    else if (/^__.*__$/.test(k)) issues.push({ path: path + '.' + k, issue: 'reserved-key' });
+                    else if (/[.~*/\[\]]/.test(k)) issues.push({ path: path + '.' + k, issue: 'bad-key-char' });
+                    _ntFsValidate(v[k], path + '.' + k, issues, depth + 1);
+                }
+                return issues;
+            }
+            return issues;
+        }
         function _ntStripImagesObj(obj) {
             if (!obj || typeof obj !== 'object') return obj;
             const out = {}; for (const k in obj) out[k] = _ntStripImages(obj[k]); return out;
@@ -3867,10 +3841,10 @@
             
             // Sync Local Storage as fallback
             if (!localStorage.getItem("treasury_branches_pro")) localStorage.setItem("treasury_branches_pro", JSON.stringify(defaultBranches));
-            branches = JSON.parse(localStorage.getItem("treasury_branches_pro"));
+            branches = _ntJP('treasury_branches_pro', null);
 
             if (!localStorage.getItem("treasury_categories_pro")) localStorage.setItem("treasury_categories_pro", JSON.stringify(defaultCategories));
-            categories = JSON.parse(localStorage.getItem("treasury_categories_pro"));
+            categories = _ntJP('treasury_categories_pro', null);
             // Migration: ensure the expense (ລາຍຈ່າຍ) list includes the service-cost + admin-cost groups
             try {
                 const wantExpense = [].concat(NT_SERVICE_COST_CATS, NT_ADMIN_COST_CATS);
@@ -3881,19 +3855,19 @@
             } catch(e) { console.warn('category migration skipped', e); }
 
             if (!localStorage.getItem("treasury_transactions_pro")) localStorage.setItem("treasury_transactions_pro", JSON.stringify(initialTransactions));
-            transactions = JSON.parse(localStorage.getItem("treasury_transactions_pro"));
+            transactions = _ntJP('treasury_transactions_pro', null);
 
             if (!localStorage.getItem("treasury_customers_pro")) localStorage.setItem("treasury_customers_pro", JSON.stringify(defaultCustomers));
-            customers = JSON.parse(localStorage.getItem("treasury_customers_pro"));
+            customers = _ntJP('treasury_customers_pro', null);
 
             if (!localStorage.getItem("treasury_invoices_pro")) localStorage.setItem("treasury_invoices_pro", JSON.stringify(defaultInvoices));
-            invoices = JSON.parse(localStorage.getItem("treasury_invoices_pro"));
+            invoices = _ntJP('treasury_invoices_pro', null);
 
             if (!localStorage.getItem("treasury_aps_pro")) localStorage.setItem("treasury_aps_pro", JSON.stringify(defaultAps));
-            aps = JSON.parse(localStorage.getItem("treasury_aps_pro"));
+            aps = _ntJP('treasury_aps_pro', null);
 
             if (!localStorage.getItem("treasury_company_info")) localStorage.setItem("treasury_company_info", JSON.stringify(defaultCompanyInfo));
-            companyInfo = JSON.parse(localStorage.getItem("treasury_company_info"));
+            companyInfo = _ntJP('treasury_company_info', null);
 
             // Restore big images (logo / QR / signature + branch QRs) from IndexedDB back into memory,
             // then refresh the UI so they appear. (They live in IndexedDB to avoid the localStorage quota
@@ -3906,13 +3880,17 @@
                 if (typeof ntHydrateBranchQrs === 'function') ntHydrateBranchQrs(function(){
                     if (typeof refreshAllViews === 'function') refreshAllViews();
                 });
+                // Restore images embedded in records (receipts, invoice QR, etc.) from IndexedDB.
+                if (typeof ntHydrateAllRecordImages === 'function') ntHydrateAllRecordImages(function(){
+                    if (typeof refreshAllViews === 'function') refreshAllViews();
+                });
             } catch(e){ logError('image hydrate: '+e.message,'warn'); }
 
             // CLEAN GHOST COST DATA on every startup
             // Remove cost entries that have no rvId, or rvId pointing to deleted invoices,
             // or no items, or all items with empty name & 0 price
             try {
-                let costTrack = JSON.parse(localStorage.getItem('nt_costTrack') || '[]');
+                let costTrack = _ntJP('nt_costTrack', []);
                 const validRvIds = new Set(invoices.filter(i => i.type === 'RV').map(i => i.id));
                 const before = costTrack.length;
                 costTrack = costTrack.filter(e => {
@@ -4065,12 +4043,12 @@
                         try {
                             // Merge deletion tombstones FIRST so the per-store merges below prune deleted records.
                             if (data.nt_deletions && typeof ntMergeDeletions === 'function') ntMergeDeletions(data.nt_deletions);
-                            if (data.transactions) { transactions = ntMergeById(transactions, data.transactions, protectLocal); localStorage.setItem("treasury_transactions_pro", JSON.stringify(transactions)); }
+                            if (data.transactions) { transactions = ntMergeById(transactions, data.transactions, protectLocal); ntSaveColl('treasury_transactions_pro', transactions); }
                             if (data.branches)     { branches = ntMergeObjById(branches, data.branches, protectLocal); localStorage.setItem("treasury_branches_pro", JSON.stringify(branches)); }
                             if (data.categories)   { categories = data.categories; localStorage.setItem("treasury_categories_pro", JSON.stringify(categories)); }
                             if (data.customers)    { customers = ntMergeObjById(customers, data.customers, protectLocal); localStorage.setItem("treasury_customers_pro", JSON.stringify(customers)); }
-                            if (data.invoices)     { invoices = ntMergeById(invoices, data.invoices, protectLocal); localStorage.setItem("treasury_invoices_pro", JSON.stringify(invoices)); }
-                            if (data.aps)          { aps = ntMergeById(aps, data.aps, protectLocal); localStorage.setItem("treasury_aps_pro", JSON.stringify(aps)); }
+                            if (data.invoices)     { invoices = ntMergeById(invoices, data.invoices, protectLocal); ntSaveColl('treasury_invoices_pro', invoices); }
+                            if (data.aps)          { aps = ntMergeById(aps, data.aps, protectLocal); ntSaveColl('treasury_aps_pro', aps); }
                             if (data.companyInfo)  { companyInfo = (typeof _ntKeepImages==='function') ? _ntKeepImages(data.companyInfo, companyInfo) : data.companyInfo; ntFlushCompanyInfo(); }
                             if (typeof nt_quotations !== 'undefined') {
                                 if (data.nt_quotations)    { nt_quotations    = ntMergeById(nt_quotations, data.nt_quotations, protectLocal);    localStorage.setItem('nt_quotations',    JSON.stringify(nt_quotations)); }
@@ -4081,7 +4059,7 @@
                                 if (data.nt_aftersales)    { nt_aftersales    = ntMergeById(nt_aftersales, data.nt_aftersales, protectLocal);    localStorage.setItem('nt_aftersales',    JSON.stringify(nt_aftersales)); }
                             }
                             if (data.nt_costTrack) {
-                                const localCT = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+                                const localCT = _ntJP('nt_costTrack', []);
                                 const mergedCT = ntMergeById(localCT, data.nt_costTrack, protectLocal);
                                 localStorage.setItem('nt_costTrack', JSON.stringify(mergedCT));
                             }
@@ -4169,31 +4147,44 @@
                     if (stamp && stamp === _ntLastAppliedSigStamp) return;             // our own echo
                     if (sd._updatedBy && sd._updatedBy === NT_DEVICE_ID) return;        // we wrote it
                     _ntLastAppliedSigStamp = stamp;
-                    try {
+                    const applySig = (fullBank) => {
+                      try {
                         // Merge slot signatures (remote wins per-key, never wipes a local-only key)
                         if (sd.signatures && typeof sd.signatures === 'object') {
-                            const local = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
+                            const local = _ntJP('nt_signatures', {});
                             localStorage.setItem('nt_signatures', JSON.stringify(Object.assign({}, local, sd.signatures)));
                         }
                         // Merge the Signature Bank by id (newest name/img kept; union so nobody's entry is lost)
-                        if (Array.isArray(sd.sigBank)) {
+                        if (Array.isArray(fullBank)) {
                             let localBank = [];
-                            try { localBank = JSON.parse(localStorage.getItem('nt_sigBank') || '[]'); } catch(_) {}
+                            try { localBank = _ntJP('nt_sigBank', []); } catch(_) {}
                             const byId = {};
-                            sd.sigBank.forEach(b => { if (b && b.id) byId[b.id] = b; });
+                            fullBank.forEach(b => { if (b && b.id) byId[b.id] = b; });
                             localBank.forEach(b => { if (b && b.id && !byId[b.id]) byId[b.id] = b; });  // keep local-only
                             const merged = Object.values(byId);
                             localStorage.setItem('nt_sigBank', JSON.stringify(merged));
                             if (typeof nt_sigBank !== 'undefined') nt_sigBank = merged;
                         }
-                        // Re-render only if not mid-edit, so signatures appear on open docs
                         const a = document.activeElement;
                         const busy = (a && (a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.tagName==='SELECT')) ||
                                      Array.from(document.querySelectorAll('.fixed.inset-0')).some(m => !m.classList.contains('hidden') && m.offsetParent !== null);
                         if (!busy && typeof refreshAllViews === 'function') { _ntApplyingRemote = true; try { refreshAllViews(); } finally { setTimeout(()=>{_ntApplyingRemote=false;},50); } }
-                        // If the cloud held a legacy oversized signature, shrink it now and push it back.
                         if (typeof _ntHealSignatures === 'function') setTimeout(_ntHealSignatures, 1500);
-                    } catch(e) { console.warn('signature sync apply error', e); }
+                      } catch(e) { console.warn('signature sync apply error', e); }
+                    };
+                    // Reassemble the bank from main + overflow shards (signatures_o1..N), then apply.
+                    const sovf = sd._sovf || 0;
+                    if (sovf > 0) {
+                        let chain = Promise.resolve((Array.isArray(sd.sigBank) ? sd.sigBank.slice() : []));
+                        for (let i = 1; i <= sovf; i++) {
+                            (function(idx){ chain = chain.then(acc => db.collection('treasury_backups').doc('signatures_o'+idx).get()
+                                .then(s => { if (s.exists && Array.isArray(s.data().sigBank)) acc = acc.concat(s.data().sigBank); return acc; })
+                                .catch(() => acc)); })(i);
+                        }
+                        chain.then(applySig);
+                    } else {
+                        applySig(Array.isArray(sd.sigBank) ? sd.sigBank : []);
+                    }
                 }, err => { console.warn('signature onSnapshot error', err); });
             } catch (err) {
                 console.error("Firestore loading failed: ", err);
@@ -4555,7 +4546,7 @@
             setTimeout(() => { _ntHealingSigs = false; }, 8000);
             // slot signatures
             try {
-                const sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
+                const sigs = _ntJP('nt_signatures', {});
                 let pending = 0, changed = false;
                 Object.keys(sigs).forEach(k => {
                     const s = sigs[k];
@@ -4574,7 +4565,7 @@
             } catch (e) {}
             // signature bank
             try {
-                let bank = JSON.parse(localStorage.getItem('nt_sigBank') || '[]');
+                let bank = _ntJP('nt_sigBank', []);
                 let pending = 0, changed = false;
                 bank.forEach(b => {
                     if (b && typeof b.img === 'string' && b.img.length > 90000 && b.img.slice(0, 11) === 'data:image/') {
@@ -4684,8 +4675,20 @@
 
         // Set a company image (logo/qr/signature) directly from a pasted URL — the most reliable
         // cross-device method (a short https link always displays and syncs everywhere).
+        // Convert a Google Drive share link into a URL that actually displays inside <img>.
+        // (A normal Drive "share" link is an HTML page, not an image; the thumbnail endpoint serves the
+        //  image bytes directly and works cross-site, as long as the file is shared "anyone with link".)
+        function _ntConvertImageUrl(url) {
+            if (!url || typeof url !== 'string') return url;
+            url = url.trim();
+            if (/drive\.google\.com|docs\.google\.com/.test(url)) {
+                const m = url.match(/\/file\/d\/([a-zA-Z0-9_-]{16,})/) || url.match(/[?&]id=([a-zA-Z0-9_-]{16,})/) || url.match(/\/d\/([a-zA-Z0-9_-]{16,})/);
+                if (m) return 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w1200';
+            }
+            return url;
+        }
         function ntSetCompanyImageUrl(field, url) {
-            url = (url || '').trim();
+            url = _ntConvertImageUrl((url || '').trim());
             companyInfo[field] = url;
             ntFlushCompanyInfo();
             triggerCloudBackup();
@@ -4871,6 +4874,8 @@
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
             const targetTab = document.getElementById(`tab-${tabId}`);
             if (targetTab) targetTab.classList.remove('hidden');
+            if (tabId === 'contract-builder' && typeof ntCBInit === 'function') { try { ntCBInit(); } catch(e){} }
+            if (tabId === 'contract-track' && typeof renderContractDocTracker === 'function') { try { renderContractDocTracker(); } catch(e){} }
 
             document.querySelectorAll('.menu-btn').forEach(btn => {
                 btn.classList.remove('bg-emerald-600', 'text-white', 'font-medium');
@@ -5090,7 +5095,7 @@
             safe('renderPlTracking');
             safe('renderStaffDutyTable');
             safe('ntApplyFormalLayouts');
-            safe('ntBankTrackInit');
+            // bank-balance tracking page removed
             safe('updateAllLogos');   // ensure company logo shows on all report/document headers
             safe('ntCheckScheduledBills');   // notify installments due / overdue for billing
         }
@@ -5172,7 +5177,7 @@
             });
 
             // COGS from cost tracker
-            const costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+            const costTrack = _ntJP('nt_costTrack', []);
             costTrack.forEach(e => {
                 if (dashBranch !== 'all' && e.branchId !== dashBranch) return;
                 if (dashMonth && (e.date||'').substring(0,7) !== dashMonth) return;
@@ -5398,7 +5403,7 @@
             // ===== COGS: from cost-calculator entries (nt_costTrack) ONLY =====
             const cogsCatSums = {};   // cost categories (for the COGS doughnut)
             const opexCatSums = {};   // expense categories (for the OPEX doughnut)
-            const costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+            const costTrack = _ntJP('nt_costTrack', []);
             costTrack.forEach(e => {
                 if (!inScope(e.branchId, e.date)) return;
                 (e.items||[]).forEach(it => {
@@ -5896,10 +5901,10 @@
             // QR: prefer branch QR, fallback company QR
             const qrSrc = i.qrImage || b.qrImage || companyInfo.qrImage || '';
             const qrImageHtml = qrSrc
-                ? `<div class="text-center space-y-1"><p class="text-[9px] font-bold text-slate-500">Scan to Pay / 扫码支付</p>${ntSafeImg(qrSrc,'max-h-36 mx-auto border rounded p-1','width:auto')}</div>`
+                ? `<div class="text-center space-y-1"><p class="text-[9px] font-bold text-slate-500">Scan to Pay / 扫码支付</p>${ntSafeImg(qrSrc,'max-h-28 mx-auto border rounded p-1','width:auto')}</div>`
                 : `<div class="text-center p-6 border border-dashed rounded text-[10px] text-gray-400">ບໍ່ມີ QR — ໄປ ຕັ້ງຄ່າ → ສາຂາ</div>`;
             const signImageHtml = companyInfo.signatureImage
-                ? (ntSafeImg(companyInfo.signatureImage,'max-h-12 mx-auto object-contain') || `<br><br><br>`) : `<br><br><br>`;
+                ? (ntSafeImg(companyInfo.signatureImage,'mx-auto object-contain','max-height:90px;max-width:100%') || `<br><br><br>`) : `<br><br><br>`;
 
             // Multi-item rows
             const items = i.items && i.items.length ? i.items : [{ desc:i.item, unit:'-', qty:1, price:i.amount }];
@@ -6284,7 +6289,7 @@
                 currency: finalCurrency, remark, rvLinkedIv,
                 revenueCategory: finalRevenueCategory,
                 items: finalItems,
-                contractId: document.getElementById('invFormContractLink')?.value || '',
+                contractId: document.getElementById('invFormContractLinkId')?.value || '',
                 serviceYear: document.getElementById('invFormServiceYear')?.value || '',
                 qrImage: b.qrImage || '',
                 bankAccount: b.bankAccount || '',
@@ -6365,7 +6370,7 @@
                     paymentMethod: inv.method || "ເງິນໂອນ"
                 });
             });
-            localStorage.setItem("treasury_transactions_pro", JSON.stringify(transactions));
+            ntSaveColl('treasury_transactions_pro', transactions);
             triggerCloudBackup();
         }
 
@@ -6375,7 +6380,7 @@
             showConfirm("ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລົບໃບບິນນີ້?", () => {
                 invoices = invoices.filter(i => i.id !== id);
                 if (typeof ntMarkDeleted==='function') ntMarkDeleted(id);
-                localStorage.setItem("treasury_invoices_pro", JSON.stringify(invoices));
+                ntSaveColl('treasury_invoices_pro', invoices);
                 triggerCloudBackup();
                 if (activeInvoiceId === id && invoices.length > 0) {
                     activeInvoiceId = invoices[0].id;
@@ -6468,7 +6473,7 @@
                 showToast("ບັນທຶກໜີ້ຕ້ອງສົ່ງໃໝ່ສຳເລັດ!");
             }
 
-            localStorage.setItem("treasury_aps_pro", JSON.stringify(aps));
+            ntSaveColl('treasury_aps_pro', aps);
             triggerCloudBackup();
             closeApModal();
             renderArApLedgers();
@@ -6510,7 +6515,7 @@
             transactions.push(newTx);
             // Mark AP with paid date for tracking
             ap.paidDate = today;
-            localStorage.setItem("treasury_transactions_pro", JSON.stringify(transactions));
+            ntSaveColl('treasury_transactions_pro', transactions);
             triggerCloudBackup();
         }
 
@@ -6524,7 +6529,7 @@
                 if (ap.status === 'Paid' && oldStatus !== 'Paid') {
                     autoCreateTransactionFromAp(ap);
                 }
-                localStorage.setItem("treasury_aps_pro", JSON.stringify(aps));
+                ntSaveColl('treasury_aps_pro', aps);
                 triggerCloudBackup();
                 checkOverdueBills();
                 // Refresh ALL views (incl. daily report, dashboard, P&L, transactions list)
@@ -6539,7 +6544,7 @@
             showConfirm("ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລົບລາຍການໜີ້ຕ້ອງສົ່ງນີ້?", () => {
                 aps = aps.filter(item => item.id !== id);
                 if (typeof ntMarkDeleted==='function') ntMarkDeleted(id);
-                localStorage.setItem("treasury_aps_pro", JSON.stringify(aps));
+                ntSaveColl('treasury_aps_pro', aps);
                 triggerCloudBackup();
                 renderArApLedgers();
                 updateAppView();
@@ -6683,7 +6688,7 @@
             if (inv) {
                 inv.status = 'Paid';
                 autoCreateTransactionFromInvoice(inv);
-                localStorage.setItem("treasury_invoices_pro", JSON.stringify(invoices));
+                ntSaveColl('treasury_invoices_pro', invoices);
                 triggerCloudBackup();
                 renderArApLedgers();
                 updateAppView();
@@ -6856,7 +6861,7 @@
             showConfirm("ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລົບທຸລະກຳນີ້?", () => {
                 transactions = transactions.filter(t => t.id !== id);
                 if (typeof ntMarkDeleted==='function') ntMarkDeleted(id);
-                localStorage.setItem("treasury_transactions_pro", JSON.stringify(transactions));
+                ntSaveColl('treasury_transactions_pro', transactions);
                 triggerCloudBackup();
                 refreshAllViews();
                 showToast("ລົບທຸລະກຳສຳເລັດ!");
@@ -7005,13 +7010,22 @@
         }
 
         function ntSetBranchQrLink(url){
-            url = (url||'').trim();
+            url = (typeof _ntConvertImageUrl==='function') ? _ntConvertImageUrl((url||'').trim()) : (url||'').trim();
             window._uploadedBranchQr = url || null;   // a link is stored directly (no upload needed)
             const prev = document.getElementById('previewBranchQr');
             if (prev) {
                 if (url) { prev.src = url; prev.classList.remove('hidden'); }
                 else { prev.src=''; prev.classList.add('hidden'); }
             }
+        }
+        // Generic "paste image link" handler for receipt/transaction upload fields. Accepts a normal URL
+        // OR a Google Drive share link (auto-converted), so every upload spot supports Drive links.
+        function _ntShowPrev(id, url){ const p=document.getElementById(id); if(p){ if(url){ p.src=url; p.classList.remove('hidden'); } else { p.src=''; p.classList.add('hidden'); } } }
+        function ntSetUploadedImageUrl(target, url){
+            url = (typeof _ntConvertImageUrl==='function') ? _ntConvertImageUrl((url||'').trim()) : (url||'').trim();
+            if (target === 'bcReceipt') { window._uploadedBcReceipt = url || null; _ntShowPrev('bcReceiptPreview', url); }
+            else if (target === 'bpReceipt') { window._uploadedBpReceipt = url || null; _ntShowPrev('bpReceiptPreview', url); }
+            else if (target === 'txn') { try { uploadedImageBase64 = url || null; } catch(_) { window.uploadedImageBase64 = url || null; } _ntShowPrev('imagePreview', url); const c=document.getElementById('imagePreviewContainer'); if(c){ if(url) c.classList.remove('hidden'); else c.classList.add('hidden'); } }
         }
 
         function saveBranchConfig(event) {
@@ -7136,7 +7150,7 @@
                             t.category = name;
                         }
                     });
-                    localStorage.setItem("treasury_transactions_pro", JSON.stringify(transactions));
+                    ntSaveColl('treasury_transactions_pro', transactions);
                 }
                 showToast("ອັບເດດປະເພດສຳເລັດ!");
             } else {
@@ -7428,7 +7442,7 @@
                 arOutstanding += (i.amount||0);
             });
             // COGS from cost tracker
-            JSON.parse(localStorage.getItem('nt_costTrack')||'[]').forEach(e => {
+            _ntJP('nt_costTrack', []).forEach(e => {
                 if ((e.currency||'LAK')!=='LAK') return;
                 if (!inB(e.branchId) || !inM(e.date)) return;
                 (e.items||[]).forEach(it => { const k=it.name||'ຕົ້ນທຶນອື່ນໆ'; cogs[k]=(cogs[k]||0)+(Number(it.qty)||1)*(Number(it.price)||0); });
@@ -7597,7 +7611,7 @@
 
             // COGS from cost-track (LAK only — cost calc is LAK-based)
             if (cur === 'LAK') {
-                const costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+                const costTrack = _ntJP('nt_costTrack', []);
                 costTrack.forEach(e => {
                     if (pBranch !== 'all' && e.branchId !== pBranch) return;
                     const d = (e.date||'');
@@ -7762,7 +7776,7 @@
             });
 
             // COGS from cost tracker - currency-aware
-            const costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]')
+            const costTrack = _ntJP('nt_costTrack', [])
                 .filter(e => {
                     const mB = pBranch==='all' || e.branchId===pBranch;
                     const mM = !pMonth || (e.date||'').startsWith(pMonth);
@@ -8625,7 +8639,11 @@ ${metrics.netMargin > 20 ? 'ທຸລະກຳຂອງທ່ານມີອັ�
                 return true;
             } catch(e) {
                 if (e.name === 'QuotaExceededError') {
-                    showGlobalError('ຫນ່ວຍຄວາມຈຳ local ເຕັມ! ກະລຸນາລ້າງຂໍ້ມູນເກົ່າ.');
+                    // Free space by moving embedded images out to IndexedDB, then retry once.
+                    try { if (typeof ntEmergencyOffloadImages === 'function') ntEmergencyOffloadImages(); } catch(_){}
+                    try { localStorage.setItem(key, value); return true; } catch(e2) {
+                        showGlobalError('ຫນ່ວຍຄວາມຈຳ local ເຕັມ! ກະລຸນາລ້າງຮູບ/ຂໍ້ມູນເກົ່າ.');
+                    }
                 } else {
                     showGlobalError('ບໍ່ສາມາດບັນທຶກຂໍ້ມູນ local ໄດ້: ' + e.message);
                 }
@@ -8718,6 +8736,95 @@ ${metrics.netMargin > 20 ? 'ທຸລະກຳຂອງທ່ານມີອັ�
                 if (branches[id] && branches[id].qrImage === '__IDB__') { ntImgLoad('branchqr_'+id).then(function(v){ branches[id].qrImage = v || ''; done(); }); }
                 else { done(); }
             });
+        }
+
+        // ---- Record-level image offload: keep big base64 images embedded in records (receipts, QR on
+        // invoices, etc.) OUT of localStorage so saving records never overflows the quota. ----
+        var NT_COLL_IMG_FIELDS = {
+            'treasury_transactions_pro': ['image','receiptImage','slipImage'],
+            'treasury_invoices_pro':     ['qrImage','image'],
+            'treasury_aps_pro':          ['image','receiptImage','slipImage'],
+            'nt_budgetCalcs':            ['receiptImage','image'],
+            'nt_budgetPropols':          ['receiptImage','image'],
+            'nt_costTrack':              ['image','receiptImage'],
+            'nt_aftersales':             ['image']
+        };
+        function _ntCollByKey(key) {
+            try {
+                switch(key){
+                    case 'treasury_transactions_pro': return (typeof transactions!=='undefined')?transactions:null;
+                    case 'treasury_invoices_pro':     return (typeof invoices!=='undefined')?invoices:null;
+                    case 'treasury_aps_pro':          return (typeof aps!=='undefined')?aps:null;
+                    case 'nt_budgetCalcs':            return (typeof nt_budgetCalcs!=='undefined')?nt_budgetCalcs:null;
+                    case 'nt_budgetPropols':          return (typeof nt_budgetPropols!=='undefined')?nt_budgetPropols:null;
+                    case 'nt_costTrack':              return (typeof nt_costTrack!=='undefined')?nt_costTrack:null;
+                    case 'nt_aftersales':             return (typeof nt_aftersales!=='undefined')?nt_aftersales:null;
+                }
+            } catch(e){}
+            return null;
+        }
+        // Produce a localStorage-safe copy of a collection: big base64 images moved to IndexedDB, replaced
+        // with an '__IDB__' marker + a '_idb_<field>' key reference. The in-memory array is NOT modified
+        // (so the UI keeps the real images this session); on next load they are hydrated back from IDB.
+        function _ntLightColl(key, arr) {
+            var fields = NT_COLL_IMG_FIELDS[key];
+            if (!fields || !Array.isArray(arr)) return arr;
+            return arr.map(function(rec){
+                if (!rec || typeof rec !== 'object') return rec;
+                var copy = null;
+                fields.forEach(function(f){
+                    if (_ntIsStorableBig(rec[f])) {
+                        var idbKey = key + '::' + (rec.id || '') + '::' + f;
+                        ntImgStore(idbKey, rec[f]);
+                        if (!copy) copy = Object.assign({}, rec);
+                        copy[f] = '__IDB__'; copy['_idb_'+f] = idbKey;
+                    }
+                });
+                return copy || rec;
+            });
+        }
+        function ntEmergencyOffloadImages() {
+            Object.keys(NT_COLL_IMG_FIELDS).forEach(function(key){
+                var arr = _ntCollByKey(key); if (!Array.isArray(arr)) return;
+                try { localStorage.setItem(key, JSON.stringify(_ntLightColl(key, arr))); } catch(_){}
+            });
+        }
+        // Save a collection with images offloaded; on quota error, free the other collections + retry.
+        function ntSaveColl(key, arr) {
+            if (!Array.isArray(arr)) { try { localStorage.setItem(key, JSON.stringify(arr)); return true; } catch(e){ return false; } }
+            var light = _ntLightColl(key, arr);
+            try { localStorage.setItem(key, JSON.stringify(light)); return true; }
+            catch(e) {
+                if (e && e.name === 'QuotaExceededError') {
+                    ntEmergencyOffloadImages();
+                    try { localStorage.setItem(key, JSON.stringify(light)); return true; }
+                    catch(e2) { if (typeof showGlobalError === 'function') showGlobalError('ໜ່ວຍຄວາມຈຳເຕັມ — ກະລຸນາລ້າງຮູບເກົ່າບາງສ່ວນ'); return false; }
+                }
+                logError(key+' save: '+e.message,'warn'); return false;
+            }
+        }
+        // Restore offloaded images from IndexedDB back into an in-memory collection.
+        function ntHydrateColl(arr, key, cb) {
+            var fields = NT_COLL_IMG_FIELDS[key];
+            if (!fields || !Array.isArray(arr) || !arr.length) { if(cb) cb(); return; }
+            var tasks = [];
+            arr.forEach(function(rec){
+                if (!rec || typeof rec !== 'object') return;
+                fields.forEach(function(f){
+                    if (rec[f] === '__IDB__') {
+                        var idbKey = rec['_idb_'+f] || (key + '::' + (rec.id || '') + '::' + f);   // deterministic fallback
+                        tasks.push(ntImgLoad(idbKey).then(function(v){ rec[f] = v || ''; }));
+                    }
+                });
+            });
+            Promise.all(tasks).then(function(){ if(cb) cb(); }).catch(function(){ if(cb) cb(); });
+        }
+        function ntHydrateAllRecordImages(cb) {
+            var keys = Object.keys(NT_COLL_IMG_FIELDS);
+            var pending = keys.length;
+            if (!pending) { if(cb) cb(); return; }
+            var done = function(){ if(--pending<=0 && cb) cb(); };
+            keys.forEach(function(key){ ntHydrateColl(_ntCollByKey(key), key, done); });
         }
 
         // --- Global JS error catcher ---
@@ -8816,7 +8923,7 @@ const firebaseDefaultConfig = {
 // Use user-saved config from the Connection Settings page if present
 var firebaseCloudConfig = firebaseDefaultConfig;
 try {
-    const savedCfg = JSON.parse(localStorage.getItem('nt_dbConfig') || '{}');
+    const savedCfg = _ntJP('nt_dbConfig', {});
     if (savedCfg && savedCfg.apiKey && savedCfg.projectId) {
         firebaseCloudConfig = {
             apiKey: savedCfg.apiKey,
@@ -8940,9 +9047,9 @@ var costRows = [];
             if (!m) return;
             _ntApplyingRemote = true;
             try {
-                if (m.transactions) { transactions = m.transactions; localStorage.setItem('treasury_transactions_pro', JSON.stringify(transactions)); }
-                if (m.invoices)     { invoices = m.invoices; localStorage.setItem('treasury_invoices_pro', JSON.stringify(invoices)); }
-                if (m.aps)          { aps = m.aps; localStorage.setItem('treasury_aps_pro', JSON.stringify(aps)); }
+                if (m.transactions) { transactions = m.transactions; ntSaveColl('treasury_transactions_pro', transactions); }
+                if (m.invoices)     { invoices = m.invoices; ntSaveColl('treasury_invoices_pro', invoices); }
+                if (m.aps)          { aps = m.aps; ntSaveColl('treasury_aps_pro', aps); }
                 if (m.customers)    { customers = m.customers; localStorage.setItem('treasury_customers_pro', JSON.stringify(customers)); }
                 if (m.branches)     { branches = m.branches; localStorage.setItem('treasury_branches_pro', JSON.stringify(branches)); }
                 if (m.categories)   { categories = m.categories; localStorage.setItem('treasury_categories_pro', JSON.stringify(categories)); }
@@ -8983,9 +9090,9 @@ var costRows = [];
                 // LOCAL, so an edit that didn't bump _lm still isn't reverted by the cloud's old copy.
                 const protectLocal = (Date.now() - _ntLastLocalEditAt) < 12000;
                 const A = (loc, key) => ntMergeById(Array.isArray(loc) ? loc : [], Array.isArray(cloud[key]) ? cloud[key] : [], protectLocal);
-                const localCostTrack = JSON.parse(localStorage.getItem('nt_costTrack') || '[]');
-                const localStaff     = JSON.parse(localStorage.getItem('nt_staffDuties') || '[]');
-                const localAccrual   = JSON.parse(localStorage.getItem('nt_accrualProj') || '{}');
+                const localCostTrack = _ntJP('nt_costTrack', []);
+                const localStaff     = _ntJP('nt_staffDuties', []);
+                const localAccrual   = _ntJP('nt_accrualProj', {});
                 return {
                     transactions: A(transactions, 'transactions'),
                     invoices:     A(invoices, 'invoices'),
@@ -9021,10 +9128,40 @@ var costRows = [];
                 setTimeout(() => { if (statusLabel && statusLabel.textContent === 'Cloud Synced ✓') { statusLabel.textContent = 'Cloud Firestore Ready'; statusLabel.className = 'font-bold cloud-status-ok'; } }, 2000);
             };
             const onErr = (err) => {
-                if (typeof logError === 'function') logError('Firestore backup failed: ' + (err && err.message));
+                if (typeof logError === 'function') logError('Firestore backup failed: ' + (err && (err.code || err.message)));
                 const msg = (err && (err.code || err.message) || '').toString().toLowerCase();
-                const permanent = msg.includes('invalid-argument') || msg.includes('too large') || msg.includes('permission') || msg.includes('exceeds the maximum');
-                if (permanent) { _ntRetryCount = 0; if (statusLabel) { statusLabel.textContent = 'Sync error (data too large)'; statusLabel.className = 'font-bold cloud-status-error'; } return; }
+                const isInvalid = msg.includes('invalid-argument');
+                const isTooBig = msg.includes('too large') || msg.includes('exceeds the maximum');
+                const permanent = isInvalid || isTooBig || msg.includes('permission');
+                if (permanent) {
+                    _ntRetryCount = 0;
+                    if (statusLabel) {
+                        // Distinguish causes so it's actionable (size vs a bad value vs permissions).
+                        statusLabel.textContent = isTooBig ? 'Sync error (data too large)'
+                            : isInvalid ? 'Sync error (invalid data — auto-fixing)'
+                            : msg.includes('permission') ? 'Sync error (permission)'
+                            : 'Sync error';
+                        statusLabel.className = 'font-bold cloud-status-error';
+                    }
+                    console.warn('NT sync permanent error:', (err && (err.code || err.message)));
+                    // Surface the EXACT cause so it can be acted on instead of guessed. Firebase's own
+                    // message names the offending field + reason ("...invalid data. <reason> (found in
+                    // field <path>)") — far more precise than our validator, so we show THAT.
+                    try {
+                        const fbMsg = (err && err.message) ? String(err.message) : '';
+                        const issues = (window._ntSyncIssues && window._ntSyncIssues.length) ? window._ntSyncIssues
+                                      : (window._ntSyncIssuesRaw || []);
+                        window._ntLastSyncError = { code: (err && err.code), message: fbMsg, issues: issues };
+                        if (isInvalid) {
+                            // Pull the informative tail of Firebase's message (after "invalid data").
+                            let detail = fbMsg ? fbMsg.replace(/^[\s\S]*?invalid data\.?\s*/i, '').replace(/\s*in document[\s\S]*$/i, '').trim() : '';
+                            if (!detail) detail = issues.length ? issues.slice(0, 5).map(x => x.path + ' (' + x.issue + ')').join(', ') : (fbMsg.slice(0, 200) || 'unknown');
+                            if (typeof showToast === 'function') showToast('Sync ຕິດ: ' + detail.slice(0, 220), 'error', 14000);
+                            console.error('NT sync invalid-data →', window._ntLastSyncError);
+                        }
+                    } catch(_) {}
+                    return;
+                }
                 // Transient (usually write contention when several users save at once). Firestore +
                 // our retry will resolve it — keep a calm "Syncing..." status instead of an alarming
                 // "Sync Failed!" so the connection doesn't *look* like it dropped. Only after all
@@ -9053,7 +9190,27 @@ var costRows = [];
                     else if (v && typeof v === 'object') c[k] = _ntStripImages(v);
                     else if (_ntIsBigDataUrl(v) || _ntIsHugeString(v)) c[k] = '';
                 }
-                return c;
+                // Coerce NaN/Infinity/undefined/bad-keys/non-plain → safe so Firestore never rejects with
+                // "invalid-argument". Also record diagnostics: what was wrong BEFORE, and (as a safety net)
+                // anything STILL wrong AFTER — so the cause is visible instead of guessed.
+                let safe = c;
+                try {
+                    if (typeof _ntFsValidate === 'function') {
+                        const before = _ntFsValidate(c, 'data', [], 0);
+                        if (before.length) { window._ntSyncIssuesRaw = before; console.warn('NT sync: auto-fixing ' + before.length + ' invalid field(s):', before.slice(0, 10)); }
+                    }
+                    safe = (typeof _ntFirestoreSafe === 'function') ? _ntFirestoreSafe(c) : c;
+                    // Final guarantee: a JSON round-trip yields a pure plain-data tree (drops anything
+                    // Firestore can't store). Safe now because _ntFirestoreSafe already broke any circular
+                    // refs (depth guard) and wrapped nested arrays. Dates become ISO strings (Firestore OK).
+                    try { safe = JSON.parse(JSON.stringify(safe)); } catch(_) {}
+                    if (typeof _ntFsValidate === 'function') {
+                        const after = _ntFsValidate(safe, 'data', [], 0);
+                        window._ntSyncIssues = after;
+                        if (after.length) console.error('NT sync: STILL invalid after sanitize (please report):', after.slice(0, 10));
+                    }
+                } catch(e) { console.warn('sanitize diag error', e); safe = (typeof _ntFirestoreSafe === 'function') ? _ntFirestoreSafe(c) : c; try { safe = JSON.parse(JSON.stringify(safe)); } catch(_) {} }
+                return safe;
             };
 
             // Preferred path: transaction (read-merge-write) — never clobbers others' newer records.
@@ -9114,22 +9271,57 @@ var costRows = [];
         function _ntFlushSignatureWrite() {
             if (!db || !navigator.onLine || _ntApplyingRemote) return;
             let sigs = {};
-            try { sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}'); } catch(_) {}
+            try { sigs = _ntJP('nt_signatures', {}); } catch(_) {}
             let bank = [];
-            try { bank = JSON.parse(localStorage.getItem('nt_sigBank') || '[]'); } catch(_) {}
+            try { bank = _ntJP('nt_sigBank', []); } catch(_) {}
             const stamp = NT_DEVICE_ID + ':' + Date.now();
             _ntLastAppliedSigStamp = stamp;
-            const payload = { signatures: sigs, sigBank: bank, _updatedBy: NT_DEVICE_ID, _stamp: stamp, updatedAt: new Date() };
-            db.collection('treasury_backups').doc('signatures').set(payload)
-                .then(() => { _ntSigRetryCount = 0; })
-                .catch(err => {
-                    const msg = (err && (err.code || err.message) || '').toString().toLowerCase();
-                    const permanent = msg.includes('invalid-argument') || msg.includes('too large') ||
-                                      msg.includes('permission') || msg.includes('exceeds the maximum');
-                    if (permanent) { _ntSigRetryCount = 0; if (typeof showToast==='function') showToast('ລາຍເຊັນໃຫຍ່ເກີນ — ບັນທຶກໃນເຄື່ອງເທົ່ານັ້ນ', 'warning'); return; }
-                    if (_ntSigRetryCount < 2) { _ntSigRetryCount++; setTimeout(_ntFlushSignatureWrite, 2500 * _ntSigRetryCount); }
-                    else _ntSigRetryCount = 0;
-                });
+            // Signatures are images and can be large. Split them across multiple docs so NONE exceeds
+            // Firestore's 1 MiB limit (this was the recurring "data too large"). main = signatures map +
+            // first batch of the bank; signatures_o1..N = the rest. A single oversized signature has its
+            // image dropped as a last resort (kept in the local bank regardless).
+            const SIG_MAX = 800000;   // UTF-8 bytes (safe under 1 MiB)
+            const col = db.collection('treasury_backups');
+            const sovfRef = (i) => col.doc('signatures_o' + i);
+            const base = () => ({ _updatedBy: NT_DEVICE_ID, _stamp: stamp, updatedAt: new Date() });
+            const fits = (o) => _ntJBytes(o) < SIG_MAX;
+            let main = Object.assign({ signatures: sigs, sigBank: [] }, base());
+            const shards = [];
+            let cur = null;
+            bank.forEach(item => {
+                let it = item;
+                if (_ntJBytes(it) >= SIG_MAX && typeof _ntStripImages === 'function') it = _ntStripImages(item);
+                if (cur === null) {
+                    main.sigBank.push(it);
+                    if (!fits(main) && main.sigBank.length > 0) { main.sigBank.pop(); cur = Object.assign({ sigBank: [it] }, base()); shards.push(cur); }
+                } else {
+                    cur.sigBank.push(it);
+                    if (!fits(cur) && cur.sigBank.length > 1) { cur.sigBank.pop(); cur = Object.assign({ sigBank: [it] }, base()); shards.push(cur); }
+                }
+            });
+            main._sovf = shards.length;
+            // Sanitize signature docs too (same invalid-data protection as the main write).
+            if (typeof _ntFirestoreSafe === 'function') {
+                try { main = _ntFirestoreSafe(main); for (let i = 0; i < shards.length; i++) shards[i] = _ntFirestoreSafe(shards[i]); } catch(_) {}
+            }
+            const sigErr = (err) => {
+                const msg = (err && (err.code || err.message) || '').toString().toLowerCase();
+                const permanent = msg.includes('invalid-argument') || msg.includes('too large') ||
+                                  msg.includes('permission') || msg.includes('exceeds the maximum');
+                if (permanent) { _ntSigRetryCount = 0; if (typeof showToast==='function') showToast('ລາຍເຊັນບາງອັນໃຫຍ່ເກີນ — ກຳລັງບີບອັດ', 'warning'); if (typeof _ntHealSignatures==='function') setTimeout(_ntHealSignatures, 500); return; }
+                if (_ntSigRetryCount < 2) { _ntSigRetryCount++; setTimeout(_ntFlushSignatureWrite, 2500 * _ntSigRetryCount); }
+                else _ntSigRetryCount = 0;
+            };
+            col.doc('signatures').get().then(snap => {
+                const oldN = (snap.exists && snap.data() && snap.data()._sovf) || 0;
+                col.doc('signatures').set(main).then(() => {
+                    shards.forEach((sh, i) => sovfRef(i + 1).set(sh).catch(()=>{}));
+                    for (let i = shards.length + 1; i <= oldN; i++) sovfRef(i).delete().catch(()=>{});
+                    _ntSigRetryCount = 0;
+                }).catch(sigErr);
+            }).catch(() => {
+                col.doc('signatures').set(main).then(() => { shards.forEach((sh, i) => sovfRef(i + 1).set(sh).catch(()=>{})); }).catch(sigErr);
+            });
         }
 
         // Initialize network monitor on load
@@ -9229,24 +9421,43 @@ function ntInvItemType(idx, sel){
 
 // ===== ລິ້ງໃບເກັບເງິນ/ໃບຮັບເງິນ ກັບສັນຍາ (ສຳລັບຫັກລົບ/ຕິດຕາມ ດ້ວຍ ເລກສັນຍາ + ປີບໍລິການ) =====
 function ntPopulateInvContractLink(custId, selectedId){
-    var sel = document.getElementById('invFormContractLink');
-    if (!sel) return;
+    var dl = document.getElementById('invContractDL');
+    var input = document.getElementById('invFormContractLink');
+    var hid = document.getElementById('invFormContractLinkId');
+    if (!dl || !input) return;
     var list = (typeof nt_contracts!=='undefined' && nt_contracts) ? nt_contracts.slice() : [];
     // prefer the chosen customer's contracts; if none, show all
     var mine = custId ? list.filter(c => c.customerId === custId) : [];
     var show = mine.length ? mine : list;
-    var opts = '<option value="">— ບໍ່ລິ້ງສັນຍາ —</option>';
+    window._ntInvContractMap = {};   // label -> contractId (for resolving the typed value)
+    var opts = '';
     show.forEach(function(c){
-        var label = (c.contractNo || c.serviceItem || 'ສັນຍາ') + ' · ' + (c.contractYear || '') + (mine.length ? '' : ' · ' + (c.customerName||''));
-        opts += '<option value="'+c.id+'"'+(c.id===selectedId?' selected':'')+'>'+label+'</option>';
+        var label = (c.contractNo || c.serviceItem || 'ສັນຍາ') + ' · ' + (c.contractYear || '') + ' · ' + (c.customerName||'');
+        if (window._ntInvContractMap[label]) label += ' #' + String(c.id).slice(-4);  // keep labels unique
+        window._ntInvContractMap[label] = c.id;
+        opts += '<option value="'+label.replace(/"/g,'&quot;')+'"></option>';
     });
-    sel.innerHTML = opts;
+    dl.innerHTML = opts;
+    if (selectedId) {
+        var lbl = Object.keys(window._ntInvContractMap).find(k => window._ntInvContractMap[k]===selectedId);
+        input.value = lbl || '';
+        if (hid) hid.value = selectedId;
+    } else { input.value=''; if (hid) hid.value=''; }
 }
 function ntInvContractLinkChange(){
-    var sel = document.getElementById('invFormContractLink');
+    var input = document.getElementById('invFormContractLink');
+    var hid = document.getElementById('invFormContractLinkId');
     var yr = document.getElementById('invFormServiceYear');
-    if (!sel) return;
-    var c = (typeof nt_contracts!=='undefined' ? nt_contracts : []).find(x => x.id === sel.value);
+    if (!input) return;
+    var val = (input.value||'').trim();
+    var map = window._ntInvContractMap || {};
+    var id = map[val] || '';
+    if (!id && val) {   // partial typing → resolve when it uniquely matches one contract
+        var hits = Object.keys(map).filter(function(k){ return k.toLowerCase().indexOf(val.toLowerCase())>=0; });
+        if (hits.length === 1) id = map[hits[0]];
+    }
+    if (hid) hid.value = id;
+    var c = (typeof nt_contracts!=='undefined' ? nt_contracts : []).find(x => x.id === id);
     if (c && yr) yr.value = c.contractYear || '';
     ntBuildContractItemsList(c || null);
 }
@@ -9357,7 +9568,7 @@ function loadRvForCost() {
 
     // Load saved cost items for THIS RV, or reset to empty
     if (rvId) {
-        const costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+        const costTrack = _ntJP('nt_costTrack', []);
         const saved = costTrack.find(x => x.rvId === rvId);
         if (saved && saved.items && saved.items.length) {
             cost_items = JSON.parse(JSON.stringify(saved.items));
@@ -9453,7 +9664,7 @@ function resetCostForCurrentRv() {
         return;
     }
     if (!confirm('ລ້າງລາຍການຕົ້ນທຶນທີ່ບັນທຶກໄວ້ສຳລັບ RV ນີ້?')) return;
-    let costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+    let costTrack = _ntJP('nt_costTrack', []);
     costTrack = costTrack.filter(x => x.rvId !== cost_currentRvId);
     localStorage.setItem('nt_costTrack', JSON.stringify(costTrack));
     cost_items = [{ name:'', unit:'ຄັ້ງ', qty:1, price:0, note:'' }];
@@ -9535,7 +9746,7 @@ function saveCostCalculation(costDestination) {
         destination: costDestination,
         createdAt: new Date().toISOString()
     };
-    let costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+    let costTrack = _ntJP('nt_costTrack', []);
     // Find any PRE-EXISTING entry for this RV so we can clean up its old transactions/APs
     const oldEntries = costTrack.filter(x => x.rvId === cost_currentRvId);
     oldEntries.forEach(old => {
@@ -9660,7 +9871,7 @@ function renderCostTrackTable() {
         if (prev && Array.from(brSel.options).some(o=>o.value===prev)) brSel.value = prev;
     }
 
-    let data = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+    let data = _ntJP('nt_costTrack', []);
     // Filter by customer (name search)
     const custQuery = (document.getElementById('costTrackCustomer')?.value||'').trim().toLowerCase();
     if (custQuery) {
@@ -9801,7 +10012,7 @@ function renderCostTrackTable() {
 }
 
 function markCostPaid(id) {
-    let costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+    let costTrack = _ntJP('nt_costTrack', []);
     const idx = costTrack.findIndex(x => x.id === id);
     if (idx < 0) return;
     costTrack[idx].status = 'paid';
@@ -9813,7 +10024,7 @@ function markCostPaid(id) {
 }
 
 function markCostUnpaid(id) {
-    let costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+    let costTrack = _ntJP('nt_costTrack', []);
     const idx = costTrack.findIndex(x => x.id === id);
     if (idx < 0) return;
     costTrack[idx].status = 'pending';
@@ -9826,7 +10037,7 @@ function markCostUnpaid(id) {
 
 function deleteCostEntry(id) {
     if (!confirm('ລົບລາຍການຄິດໄລ່ຕົ້ນທຶນນີ້?')) return;
-    let costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+    let costTrack = _ntJP('nt_costTrack', []);
     costTrack = costTrack.filter(x => x.id !== id);
     localStorage.setItem('nt_costTrack', JSON.stringify(costTrack));
     if (typeof triggerCloudBackup === 'function') try{ triggerCloudBackup(); }catch(e){}
@@ -9836,7 +10047,7 @@ function deleteCostEntry(id) {
 
 // Per-line item payment (so user can pay one item at a time)
 function markCostLinePaid(trackId, itemIdx) {
-    let costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+    let costTrack = _ntJP('nt_costTrack', []);
     const e = costTrack.find(x => x.id === trackId);
     if (!e) { showToast('ບໍ່ພົບລາຍການ','error'); return; }
     if (!e.itemStatuses) e.itemStatuses = (e.items||[]).map(() => 'pending');
@@ -9881,7 +10092,7 @@ function markCostLinePaid(trackId, itemIdx) {
 }
 
 function markCostLineUnpaid(trackId, itemIdx) {
-    let costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+    let costTrack = _ntJP('nt_costTrack', []);
     const e = costTrack.find(x => x.id === trackId);
     if (!e) return;
     if (!e.itemStatuses) e.itemStatuses = (e.items||[]).map(() => 'pending');
@@ -9915,7 +10126,7 @@ function renderExpenseAlloc() {
     // Header is now rendered via the .nt-header-slot (ntApplyFormalLayouts). No manual company-info injection needed.
 
     // Data: split BY LINE ITEM (so each cost line gets its own row, can be paid individually)
-    const costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+    const costTrack = _ntJP('nt_costTrack', []);
     let rows = [];
 
     // From cost tracking (COGS) — ONE ROW PER ITEM
@@ -10484,7 +10695,7 @@ function _buildFullBookData(month, branchId) {
     const qtList = (nt_quotations||[]).filter(q => (q.date||'').startsWith(mo) && (b==='all'||q.branchId===b));
     const arList = invoices.filter(i => i.type==='IV' && i.status!=='Paid' && matchInv(i));
     const apList = aps.filter(a => (a.dueDate||'').startsWith(mo) && (b==='all'||a.branchId===b));
-    const costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]').filter(e => (e.date||'').startsWith(mo) && (b==='all'||e.branchId===b));
+    const costTrack = _ntJP('nt_costTrack', []).filter(e => (e.date||'').startsWith(mo) && (b==='all'||e.branchId===b));
     const contracts = (nt_contracts||[]).filter(c => b==='all'||c.branchId===b);
 
     return { mo, b, rvList, ivList, qtList, arList, apList, costTrack, contracts };
@@ -10650,7 +10861,7 @@ function printMonthlyReport(month, branchId) {
     const qtList = nt_quotations.filter(q=>q.date && q.date.startsWith(mo) && (b==='all'||q.branchId===b));
     const revenue = rvList.reduce((s,i)=>s+(i.amount||0),0);
     const apList = aps.filter(a=>a.dueDate && a.dueDate.startsWith(mo));
-    const costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]').filter(e=>e.date && e.date.startsWith(mo));
+    const costTrack = _ntJP('nt_costTrack', []).filter(e=>e.date && e.date.startsWith(mo));
     const cogs = costTrack.reduce((s,e)=>s+(e.cost||0),0);
     const profit = costTrack.reduce((s,e)=>s+(e.profit||0),0);
     const ci = companyInfo||{};
@@ -10745,13 +10956,13 @@ document.addEventListener('DOMContentLoaded', function() {
 // ============================================================
 
 // ---- DATA STORES (localStorage) ----------------------------
-var nt_quotations    = JSON.parse(localStorage.getItem('nt_quotations')    || '[]');
-var nt_budgetCalcs   = JSON.parse(localStorage.getItem('nt_budgetCalcs')   || '[]');
-var nt_budgetPropols = JSON.parse(localStorage.getItem('nt_budgetPropols') || '[]');
-var nt_contracts     = JSON.parse(localStorage.getItem('nt_contracts')     || '[]');
-var nt_contactLogs   = JSON.parse(localStorage.getItem('nt_contactLogs')   || '[]');
-var nt_aftersales    = JSON.parse(localStorage.getItem('nt_aftersales')    || '[]');
-var nt_proposalLetters = JSON.parse(localStorage.getItem('nt_proposalLetters') || '[]');
+var nt_quotations    = _ntJP('nt_quotations', []);
+var nt_budgetCalcs   = _ntJP('nt_budgetCalcs', []);
+var nt_budgetPropols = _ntJP('nt_budgetPropols', []);
+var nt_contracts     = _ntJP('nt_contracts', []);
+var nt_contactLogs   = _ntJP('nt_contactLogs', []);
+var nt_aftersales    = _ntJP('nt_aftersales', []);
+var nt_proposalLetters = _ntJP('nt_proposalLetters', []);
 
 // ============================================================
 // FORMAL REPORT HEADER + SIGNATURE BLOCK (reusable across all tables)
@@ -10801,7 +11012,7 @@ function ntFormalHeader(title, opts) {
 // Stored in localStorage 'nt_sigBank' and synced via the SEPARATE signatures document,
 // so it never touches the main data connection (keeps multi-user sync stable).
 // ============================================================
-var nt_sigBank = (function(){ try { return JSON.parse(localStorage.getItem('nt_sigBank') || '[]'); } catch(_) { return []; } })();
+var nt_sigBank = (function(){ try { return _ntJP('nt_sigBank', []); } catch(_) { return []; } })();
 if (!Array.isArray(nt_sigBank)) nt_sigBank = [];
 
 function ntSaveSigBank() {
@@ -10985,8 +11196,8 @@ function ntSigBankPick(slotKey) {
 function ntSigBankApply(bankId, slotKey) {
     const entry = nt_sigBank.find(s => s.id === bankId);
     if (!entry) return;
-    const sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
-    sigs[slotKey] = { img: entry.img, w: entry.w || 150, h: entry.h || 70, x: 0, y: 0, fromBank: entry.name || '' };
+    const sigs = _ntJP('nt_signatures', {});
+    sigs[slotKey] = { img: entry.img, w: entry.w || 230, h: 0, x: 0, y: 0, fromBank: entry.name || '' };
     const ok = (typeof safeSetLocalStorage === 'function')
         ? safeSetLocalStorage('nt_signatures', JSON.stringify(sigs))
         : (function(){ try { localStorage.setItem('nt_signatures', JSON.stringify(sigs)); return true; } catch(_) { return false; } })();
@@ -10998,45 +11209,47 @@ function ntSigBankApply(bankId, slotKey) {
 }
 
 function ntSignatureSlot(role, key) {
-    const sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
+    const sigs = _ntJP('nt_signatures', {});
     const saved = sigs[key];
     const imgHtml = saved && saved.img
-        ? `<img src="${saved.img}" style="height:${saved.h||60}px; max-width:${saved.w||150}px; object-fit:contain;" class="mx-auto">`
+        ? `<img src="${saved.img}" style="width:${saved.w||220}px; max-width:100%; height:${saved.h&&saved.h>0?saved.h+'px':'auto'};" class="mx-auto">`
         : `<div class="h-16"></div>`;
     return `
     <div class="text-center text-xs">
         <p class="text-slate-950 font-bold mb-1">${role}</p>
         <div class="nt-sig-slot relative group" data-sigkey="${key}">
             ${imgHtml}
-            <div class="border-t border-gray-400 mt-1 pt-1 text-gray-400">ລາຍເຊັນ & ຊື່</div>
+            
             <div class="no-print absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-white/70">
                 <button onclick="ntSigBankPick('${key}')" class="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded shadow" title="ເລືອກຈາກຄັງລາຍເຊັນ"><i class="fa-solid fa-signature mr-1"></i>ຄັງ</button><button onclick="ntUploadSignature('${key}')" class="text-[10px] bg-indigo-600 text-white px-2 py-1 rounded shadow ml-1" title="ອັບໂຫຼດລາຍເຊັນ (PNG/JPG)"><i class="fa-solid fa-upload mr-1"></i>ອັບ</button>
-                ${saved && saved.img ? `<button onclick="ntAdjustSignature('${key}')" class="text-[10px] bg-amber-500 text-white px-2 py-1 rounded shadow ml-1" title="ປັບຂະໜາດ"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button><button onclick="ntRemoveSignature('${key}')" class="text-[10px] bg-rose-500 text-white px-2 py-1 rounded shadow ml-1" title="ລົບ"><i class="fa-solid fa-trash"></i></button>` : ''}
+                ${saved && saved.img ? `<button onclick="ntSigAutoFit('${key}')" class="text-[10px] bg-amber-500 text-white px-2 py-1 rounded shadow ml-1" title="ປັບໃຫ້ເຕັມກອບ + ຂະຫຍາຍໃຫຍ່"><i class="fa-solid fa-wand-magic-sparkles"></i></button><button onclick="ntRemoveSignature('${key}')" class="text-[10px] bg-rose-500 text-white px-2 py-1 rounded shadow ml-1" title="ລົບ"><i class="fa-solid fa-trash"></i></button>` : ''}
             </div>
         </div>
+        ${_ntSigSliders(key, saved)}
     </div>`;
 }
 
 function ntSignatureBlock(roles, areaKey) {
     roles = roles || ['ຜູ້ບໍລິຫານ', 'ຄະນະບໍລິຫານ', 'ຜູ້ສະຫຼຸບ'];
-    const sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
+    const sigs = _ntJP('nt_signatures', {});
     const cols = roles.map((role, i) => {
         const key = `${areaKey}_${i}`;
         const saved = sigs[key];
         const imgHtml = saved && saved.img
-            ? `<img src="${saved.img}" style="height:${saved.h||70}px; max-width:${saved.w||150}px; object-fit:contain;" class="mx-auto">`
+            ? `<img src="${saved.img}" style="width:${saved.w||220}px; max-width:100%; height:${saved.h&&saved.h>0?saved.h+'px':'auto'};" class="mx-auto">`
             : `<div class="h-16"></div>`;
         return `
         <div class="text-center text-xs flex-1">
             <p class="font-bold mb-1">${role}</p>
             <div class="nt-sig-slot relative group" data-sigkey="${key}">
                 ${imgHtml}
-                <div class="border-t border-gray-400 mt-1 pt-1 text-gray-400">ລາຍເຊັນ & ຊື່</div>
+                
                 <div class="no-print absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-white/70">
                     <button onclick="ntSigBankPick('${key}')" class="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded shadow" title="ເລືອກຈາກຄັງລາຍເຊັນ"><i class="fa-solid fa-signature mr-1"></i>ຄັງ</button><button onclick="ntUploadSignature('${key}')" class="text-[10px] bg-indigo-600 text-white px-2 py-1 rounded shadow ml-1" title="ອັບໂຫຼດລາຍເຊັນ (PNG/JPG)"><i class="fa-solid fa-upload mr-1"></i>ອັບ</button>
-                    ${saved && saved.img ? `<button onclick="ntAdjustSignature('${key}')" class="text-[10px] bg-amber-500 text-white px-2 py-1 rounded shadow ml-1" title="ປັບຂະໜາດ"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button><button onclick="ntRemoveSignature('${key}')" class="text-[10px] bg-rose-500 text-white px-2 py-1 rounded shadow ml-1" title="ລົບ"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    ${saved && saved.img ? `<button onclick="ntSigAutoFit('${key}')" class="text-[10px] bg-amber-500 text-white px-2 py-1 rounded shadow ml-1" title="ປັບໃຫ້ເຕັມກອບ + ຂະຫຍາຍໃຫຍ່"><i class="fa-solid fa-wand-magic-sparkles"></i></button><button onclick="ntRemoveSignature('${key}')" class="text-[10px] bg-rose-500 text-white px-2 py-1 rounded shadow ml-1" title="ລົບ"><i class="fa-solid fa-trash"></i></button>` : ''}
                 </div>
             </div>
+            ${_ntSigSliders(key, saved)}
         </div>`;
     }).join('');
     return `<div class="nt-signature-block flex justify-around gap-6 mt-8 pt-4">${cols}</div>`;
@@ -11062,10 +11275,38 @@ function ntUploadSignature(key) {
             img.onload = () => {
                 try {
                     // Scale down for STORAGE so the data URL stays small (keeps cloud sync reliable)
-                    const MAX_W = 360, MAX_H = 360;   // square-ish cap so tall signatures keep height
-                    let w = img.width, h = img.height;
-                    const ratio = Math.min(MAX_W / w, MAX_H / h, 1);
-                    w = Math.round(w * ratio); h = Math.round(h * ratio);
+                    const MAX_W = 420, MAX_H = 420;
+                    const sw = img.width, sh = img.height;
+                    // 1) TRIM white/transparent padding so the actual ink fills the frame (a stamp/signature
+                    //    with lots of empty margin looked tiny inside its box → now it fills it).
+                    let cropX = 0, cropY = 0, cropW = sw, cropH = sh;
+                    try {
+                        const dcv = document.createElement('canvas'); dcv.width = sw; dcv.height = sh;
+                        const dctx = dcv.getContext('2d'); dctx.drawImage(img, 0, 0, sw, sh);
+                        const px = dctx.getImageData(0, 0, sw, sh).data;
+                        let minX = sw, minY = sh, maxX = 0, maxY = 0, found = false;
+                        for (let y = 0; y < sh; y++) {
+                            for (let x = 0; x < sw; x++) {
+                                const idx = (y * sw + x) * 4;
+                                const r = px[idx], g = px[idx + 1], bl = px[idx + 2], a = px[idx + 3];
+                                if (a > 25 && !(r > 238 && g > 238 && bl > 238)) {   // visible & not near-white = ink
+                                    found = true;
+                                    if (x < minX) minX = x; if (x > maxX) maxX = x;
+                                    if (y < minY) minY = y; if (y > maxY) maxY = y;
+                                }
+                            }
+                        }
+                        if (found && maxX >= minX && maxY >= minY) {
+                            const padX = Math.round((maxX - minX + 1) * 0.04) + 2;
+                            const padY = Math.round((maxY - minY + 1) * 0.04) + 2;
+                            cropX = Math.max(0, minX - padX); cropY = Math.max(0, minY - padY);
+                            cropW = Math.min(sw - cropX, (maxX - minX + 1) + padX * 2);
+                            cropH = Math.min(sh - cropY, (maxY - minY + 1) + padY * 2);
+                        }
+                    } catch (e) { /* pixel read blocked → keep full image */ }
+                    // 2) scale the cropped region down for storage
+                    const ratio = Math.min(MAX_W / cropW, MAX_H / cropH, 1);
+                    const w = Math.max(1, Math.round(cropW * ratio)), h = Math.max(1, Math.round(cropH * ratio));
                     const canvas = document.createElement('canvas');
                     canvas.width = w; canvas.height = h;
                     const ctx = canvas.getContext('2d');
@@ -11073,27 +11314,23 @@ function ntUploadSignature(key) {
                     let dataUrl;
                     if (isPng) {
                         ctx.clearRect(0, 0, w, h);            // keep transparency
-                        ctx.drawImage(img, 0, 0, w, h);
+                        ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, w, h);
                         dataUrl = canvas.toDataURL('image/png');
-                        // PNG can be heavy; if too big, re-encode as JPEG on white to shrink
                         if (dataUrl.length > 90000) {
-                            ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,w,h); ctx.drawImage(img,0,0,w,h);
+                            ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, h); ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, w, h);
                             dataUrl = canvas.toDataURL('image/jpeg', 0.82);
                         }
                     } else {
                         ctx.fillStyle = '#ffffff';            // flatten onto white for JPGs
                         ctx.fillRect(0, 0, w, h);
-                        ctx.drawImage(img, 0, 0, w, h);
+                        ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, w, h);
                         dataUrl = canvas.toDataURL('image/jpeg', 0.82);
                     }
-                    const sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
-                    // DISPLAY size: allow a TALLER signature (portrait). Fit within a 170(w) x 150(h)
-                    // box keeping aspect — so vertical signatures get more height than before.
-                    const BOX_W = 170, BOX_H = 150;
-                    const dispRatio = Math.min(BOX_W / w, BOX_H / h, 1);
-                    const dispW = Math.max(40, Math.round(w * dispRatio));
-                    const dispH = Math.max(20, Math.round(h * dispRatio));
-                    sigs[key] = { img: dataUrl, w: dispW, h: dispH, x: 0, y: 0 };
+                    const sigs = _ntJP('nt_signatures', {});
+                    // DISPLAY: width-driven (height auto, keeps aspect). Default 230px — comfortably larger
+                    // than the document QR — and the sliders go far bigger if wanted.
+                    const dispW = 230;
+                    sigs[key] = { img: dataUrl, w: dispW, h: 0, x: 0, y: 0 };
                     const _persistSig = () => {
                         const okSave = (typeof safeSetLocalStorage === 'function')
                             ? safeSetLocalStorage('nt_signatures', JSON.stringify(sigs))
@@ -11121,27 +11358,93 @@ function ntUploadSignature(key) {
     input.click();
 }
 
+// Two inline sliders (width + height) for resizing a signature in place. Generous max (height up to
+// 1200px) so it can be made as large/tall as wanted. Width = amber, Height = indigo.
+// One-click: trim the white/transparent padding off an EXISTING saved signature and enlarge it so the
+// ink fills the frame (fixes a stamp that looks tiny because of empty margins). No re-upload needed.
+function ntSigAutoFit(key) {
+    let sigs; try { sigs = _ntJP('nt_signatures', {}); } catch (_) { return; }
+    const s = sigs[key]; if (!s || !s.img) return;
+    const finish = () => {
+        s.w = 230; s.h = 0; sigs[key] = s;
+        try { localStorage.setItem('nt_signatures', JSON.stringify(sigs)); } catch (_) {}
+        if (typeof triggerSignatureBackup === 'function') try { triggerSignatureBackup(); } catch (_) {}
+        if (typeof refreshAllViews === 'function') refreshAllViews();
+        if (typeof showToast === 'function') showToast('ປັບລາຍເຊັນໃຫ້ເຕັມກອບ + ຂະຫຍາຍແລ້ວ', 'success');
+    };
+    const img = new Image();
+    img.onload = function () {
+        try {
+            const sw = img.naturalWidth, sh = img.naturalHeight;
+            const dcv = document.createElement('canvas'); dcv.width = sw; dcv.height = sh;
+            const dctx = dcv.getContext('2d'); dctx.drawImage(img, 0, 0);
+            const px = dctx.getImageData(0, 0, sw, sh).data;
+            let minX = sw, minY = sh, maxX = 0, maxY = 0, found = false;
+            for (let y = 0; y < sh; y++) for (let x = 0; x < sw; x++) { const i = (y * sw + x) * 4; const r = px[i], g = px[i + 1], b = px[i + 2], a = px[i + 3]; if (a > 25 && !(r > 238 && g > 238 && b > 238)) { found = true; if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y; } }
+            if (found && maxX >= minX && maxY >= minY) {
+                const padX = Math.round((maxX - minX + 1) * 0.04) + 2, padY = Math.round((maxY - minY + 1) * 0.04) + 2;
+                const cx = Math.max(0, minX - padX), cy = Math.max(0, minY - padY), cw = Math.min(sw - cx, (maxX - minX + 1) + padX * 2), ch = Math.min(sh - cy, (maxY - minY + 1) + padY * 2);
+                const r = Math.min(420 / cw, 420 / ch, 1);
+                const out = document.createElement('canvas'); out.width = Math.max(1, Math.round(cw * r)); out.height = Math.max(1, Math.round(ch * r));
+                out.getContext('2d').drawImage(img, cx, cy, cw, ch, 0, 0, out.width, out.height);
+                s.img = out.toDataURL('image/png');
+            }
+        } catch (e) { /* pixel read blocked → just enlarge */ }
+        finish();
+    };
+    img.onerror = finish;
+    img.src = s.img;
+}
+function _ntSigSliders(key, saved) {
+    if (!saved || !saved.img) return '';
+    return `<div class="no-print mt-1 px-1">
+        <div class="flex items-center gap-1"><i class="fa-solid fa-arrows-left-right text-[8px] text-amber-600 w-3"></i><input type="range" min="40" max="900" value="${saved.w||220}" oninput="ntSigSlide('${key}','w',this.value)" class="w-full accent-amber-500 cursor-pointer h-1" title="ປັບຄວາມກວ້າງ"></div>
+        <div class="flex items-center gap-1 mt-0.5"><i class="fa-solid fa-arrows-up-down text-[8px] text-indigo-600 w-3"></i><input type="range" min="20" max="1200" value="${saved.h||80}" oninput="ntSigSlide('${key}','h',this.value)" class="w-full accent-indigo-500 cursor-pointer h-1" title="ປັບຄວາມສູງ (ລວງຕັ້ງ)"></div>
+    </div>`;
+}
+// Live size adjust via the inline sliders — resizes in place (no full re-render, so the slider keeps
+// focus while dragging) and saves immediately, with a debounced cloud backup. dim = 'w' | 'h'.
+function ntSigSlide(key, dim, val) {
+    val = parseInt(val) || 0;
+    if (dim === 'w') val = Math.max(40, Math.min(900, val));
+    else val = Math.max(20, Math.min(1200, val));     // height: effectively no practical limit
+    let sigs; try { sigs = _ntJP('nt_signatures', {}); } catch (_) { sigs = {}; }
+    if (!sigs[key]) return;
+    sigs[key][dim] = val;
+    try {
+        document.querySelectorAll('.nt-sig-slot[data-sigkey="' + key + '"] img').forEach(function (img) {
+            img.style.width = (sigs[key].w || 190) + 'px';
+            img.style.maxWidth = '100%';
+            img.style.height = (sigs[key].h && sigs[key].h > 0) ? (sigs[key].h + 'px') : 'auto';
+            img.style.objectFit = '';     // direct W×H so BOTH width and height sliders take real effect
+        });
+    } catch (_) {}
+    try { localStorage.setItem('nt_signatures', JSON.stringify(sigs)); } catch (_) {}
+    clearTimeout(window._ntSigSlideT);
+    window._ntSigSlideT = setTimeout(function () { if (typeof triggerSignatureBackup === 'function') try { triggerSignatureBackup(); } catch (_) {} }, 700);
+}
+
 // Adjust signature size (scale) via prompt
 function ntAdjustSignature(key) {
-    const sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
+    const sigs = _ntJP('nt_signatures', {});
     if (!sigs[key]) return;
     const cur = sigs[key];
-    const w = prompt('ຄວາມກວ້າງລາຍເຊັນ (px, 40-320):', cur.w || 150);
+    // Width is the dimension that actually scales the signature inside its column. Bigger number =
+    // bigger signature (it upscales). Height follows the image's aspect ratio automatically.
+    const w = prompt('ຂະໜາດລາຍເຊັນ (px, 40–600) — ໃສ່ເລກຫຼາຍຂຶ້ນ = ລາຍເຊັນໃຫຍ່ຂຶ້ນ:', cur.w || 190);
     if (w === null) return;
-    const h = prompt('ຄວາມສູງລາຍເຊັນ (px, 20-320) — ໃສ່ຫຼາຍຂຶ້ນສຳລັບລາຍເຊັນແນວຕັ້ງ:', cur.h || 120);
-    if (h === null) return;
-    cur.w = Math.max(40, Math.min(320, parseInt(w) || 150));
-    cur.h = Math.max(20, Math.min(320, parseInt(h) || 120));
+    cur.w = Math.max(40, Math.min(600, parseInt(w) || 190));
+    cur.h = 0;   // auto height (keeps aspect ratio so it never looks squashed)
     sigs[key] = cur;
     localStorage.setItem('nt_signatures', JSON.stringify(sigs));
     if (typeof triggerSignatureBackup === 'function') try{ triggerSignatureBackup(); }catch(_){}
     if (typeof refreshAllViews === 'function') refreshAllViews();
-    showToast('ປັບຂະໜາດລາຍເຊັນສຳເລັດ', 'success');
+    showToast('ປັບຂະໜາດລາຍເຊັນສຳເລັດ (ກວ້າງ ' + cur.w + 'px)', 'success');
 }
 
 function ntRemoveSignature(key) {
     if (!confirm('ລົບລາຍເຊັນນີ້?')) return;
-    const sigs = JSON.parse(localStorage.getItem('nt_signatures') || '{}');
+    const sigs = _ntJP('nt_signatures', {});
     delete sigs[key];
     localStorage.setItem('nt_signatures', JSON.stringify(sigs));
     if (typeof triggerSignatureBackup === 'function') try{ triggerSignatureBackup(); }catch(_){}
@@ -11172,11 +11475,11 @@ function ntApplyFormalLayouts() {
 function _ntBNum(v){ if(v===null||v===undefined||v==='') return 0; var n=parseFloat(String(v).replace(/[, ]/g,'')); return isNaN(n)?0:n; }
 function _ntBFmt(n){ return (Number(n)||0).toLocaleString('en-US'); }
 var nt_bankData = {};
-try { nt_bankData = JSON.parse(localStorage.getItem('nt_bankData') || '{}'); } catch(e){ nt_bankData = {}; }
+try { nt_bankData = _ntJP('nt_bankData', {}); } catch(e){ nt_bankData = {}; }
 // migrate any old flat data once
 (function(){ try {
     if(!nt_bankData.__migrated){
-        var old = JSON.parse(localStorage.getItem('nt_bankTrack')||'[]');
+        var old = _ntJP('nt_bankTrack', []);
         if(old && old.length){ nt_bankData['_all'] = { rows:old, opening:_ntBNum(localStorage.getItem('nt_bankTrackOpening')||'0'), actual:_ntBNum(localStorage.getItem('nt_bankTrackActual')||'0') }; }
         nt_bankData.__migrated = 1;
         localStorage.setItem('nt_bankData', JSON.stringify(nt_bankData));
@@ -11334,12 +11637,12 @@ function ntBankTrackInit(){
 
 
 
-var nt_contactLogs   = JSON.parse(localStorage.getItem('nt_contactLogs')   || '[]');
-var nt_aftersales    = JSON.parse(localStorage.getItem('nt_aftersales')    || '[]');
-var nt_dbConfig      = JSON.parse(localStorage.getItem('nt_dbConfig')      || '{}');
+var nt_contactLogs   = _ntJP('nt_contactLogs', []);
+var nt_aftersales    = _ntJP('nt_aftersales', []);
+var nt_dbConfig      = _ntJP('nt_dbConfig', {});
 var nt_gsWebhook     = localStorage.getItem('nt_gsWebhook') || '';
 // Cost item templates — admin can manage in System Setup
-var nt_costTemplates = JSON.parse(localStorage.getItem('nt_costTemplates') || 'null');
+var nt_costTemplates = _ntJP('nt_costTemplates', null);
 if (!nt_costTemplates) {
     // Default seed list
     nt_costTemplates = [
@@ -11366,14 +11669,14 @@ if (!nt_costTemplates) {
 }
 
 // Contract service categories (editable)
-var nt_serviceCategories = JSON.parse(localStorage.getItem('nt_serviceCategories') || 'null');
+var nt_serviceCategories = _ntJP('nt_serviceCategories', null);
 if (!nt_serviceCategories) {
     nt_serviceCategories = ['ບໍລິການບັນຊີ', 'ບໍລິການກວດສອບ', 'ບໍລິການອາກອນ', 'ບໍລິການທີ່ປຶກສາ', 'ບໍລິການອື່ນໆ'];
     localStorage.setItem('nt_serviceCategories', JSON.stringify(nt_serviceCategories));
 }
 
 // Fixed-expense templates (recurring monthly costs: salaries, rent, etc.)
-var nt_fixedExpenses = JSON.parse(localStorage.getItem('nt_fixedExpenses') || 'null');
+var nt_fixedExpenses = _ntJP('nt_fixedExpenses', null);
 if (!nt_fixedExpenses) {
     nt_fixedExpenses = [
         {name:'ເງິນເດືອນພະນັກງານ', category:'ລາຍຈ່າຍບໍລິຫານ', amount:0},
@@ -11387,9 +11690,9 @@ if (!nt_fixedExpenses) {
 
 // ===== Fixed-expense picker =====
 // ===== STAFF DUTIES (add-only registry) =====
-var nt_staffDuties = JSON.parse(localStorage.getItem('nt_staffDuties') || '[]');
+var nt_staffDuties = _ntJP('nt_staffDuties', []);
 // Accrual projection worksheets (editable forecast per month+branch) — does NOT affect daily report
-var nt_accrualProj = JSON.parse(localStorage.getItem('nt_accrualProj') || '{}');
+var nt_accrualProj = _ntJP('nt_accrualProj', {});
 
 function renderStaffDutyTable() {
     const tbody = document.getElementById('staffDutyTableBody');
@@ -11661,11 +11964,11 @@ function ntSave() {
         if (typeof ntMarkLocalEdit === 'function') ntMarkLocalEdit();
     }
     localStorage.setItem('nt_quotations',    JSON.stringify(nt_quotations));
-    localStorage.setItem('nt_budgetCalcs',   JSON.stringify(nt_budgetCalcs));
-    localStorage.setItem('nt_budgetPropols', JSON.stringify(nt_budgetPropols));
+    ntSaveColl('nt_budgetCalcs',   nt_budgetCalcs);
+    ntSaveColl('nt_budgetPropols', nt_budgetPropols);
     localStorage.setItem('nt_contracts',     JSON.stringify(nt_contracts));
     localStorage.setItem('nt_contactLogs',   JSON.stringify(nt_contactLogs));
-    localStorage.setItem('nt_aftersales',    JSON.stringify(nt_aftersales));
+    ntSaveColl('nt_aftersales',    nt_aftersales);
     localStorage.setItem('nt_costTemplates', JSON.stringify(nt_costTemplates||[]));
     // Auto-backup to cloud if connected
     if (typeof triggerCloudBackup === 'function' && typeof db !== 'undefined' && db) {
@@ -12547,7 +12850,7 @@ function ntBcItemNamePicked(idx, val){
 // Clickable unit list for budget-calc items. Persists on this device; defaults cover common units.
 var nt_units = (function(){
     const def = ['ມື້','ຄືນ','ຄັ້ງ','ກ່ອງ','ຊຸດ','ຄົນ','ໂຕ','ແຜ່ນ','ເຄື່ອງ','ຄັນ','ເດືອນ','ປີ','ຊົ່ວໂມງ','ໜ່ວຍ','ກິໂລ','ແມັດ','ລິດ'];
-    try { const s = JSON.parse(localStorage.getItem('nt_units') || 'null'); if (Array.isArray(s) && s.length) return [...new Set([...s, ...def])]; } catch(_) {}
+    try { const s = _ntJP('nt_units', null); if (Array.isArray(s) && s.length) return [...new Set([...s, ...def])]; } catch(_) {}
     return def;
 })();
 function ntSaveUnits() { try { localStorage.setItem('nt_units', JSON.stringify(nt_units)); } catch(_){} }
@@ -12814,7 +13117,7 @@ function removePvPaymentFromDaily(bcId) {
 
 // Mark cost-tracking line items as paid & remove their AP entries (called when cost-settlement PV is paid)
 function settleCostTrackingRefs(refs, paidDate) {
-    let costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+    let costTrack = _ntJP('nt_costTrack', []);
     refs.forEach(ref => {
         // ref = { trackId, itemIdx }
         const e = costTrack.find(x => x.id === ref.trackId);
@@ -12846,7 +13149,7 @@ function openCostSettlementPicker() {
     const existing = document.getElementById('costSettlePickerOverlay');
     if (existing) existing.remove();
 
-    const costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+    const costTrack = _ntJP('nt_costTrack', []);
     // Gather all UNPAID line items across all cost-tracking entries
     const pending = [];
     costTrack.forEach(e => {
@@ -13040,7 +13343,7 @@ function ntDeleteBudgetCalc(id) {
 
 // Un-settle cost-tracking line items (reverse of settleCostTrackingRefs) — used when a cost-settlement PV is deleted/cancelled
 function unsettleCostTrackingRefs(refs) {
-    let costTrack = JSON.parse(localStorage.getItem('nt_costTrack')||'[]');
+    let costTrack = _ntJP('nt_costTrack', []);
     refs.forEach(ref => {
         const e = costTrack.find(x => x.id === ref.trackId);
         if (!e) return;
@@ -13377,7 +13680,7 @@ function saveBudgetProposal() {
     if (['submitted','carry_forward'].includes(bp.status)) {
         if (!aps.some(a => a.id === 'NT_BP_'+bp.id)) {
             aps.push({ id:'NT_BP_'+bp.id, title: bp.title||'ຂໍງົບ', supplier:'ພະແນກບໍລິຫານ', dueDate: date, amount, status:'Unpaid', branchId });
-            localStorage.setItem('treasury_aps_pro', JSON.stringify(aps));
+            ntSaveColl('treasury_aps_pro', aps);
         }
     }
     ntSave();
@@ -14076,7 +14379,7 @@ function ntScheduleBill(idx, mode, dateStr){
     };
     if(typeof ntStamp==='function') ntStamp(inv);
     invoices.push(inv);
-    localStorage.setItem('treasury_invoices_pro', JSON.stringify(invoices));
+    ntSaveColl('treasury_invoices_pro', invoices);
     s.invoiced=true; s.invoicedDate=useDate; s.invoiceId=invId;
     _ntPersistSchedule(); renderContractScheduleEditor(); _ntCloseSchedAction();
     if(typeof renderInvoicesList==='function') renderInvoicesList();
@@ -14111,11 +14414,11 @@ function ntScheduleReceive(idx, mode, dateStr){
             image:'', pvNo:'', rvNo:'', contractId:c.id, contractSeq:s.seq, contractYear:c.contractYear||'',
             paymentMethod:'ເງິນໂອນ'
         });
-        localStorage.setItem('treasury_transactions_pro', JSON.stringify(transactions));
+        ntSaveColl('treasury_transactions_pro', transactions);
     }
     s.recordMode='record'; s.txnId=txnId;
     // mark a linked IV (if any) as Paid
-    if(s.invoiceId){ const iv=invoices.find(i=>i.id===s.invoiceId); if(iv){ iv.status='Paid'; localStorage.setItem('treasury_invoices_pro', JSON.stringify(invoices)); } }
+    if(s.invoiceId){ const iv=invoices.find(i=>i.id===s.invoiceId); if(iv){ iv.status='Paid'; ntSaveColl('treasury_invoices_pro', invoices); } }
     _ntPersistSchedule(); renderContractScheduleEditor(); _ntCloseSchedAction();
     if(typeof refreshAllViews==='function') refreshAllViews();
     showToast(`ຮັບເງິນ (${mode==='now'?'ທັນທີ':'ບັນທຶກ'}) ງວດ ${s.seq} → ລົງລາຍຮັບ ${useDate}`,'success');
@@ -14125,7 +14428,7 @@ function ntScheduleReceive(idx, mode, dateStr){
 function ntScheduleUnpay(idx){
     const c=_ntCurContract(); const s=_contractSchedule[idx]; if(!c||!s) return;
     if(!confirm('ຍົກເລີກການຊຳລະງວດນີ້?')) return;
-    if(s.txnId){ transactions = transactions.filter(t=>t.id!==s.txnId); localStorage.setItem('treasury_transactions_pro', JSON.stringify(transactions)); }
+    if(s.txnId){ transactions = transactions.filter(t=>t.id!==s.txnId); ntSaveColl('treasury_transactions_pro', transactions); }
     s.paid=false; s.paidDate=''; s.paidAmount=0; s.recordMode=''; s.txnId='';
     _ntPersistSchedule(); renderContractScheduleEditor();
     if(typeof refreshAllViews==='function') refreshAllViews();
@@ -14904,7 +15207,7 @@ function _ntCustomerData(cid){
     const iv = myInv.filter(i => (i.type||'')==='IV');
     const qtAll = myInv.filter(i => (i.type||'')==='QT').concat(((typeof nt_quotations!=='undefined'&&nt_quotations)?nt_quotations:[]).filter(q=>q.customerId===cid));
     const contracts = ((typeof nt_contracts!=='undefined'&&nt_contracts)?nt_contracts:[]).filter(c=>c.customerId===cid);
-    let costTrackAll=[]; try{ costTrackAll=JSON.parse(localStorage.getItem('nt_costTrack')||'[]'); }catch(_){}
+    let costTrackAll=[]; try{ costTrackAll=_ntJP('nt_costTrack', []); }catch(_){}
     const costTrack = costTrackAll.filter(e => (cname && (e.customerName||'')===cname) || (e.customerId||'')===cid);
     const rvNos = new Set(rv.map(r=>r.invoiceNo).filter(Boolean));
     const calcs = ((typeof nt_budgetCalcs!=='undefined'&&nt_budgetCalcs)?nt_budgetCalcs:[]).filter(bc => (bc.rvRef && rvNos.has(bc.rvRef)) || (bc.payee && cname && String(bc.payee).indexOf(cname)!==-1));
@@ -15348,7 +15651,7 @@ function ntSaveDbConfig(){
 }
 
 function ntLoadDbConfig(){
-    const cfg=JSON.parse(localStorage.getItem('nt_dbConfig')||'{}');
+    const cfg=_ntJP('nt_dbConfig', {});
     if(!cfg.apiKey){if(typeof showToast==='function')showToast('ຍັງບໍ່ມີ Config','warning');return;}
     document.getElementById('dbApiKey').value=cfg.apiKey||'';
     document.getElementById('dbProjectId').value=cfg.projectId||'';
@@ -15396,7 +15699,8 @@ function ntTestDbConnection(){
 
 function ntSyncToCloud(){
     if(typeof db === 'undefined' || !db){if(typeof showToast==='function')showToast('ຕ້ອງເຊື່ອມ Firebase ກ່ອນ','error');return;}
-    const payload={quotations:nt_quotations,budgetCalcs:nt_budgetCalcs,budgetPropols:nt_budgetPropols,contracts:nt_contracts,contactLogs:nt_contactLogs,aftersales:nt_aftersales,updatedAt:new Date()};
+    let payload={quotations:nt_quotations,budgetCalcs:nt_budgetCalcs,budgetPropols:nt_budgetPropols,contracts:nt_contracts,contactLogs:nt_contactLogs,aftersales:nt_aftersales,updatedAt:new Date()};
+    if (typeof _ntFirestoreSafe === 'function') { try { payload = _ntFirestoreSafe(payload); } catch(_){} }
     db.collection('treasury_nt_data').doc('main').set(payload)
         .then(()=>{if(typeof showToast==='function')showToast('Sync ຂຶ້ນ Cloud ສຳເລັດ','success');})
         .catch(e=>{if(typeof showToast==='function')showToast('Sync ລົ້ມເຫຼວ: '+e.message,'error');});
@@ -15436,15 +15740,15 @@ function ntExportAllData(){
         contactLogs: nt_contactLogs,
         aftersales: nt_aftersales,
         // Cost & settings data (these were missing before → caused mismatch)
-        costTrack: JSON.parse(localStorage.getItem('nt_costTrack') || '[]'),
-        costTemplates: (typeof nt_costTemplates !== 'undefined' ? nt_costTemplates : JSON.parse(localStorage.getItem('nt_costTemplates')||'[]')),
-        serviceCategories: (typeof nt_serviceCategories !== 'undefined' ? nt_serviceCategories : JSON.parse(localStorage.getItem('nt_serviceCategories')||'[]')),
-        fixedExpenses: (typeof nt_fixedExpenses !== 'undefined' ? nt_fixedExpenses : JSON.parse(localStorage.getItem('nt_fixedExpenses')||'[]')),
-        signatures: JSON.parse(localStorage.getItem('nt_signatures') || '{}'),
-        sigBank: JSON.parse(localStorage.getItem('nt_sigBank') || '[]'),
-        staffDuties: JSON.parse(localStorage.getItem('nt_staffDuties') || '[]'),
-        accrualProj: JSON.parse(localStorage.getItem('nt_accrualProj') || '{}'),
-        proposalLetters: (typeof nt_proposalLetters !== 'undefined' ? nt_proposalLetters : JSON.parse(localStorage.getItem('nt_proposalLetters')||'[]')),
+        costTrack: _ntJP('nt_costTrack', []),
+        costTemplates: (typeof nt_costTemplates !== 'undefined' ? nt_costTemplates : _ntJP('nt_costTemplates', [])),
+        serviceCategories: (typeof nt_serviceCategories !== 'undefined' ? nt_serviceCategories : _ntJP('nt_serviceCategories', [])),
+        fixedExpenses: (typeof nt_fixedExpenses !== 'undefined' ? nt_fixedExpenses : _ntJP('nt_fixedExpenses', [])),
+        signatures: _ntJP('nt_signatures', {}),
+        sigBank: _ntJP('nt_sigBank', []),
+        staffDuties: _ntJP('nt_staffDuties', []),
+        accrualProj: _ntJP('nt_accrualProj', {}),
+        proposalLetters: (typeof nt_proposalLetters !== 'undefined' ? nt_proposalLetters : _ntJP('nt_proposalLetters', [])),
         exportedAt: new Date().toISOString()
     };
     const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
@@ -15560,14 +15864,14 @@ function ntClearAllData(){
 function ntCaptureLocalSnapshot() {
     try {
         const today = new Date().toISOString().split('T')[0];
-        let snaps = JSON.parse(localStorage.getItem('nt_dailySnapshots') || '{}');
+        let snaps = _ntJP('nt_dailySnapshots', {});
         // Only one snapshot per day (the first of the day = start-of-day state)
         if (snaps[today]) return;  // already captured today
         snaps[today] = {
             transactions, invoices, aps,
             customers, branches, categories, companyInfo,
             nt_quotations, nt_budgetCalcs, nt_budgetPropols, nt_contracts, nt_contactLogs, nt_aftersales,
-            nt_costTrack: JSON.parse(localStorage.getItem('nt_costTrack')||'[]'),
+            nt_costTrack: _ntJP('nt_costTrack', []),
             nt_fixedExpenses: (typeof nt_fixedExpenses!=='undefined'?nt_fixedExpenses:[]),
             nt_staffDuties: (typeof nt_staffDuties!=='undefined'?nt_staffDuties:[])
         };
@@ -15582,11 +15886,11 @@ function ntMakeManualSnapshot() {
     // Force a snapshot under the current timestamp
     try {
         const stamp = new Date().toISOString().replace('T',' ').substring(0,16);
-        let snaps = JSON.parse(localStorage.getItem('nt_dailySnapshots') || '{}');
+        let snaps = _ntJP('nt_dailySnapshots', {});
         snaps[stamp] = {
             transactions, invoices, aps, customers, branches, categories, companyInfo,
             nt_quotations, nt_budgetCalcs, nt_budgetPropols, nt_contracts, nt_contactLogs, nt_aftersales,
-            nt_costTrack: JSON.parse(localStorage.getItem('nt_costTrack')||'[]'),
+            nt_costTrack: _ntJP('nt_costTrack', []),
             nt_fixedExpenses: (typeof nt_fixedExpenses!=='undefined'?nt_fixedExpenses:[]),
             nt_staffDuties: (typeof nt_staffDuties!=='undefined'?nt_staffDuties:[])
         };
@@ -15601,7 +15905,7 @@ function ntMakeManualSnapshot() {
 function renderBackupSnapshotList() {
     const el = document.getElementById('backupSnapshotList');
     if (!el) return;
-    const snaps = JSON.parse(localStorage.getItem('nt_dailySnapshots') || '{}');
+    const snaps = _ntJP('nt_dailySnapshots', {});
     const dates = Object.keys(snaps).sort().reverse();
     if (!dates.length) { el.innerHTML = '<p class="text-xs text-gray-400">ຍັງບໍ່ມີຈຸດສຳຮອງ</p>'; return; }
     el.innerHTML = dates.map(d => {
@@ -15617,7 +15921,7 @@ function renderBackupSnapshotList() {
 
 function ntRestoreSnapshot(dateKey) {
     if (!ntVerifyAdminPassword('ກູ້ຄືນຂໍ້ມູນ')) return;
-    const snaps = JSON.parse(localStorage.getItem('nt_dailySnapshots') || '{}');
+    const snaps = _ntJP('nt_dailySnapshots', {});
     const s = snaps[dateKey];
     if (!s) { showToast('ບໍ່ພົບຈຸດສຳຮອງ','error'); return; }
     if (!confirm(`ກູ້ຄືນຂໍ້ມູນຈາກ ${dateKey}? ຂໍ້ມູນປັດຈຸບັນຈະຖືກແທນທີ່.`)) return;
@@ -15649,7 +15953,7 @@ function ntRestoreSnapshot(dateKey) {
 
 // Restore the snapshot from ~2 days ago (closest available on/before that date)
 function ntRestore2DaysAgo() {
-    const snaps = JSON.parse(localStorage.getItem('nt_dailySnapshots') || '{}');
+    const snaps = _ntJP('nt_dailySnapshots', {});
     const dates = Object.keys(snaps).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort();
     if (!dates.length) { showToast('ຍັງບໍ່ມີຈຸດສຳຮອງໃຫ້ກູ້','warning'); return; }
     const target = new Date(); target.setDate(target.getDate() - 2);
@@ -15678,7 +15982,7 @@ function ntSaveSecondaryDbConfig() {
 
 function ntSwitchToSecondaryDb() {
     if (!ntVerifyAdminPassword('ສະຫຼັບໄປໃຊ້ຖານສຳຮອງ')) return;
-    const cfg = JSON.parse(localStorage.getItem('nt_dbConfig_secondary') || 'null');
+    const cfg = _ntJP('nt_dbConfig_secondary', null);
     if (!cfg || !cfg.apiKey) { showToast('ຍັງບໍ່ໄດ້ບັນທຶກຖານສຳຮອງ','error'); return; }
     if (!confirm('ສະຫຼັບໄປໃຊ້ຖານຂໍ້ມູນສຳຮອງ? ແອັບຈະໂຫຼດໃໝ່.')) return;
     // Promote secondary → primary config, then reload
@@ -15703,7 +16007,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if(nt_dbConfig.apiKey) ntLoadDbConfig();
         // Load secondary DB config into form
         try {
-            const cfg2 = JSON.parse(localStorage.getItem('nt_dbConfig_secondary')||'null');
+            const cfg2 = _ntJP('nt_dbConfig_secondary', null);
             if (cfg2) {
                 if(document.getElementById('dbApiKey2')) document.getElementById('dbApiKey2').value = cfg2.apiKey||'';
                 if(document.getElementById('dbProjectId2')) document.getElementById('dbProjectId2').value = cfg2.projectId||'';
@@ -15717,7 +16021,371 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 600);
 });
 
-</script>
+
+/* ========================= CONTRACT BUILDER MODULE ========================= */
+var nt_contractDocs = _ntJP('nt_contractDocs', []);
+var nt_cbPayPresets = _ntJP('nt_cbPayPresets', []);
+var _ntCB = { type: 'acc-tax', lang: 'lo', id: null, cost: [], pay: [] };
+
+var NT_CB_TYPES = {
+    'acc-tax': {
+        name: { lo: 'ສັນຍາວ່າຈ້າງ ບໍລິການບັນຊີ ແລະ ອາກອນ', en: 'Accounting & Tax Service Agreement', zh: '会计与税务服务合同' },
+        langs: ['lo']
+    },
+    'acc-tax-micro': {
+        name: { lo: 'ສັນຍາບັນຊີ-ອາກອນ ຈຸນລະວິສາຫະກິດ', en: 'Micro-Enterprise Accounting & Tax Agreement', zh: '微型企业会计与税务合同' },
+        langs: ['lo']
+    }
+};
+var NT_CB_LANG_NAMES = { lo: 'ລາວ', en: 'English', zh: '中文' };
+// Lao government font Phetsarath OT first (installed on most Lao machines), Noto Sans Lao as web fallback.
+var NT_CB_FONT = "'Phetsarath OT','Phetsarath',Phetsarath,'Saysettha OT','Noto Sans Lao',sans-serif";
+
+function _ntEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function _cbBlank(w){ return '<span style="display:inline-block;min-width:'+(w||70)+'px;border-bottom:1px dotted #999;">&nbsp;</span>'; }
+function _cbV(v, w){ v=(v==null?'':String(v)).trim(); return v ? '<b>'+_ntEsc(v)+'</b>' : _cbBlank(w); }
+function _cbNum(v){ var n=Number(String(v==null?'':v).replace(/[, ]/g,'')); return isFinite(n)?n:0; }
+function _cbFmt(n){ return (Number(n)||0).toLocaleString('en-US'); }
+function _cbDateFmt(iso){ if(!iso) return ''; var p=String(iso).split('-'); return p.length===3 ? (p[2]+'/'+p[1]+'/'+p[0]) : iso; }
+
+var NT_CB_FIELDKEYS = ['contractNo','branch','year','createdDate','signDate','clientCompany','clientRep','clientPosition','clientVillage','clientDistrict','clientProvince','clientCoord','clientCoordPhone'];
+
+function ntCBGetFields(){
+    var f={}; NT_CB_FIELDKEYS.forEach(function(k){ var el=document.getElementById('cb_'+k); f[k]= el ? el.value : ''; });
+    return f;
+}
+function ntCBSetFields(f){
+    f=f||{}; NT_CB_FIELDKEYS.forEach(function(k){ var el=document.getElementById('cb_'+k); if(el) el.value = (f[k]!=null?f[k]:''); });
+}
+
+// ---- auto contract number: branchCode + YYMM + running seq (resets each month) ----
+function ntCBGenNumber(){
+    var brEl=document.getElementById('cb_branch'); var branchId=brEl?brEl.value:'';
+    var branches=_ntJP('treasury_branches_pro',{});
+    var code=(branches[branchId]&&branches[branchId].code)?branches[branchId].code:'TSAA';
+    var d=new Date(); var mm=('0'+(d.getMonth()+1)).slice(-2); var yy=String(d.getFullYear()).slice(-2);
+    var prefix=code+yy+mm+'-';
+    var seq=1;
+    nt_contractDocs.forEach(function(r){ var n=(r.fields&&r.fields.contractNo)||''; if(n.indexOf(prefix)===0){ var s=parseInt(n.slice(prefix.length),10); if(s>=seq) seq=s+1; } });
+    var num=prefix+('00'+seq).slice(-3);
+    var el=document.getElementById('cb_contractNo'); if(el){ el.value=num; ntCBRender(); }
+    if(typeof showToast==='function') showToast('ສ້າງເລກທີ: '+num,'success');
+}
+
+// ---- customers datalist (client name picker) ----
+function ntCBRenderCustomerDL(){
+    var dl=document.getElementById('cbCustomerDL'); if(!dl) return;
+    var c=_ntJP('treasury_customers_pro',{}); window._ntCBCustMap={};
+    dl.innerHTML=Object.keys(c).map(function(k){ var nm=(c[k].name||''); window._ntCBCustMap[nm]=c[k]; return '<option value="'+_ntEsc(nm)+'"></option>'; }).join('');
+}
+function ntCBClientPicked(){
+    var el=document.getElementById('cb_clientCompany'); if(!el) return;
+    var cust=(window._ntCBCustMap||{})[el.value.trim()];
+    if(cust){
+        var rep=document.getElementById('cb_clientRep'); if(rep&&!rep.value&&cust.contactName) rep.value=cust.contactName;
+        var ph=document.getElementById('cb_clientCoordPhone'); if(ph&&!ph.value&&cust.tel) ph.value=cust.tel;
+        // try to fill address parts if customer.address looks like "ບ້ານ.., ເມືອງ.., ແຂວງ.."
+        if(cust.address){ var a=String(cust.address); var mb=a.match(/ບ້ານ\s*([^,]+)/), md=a.match(/ເມືອງ\s*([^,]+)/), mx=a.match(/ແຂວງ\s*([^,]+)/);
+            var v=document.getElementById('cb_clientVillage'), di=document.getElementById('cb_clientDistrict'), px=document.getElementById('cb_clientProvince');
+            if(v&&!v.value&&mb) v.value=mb[1].trim(); if(di&&!di.value&&md) di.value=md[1].trim(); if(px&&!px.value&&mx) px.value=mx[1].trim();
+        }
+    }
+    ntCBRender();
+}
+
+// ---- dynamic cost table ----
+function ntCBDefaultCost(){ return [ { desc:'ບໍລິການດ້ານບັນຊີ ແລະ ອາກອນ', cur:'ກີບ', m:'', y:'' } ]; }
+function ntCBRenderCostInputs(){
+    var box=document.getElementById('cbCostRows'); if(!box) return;
+    var rows=_ntCB.cost&&_ntCB.cost.length?_ntCB.cost:(_ntCB.cost=ntCBDefaultCost());
+    box.innerHTML=rows.map(function(r,i){
+        return '<div class="flex gap-1 items-center mb-1">'
+          +'<input value="'+_ntEsc(r.desc)+'" oninput="_ntCB.cost['+i+'].desc=this.value; ntCBRender()" placeholder="ເນື້ອໃນ" class="flex-1 bg-white border border-gray-200 rounded px-2 py-1 text-xs">'
+          +'<input value="'+_ntEsc(r.m)+'" oninput="_ntCB.cost['+i+'].m=this.value; ntCBRender()" placeholder="/ເດືອນ" inputmode="numeric" class="w-20 bg-white border border-gray-200 rounded px-2 py-1 text-xs text-right">'
+          +'<input value="'+_ntEsc(r.y)+'" oninput="_ntCB.cost['+i+'].y=this.value; ntCBRender()" placeholder="/ປີ" inputmode="numeric" class="w-20 bg-white border border-gray-200 rounded px-2 py-1 text-xs text-right">'
+          +'<button onclick="ntCBDelCostRow('+i+')" class="text-rose-500 px-1 text-xs"><i class="fa-solid fa-xmark"></i></button></div>';
+    }).join('');
+}
+function ntCBAddCostRow(){ if(!_ntCB.cost)_ntCB.cost=[]; _ntCB.cost.push({desc:'',cur:'ກີບ',m:'',y:''}); ntCBRenderCostInputs(); ntCBRender(); }
+function ntCBDelCostRow(i){ _ntCB.cost.splice(i,1); if(!_ntCB.cost.length)_ntCB.cost=ntCBDefaultCost(); ntCBRenderCostInputs(); ntCBRender(); }
+
+// ---- dynamic PAYMENT rows + presets ----
+function ntCBDefaultPay(){ return [ {pct:'60',note:'ໃນມື້ເຊັນສັນຍາບໍລິການບັນຊີ-ອາກອນ'}, {pct:'20',note:'ໃນມື້ຈັດສົ່ງ ປຶ້ມບົດສະຫຼຸບປະຈໍາປີ'}, {pct:'20',note:'ໃນມື້ຈັດສົ່ງໃບຖືບັນຊີ ແລະ ໃບຢັ້ງຢືນການມອບພັນທະອາກອນ'} ]; }
+function ntCBRenderPayInputs(){
+    var box=document.getElementById('cbPayRows'); if(!box) return;
+    var rows=_ntCB.pay&&_ntCB.pay.length?_ntCB.pay:(_ntCB.pay=ntCBDefaultPay());
+    box.innerHTML=rows.map(function(p,i){
+        return '<div class="flex gap-1 items-center mb-1">'
+          +'<input value="'+_ntEsc(p.pct)+'" oninput="_ntCB.pay['+i+'].pct=this.value; ntCBRender()" placeholder="%" inputmode="numeric" class="w-14 bg-white border border-gray-200 rounded px-2 py-1 text-xs text-center">'
+          +'<input value="'+_ntEsc(p.note)+'" oninput="_ntCB.pay['+i+'].note=this.value; ntCBRender()" placeholder="ລາຍລະອຽດງວດ" class="flex-1 bg-white border border-gray-200 rounded px-2 py-1 text-xs">'
+          +'<button onclick="ntCBDelPayRow('+i+')" class="text-rose-500 px-1 text-xs"><i class="fa-solid fa-xmark"></i></button></div>';
+    }).join('');
+}
+function ntCBAddPayRow(){ if(!_ntCB.pay)_ntCB.pay=[]; _ntCB.pay.push({pct:'',note:''}); ntCBRenderPayInputs(); ntCBRender(); }
+function ntCBDelPayRow(i){ _ntCB.pay.splice(i,1); if(!_ntCB.pay.length)_ntCB.pay=ntCBDefaultPay(); ntCBRenderPayInputs(); ntCBRender(); }
+function ntCBSavePayPreset(){
+    var name=prompt('ຕັ້ງຊື່ຊຸດຂັ້ນຕອນຊຳລະນີ້ (ເພື່ອໃຊ້ຄືນພາຍຫຼັງ):',''); if(name===null||!name.trim()) return;
+    name=name.trim(); nt_cbPayPresets=nt_cbPayPresets.filter(function(p){return p.name!==name;});
+    nt_cbPayPresets.push({name:name, rows:JSON.parse(JSON.stringify(_ntCB.pay||[]))});
+    try{localStorage.setItem('nt_cbPayPresets',JSON.stringify(nt_cbPayPresets));}catch(_){}
+    if(typeof triggerCloudBackup==='function')try{triggerCloudBackup();}catch(_){}
+    ntCBRenderPayPresetSel(); if(typeof showToast==='function') showToast('ບັນທຶກຊຸດການຊຳລະ "'+name+'"','success');
+}
+function ntCBApplyPayPreset(name){
+    if(!name) return; var p=nt_cbPayPresets.find(function(x){return x.name===name;}); if(!p) return;
+    _ntCB.pay=JSON.parse(JSON.stringify(p.rows||[])); ntCBRenderPayInputs(); ntCBRender();
+}
+function ntCBRenderPayPresetSel(){
+    var sel=document.getElementById('cbPayPresetSel'); if(!sel) return;
+    sel.innerHTML='<option value="">— ໃຊ້ຊຸດທີ່ບັນທຶກ —</option>'+nt_cbPayPresets.map(function(p){return '<option value="'+_ntEsc(p.name)+'">'+_ntEsc(p.name)+'</option>';}).join('');
+}
+
+// ---- live render ----
+function ntCBRender(){
+    var prev=document.getElementById('cbPreview'); if(!prev) return;
+    try{ prev.innerHTML=ntCBTemplate(_ntCB.type,_ntCB.lang,ntCBGetFields(),_ntCB.cost||[],_ntCB.pay||[]); }
+    catch(e){ prev.innerHTML='<p style="color:#b91c1c">render error: '+_ntEsc(e.message)+'</p>'; }
+}
+
+// Shared letterhead: company info (logo+name+address+contact) on LEFT, ເລກທີ on RIGHT (table layout)
+function _cbLetterhead(f, ci){
+    ci=ci||{};
+    var logoHtml=(ci.logoImage && typeof ntSafeImg==='function') ? ntSafeImg(ci.logoImage,'','height:58px;width:auto;object-fit:contain') : '';
+    return '<table style="width:100%;border-bottom:2px solid #1e3a8a;padding-bottom:6px;margin-bottom:10px"><tr>'
+      + '<td style="vertical-align:top;width:72%">'
+      +   '<table style="border-collapse:collapse"><tr>'
+      +     '<td style="width:64px;vertical-align:middle;padding-right:6px">'+logoHtml+'</td>'
+      +     '<td style="vertical-align:middle;line-height:1.35">'
+      +       '<div style="font-weight:bold;font-size:14px;color:#1e3a8a">'+_ntEsc(ci.name||'ບໍລິສັດ TSAA ຈຳກັດ')+'</div>'
+      +       (ci.address?'<div style="font-size:10.5px">'+_ntEsc(ci.address)+'</div>':'')
+      +       '<div style="font-size:10.5px">'+(ci.contact?'ໂທ: '+_ntEsc(ci.contact):'')+(ci.taxId?' | ເລກເສຍພາສີ: '+_ntEsc(ci.taxId):'')+'</div>'
+      +     '</td></tr></table>'
+      + '</td>'
+      + '<td style="vertical-align:top;text-align:right;width:28%;padding-top:4px"><div style="font-size:12px"><i>ເລກທີ: </i>'+_cbV(f.contractNo,46)+'/Mk-TSAA</div></td>'
+      + '</tr></table>';
+}
+
+// Contract type 2: Micro-enterprise accounting-tax agreement (no VAT, 12-item scope, single payment)
+function _ntCBAccTaxMicroLo(f, cost, pay){
+    var yr=(f.year||'').trim();
+    var Y=function(w){ return _cbV(yr, w||40); };
+    var ci=(typeof companyInfo!=='undefined'&&companyInfo)?companyInfo:{};
+    var rows=(cost&&cost.length)?cost:[{desc:'ບໍລິການດ້ານບັນຊີ ແລະ ອາກອນ',cur:'ກີບ',m:'',y:''}];
+    var sumY=0; rows.forEach(function(r){ sumY+=_cbNum(r.y); });
+    var totY=sumY;   // micro-enterprise: amount does NOT include VAT
+    var b='1px solid #444';
+    var costRowsHtml=rows.map(function(r,i){ return '<tr><td style="border:'+b+';padding:4px 6px;text-align:center">'+(i+1)+'</td><td style="border:'+b+';padding:4px 6px">'+(_ntEsc(r.desc)||_cbBlank(120))+'</td><td style="border:'+b+';padding:4px 6px;text-align:center">'+_ntEsc(r.cur||'ກີບ')+'</td><td style="border:'+b+';padding:4px 6px;text-align:right">'+(r.y?_cbFmt(_cbNum(r.y)):'')+' ກີບ</td></tr>'; }).join('');
+    var totRowHtml='<tr style="font-weight:bold;background:#f1f5f9"><td colspan="2" style="border:'+b+';padding:4px 6px;text-align:center">ລວມ</td><td style="border:'+b+';padding:4px 6px;text-align:center">ກີບ</td><td style="border:'+b+';padding:4px 6px;text-align:right">'+_cbFmt(totY)+' ກີບ</td></tr>';
+    var th='style="border:'+b+';padding:4px 6px;background:#e2e8f0;text-align:center;font-weight:bold"';
+    var prows=(pay&&pay.length)?pay:[{pct:'100',note:'ໃນມື້ທີເຊັນສັນຍາບໍລິການປະຈໍາປີ '+(yr||'……')}];
+    var payHtml=prows.map(function(p){ return '<li>- ຊໍາລະ '+_cbV(p.pct,30)+'% '+_ntEsc(p.note||'')+'</li>'; }).join('');
+    return ''
+    + '<div style="font-family:'+NT_CB_FONT+';color:#111;line-height:1.7;font-size:13px;">'
+    + _cbLetterhead(f, ci)
+    + '<div style="text-align:center;margin-bottom:8px"><div style="font-weight:bold">ສາທາລະນະລັດ ປະຊາທິປະໄຕ ປະຊາຊົນລາວ</div><div style="font-weight:bold">ສັນຕິພາບ ເອກະລາດ ປະຊາທິປະໄຕ ເອກະພາບ ວັດທະນະຖາວອນ</div><div style="width:120px;height:1px;background:#444;margin:6px auto"></div></div>'
+    + '<div style="text-align:center;margin:14px 0"><div style="font-size:17px;font-weight:bold">ສັນຍາວ່າຈ້າງ ສັນຍາບັນຊີ-ອາກອນ ຈຸນລະວິສາຫະກິດ</div><div style="font-size:16px;font-weight:bold">ປະຈຳປີ '+Y(50)+'</div></div>'
+    + '<p style="text-align:center">ສ້າງຂຶ້ນໃນວັນທີ '+_cbV(_cbDateFmt(f.createdDate),90)+' ທີ່ ບໍລິສັດ TSAA ຈຳກັດ.</p>'
+    + '<p style="text-align:center;font-weight:bold">ລະຫວ່າງ</p>'
+    + '<p><b>ບໍລິສັດ TSAA ຈຳກັດ.</b> ຕ່າງໜ້າໂດຍ ທ່ານ ພອນເທວາ ໂຄຕິເສນ ເຊິ່ງເປັນຜູ້ອຳນວຍການ, ສໍານັກງານຕັ້ງຢູ່ ບ້ານ ໂພນຕ້ອງສະຫວາດ, ເມືອງ ຈັນທະບູລີ, ນະຄອນຫຼວງວຽງຈັນ, ເບີໂທລະສັບ 020 56 366 264, E-mail: tsaamarketingandsale2013@gmail.com <i>(ເຊິ່ງຕໍ່ໄປນີ້ເອີ້ນ ຝ່າຍ ກ)</i></p>'
+    + '<p style="text-align:center;font-weight:bold">ແລະ</p>'
+    + '<p>'+_cbV(f.clientCompany,180)+' ຕ່າງໜ້າໂດຍ ທ່ານ '+_cbV(f.clientRep,120)+', ເຊິ່ງເປັນ ເຈົ້າຂອງວິສາຫະກິດ, ສໍານັກງານຕັ້ງຢູ່ບ້ານ '+_cbV(f.clientVillage,90)+' ເມືອງ '+_cbV(f.clientDistrict,90)+' ແຂວງ '+_cbV(f.clientProvince,90)+'. <i>(ເຊິ່ງຕໍ່ໄປນີ້ເອີ້ນ ຝ່າຍ ຂ)</i></p>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 1 : ວ່າດ້ວຍ ຈຸດປະສົງສັນຍາ</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ເພື່ອກຳນົດຈຸດປະສົງ, ເປົ້າໝາຍ, ຂອບເຂດວຽກ, ຄາດໝາຍ, ຄວາມຮັບຜິດຊອບ ແລະ ງົບປະມານຕ່າງໆ ທີ່ກ່ຽວຂ້ອງກັບສັນຍາຂອງສອງຝ່າຍ.</li><li>ເພື່ອກຳນົດບຸກຄະລາກອນ ແລະ ໜ້າວຽກລະອຽດ ຂອງ ການບໍລິການ ບັນຊີ ແລະ ອາກອນ.</li><li>ເພື່ອເປັນຫຼັກຖານ - ບ່ອນອີງການເຄື່ອນໄຫວ ຂອງ ພະນັກງານວິຊາການ ສໍາລັບການປະຕິບັດສັນຍາ ຂອງສອງຝ່າຍ.</li></ol>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 2 : ວ່າດ້ວຍ ເນື້ອໃນສັນຍາ</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ຝ່າຍ ຂ ຕົກລົງວ່າຈ້າງ ຝ່າຍ ກ ໃຫ້ມາ ບໍລິການດ້ານບັນຊີ ແລະ ອາກອນ ແລະ ພ້ອມກັບ ສ້າງບົດລາຍງານການເງິນປະຈຳປີ '+Y()+'.</li><li>ຝ່າຍ ກ ຕົກລົງຮັບເອົາການວ່າຈ້າງ ຈາກ ຝ່າຍ ຂ ມາບໍລິການ ດ້ານບັນຊີ ແລະ ອາກອນ ແລະ ສ້າງບົດລາຍງານ ການເງິນປະຈຳປີ '+Y()+'.</li><li>ຝ່າຍ ກ ແລະ ຝ່າຍ ຂ ໄດ້ຕົກລົງຂອບເຂດວຽກການໃຫ້ບໍລິການຮ່ວມກັນ ເຊິ່ງປະກອບດ້ວຍລາຍລະອຽດດັ່ງນີ້:</li></ol>'
+    + '<table style="border-collapse:collapse;width:100%;margin:8px 0;font-size:12px"><tr><td '+th+' style="width:36px;border:'+b+';padding:4px;background:#e2e8f0;font-weight:bold">ລຳດັບ</td><td '+th+'>ເນື້ອໃນ</td></tr>'
+    +   '<tr><td style="border:'+b+';padding:4px;text-align:center;vertical-align:top">1</td><td style="border:'+b+';padding:6px"><b>ຂອບເຂດໃນການບໍລິການ ໂດຍມີລາຍລະອຽດດັ່ງນີ້:</b><ol style="margin:4px 0 0 18px;padding:0"><li>ໂປຮແກຣມບັນທຶກເຄຶ່ອງຂາຍການຄ້າ - ການບໍລິການ ທີ່ໄດ້ບິນເກັບເງິນ ອມພ ທີ່ເຊື່ອມຕໍ່ກັບລະບົບ Taxris ແລະ ພ້ອມການເຝຶກການນຳໃຊ້</li><li>ໄດ້ທີ່ປືກສາບັນຊີ - ອາກອນ</li><li>ວາງລະບົບບັນຊີ ແລະ ສ້າງຜັງບັນຊີ</li><li>ຜູ້ບັນທຶກ ແລະ ສະຫລຸບບັນຊີ, ສ້າງບົດລາຍງານການເງິນປະຈຳເດືອນ, 6 ເດືອນຕົ້ນປີ ແລະ ທ້າຍປີ</li><li>ວາງລະບົບເກັບເອກະສານຫລັກຖານທາງບັນຊີ - ການເງິນ - ອາກອນ</li><li>ປື້ມຄູ່ມືບັນຊີ</li><li>ແຈ້ງພັນທະອາກອນແຕ່ລະເດືອນຕາມກົດໝາຍອາກອນທີວາງອອກ</li><li>ປິ້ນບົດລາຍງານການເງິນປະຈຳປີ ໃຫ້ແກ່ຂະແໜ່ງບັນຊີ ແລະ ອາກອນ</li><li>ປະກອບ ແລະ ປິ້ນຟອມນຳຂະແໜງບັນຊີ ເພື່ອອອກໃບຕິດຕາມຖືບັນຊີປະຈຳປີ</li><li>ປະກອບ ແລະ ປິ້ນຟອມນຳຂະແໜງອາກອນ ເພີ່ອອອກໃບຢັ້ງຢືນການມອບພັນທະອາກອນປະຈຳປີ</li><li>ເປັນຕົວແທນປະສານງານ ແລະ ຮ່ວມເຮັດວຽກກັບເຈົ້າໜ້າທີ່ໄລ່ລ່ຽງກວດກາປະຈຳປີ</li><li>ປະກອບຟອມຢືນຕໍ່ໃບອະນຸຍາດເຄື່ອງບັນທຶກຂາຍປະຈຳປີ</li></ol></td></tr></table>'
+    + '<p style="margin-top:6px"><b>4. ສິດ, ໜ້າທີ່ຮັບຜິດຊອບ ແລະ ຂອບເຂດການບໍລິການ ຂອງ ຝ່າຍ ກ ແລະ ຝ່າຍ ຂ</b></p>'
+    + '<p style="font-weight:bold;margin:4px 0 0">ຝ່າຍ ກ:</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ບໍລິສັດຮັບປະກັນຄວາມຖືກຕ້ອງ, ຄົບຖ້ວນ ແລະ ທັນເວລາດ້ານເອກະສານຕ່າງໆຕາມສັນຍາທີ່ຕົກລົງກັນ ໃຫ້ແກ່ '+_cbV(f.clientCompany,160)+'. ແຕ່ງຕັ້ງຜູ້ປະສານງານ ແລະ ເຮັດວຽກກັບ ຝ່າຍ ຂ ຈົນສໍາເລັດໄລຍະການບໍລິການຕາມສັນຍາ, ເຊິ່ງຜູ້ທີ່ຈະເຮັດວຽກງານຕົວຈິງແມ່ນຕ່າງໜ້າໂດຍ ທ່ານ ພອນເທວາ ໂຄຕິເສນ, ເບີໂທ: 020 56 366 264.</li><li>ເຂົ້າມາບໍລິການພາຍໃນບໍລິສັດຕາມຕາຕະລາງທີ່ຕົກລົງກັນ ແລະ ຈະແຈ້ງໃຫ້ທາງ ຝ່າຍ ຂ ຮັບຮູ້ລ່ວງໜ້າທຸກໆຄັ້ງ.</li><li>ກໍລະນີບັນດາໜ້າວຽກທີ່ກຳນົດໃນສັນຍາບໍລິການສະບັບນີ້ຫາກຊັກຊ້າ, ເຊິ່ງເປັນເຫດຜົນທີ່ພາໃຫ້ເກີດມີການປັບໄໝຈາກພາກລັດສຳລັບການແຈ້ງອາກອນຕ່າງໆ ຂອງ ຝ່າຍ ຂ ແມ່ນ ຝ່າຍ ກ ຈະຮັບຜິດຊອບຄ່າປັບໄໝທີ່ເກີດຂຶ້ນແຕ່ພຽງຝ່າຍດຽວ.</li></ol>'
+    + '<p style="font-weight:bold;margin:6px 0 0">ຝ່າຍ ຂ:</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ບໍລິສັດຮັບປະກັນຄວາມຖືກຕ້ອງ, ຄວາມຄົບຖ້ວນ ແລະ ຄວາມເປັນຈິງ ທາງດ້ານຂໍ້ມູນ ທີ່ສະໜອງໃຫ້ແກ່ ບໍລິສັດ ທີເອັດສ ທີ່ປຶກສາບັນຊີ ແລະ ກວດສອບ ຈຳກັດ. ບັນດາເອກະສານ ດັ່ງກ່າວຈະສະໜອງໃຫ້ພາຍໃນ 5 ມື້ຫຼັງຈາກເຊັນສັນຍາແລ້ວ.</li><li>ແຕ່ງຕັ້ງຜູ້ປະສານງານໃນການຮ່ວມເຮັດວຽກກັບ ຝ່າຍ ກ ຈົນສໍາເລັດໄລຍະການບໍລິການຕາມສັນຍາ ເຊິ່ງຜູ້ທີ່ຈະເຮັດວຽກງານຕົວຈິງແມ່ນໂດຍ ທ່ານ '+_cbV(f.clientCoord,120)+', ເບີໂທ: '+_cbV(f.clientCoordPhone,90)+'.</li><li>ອຳນວຍຄວາມສະດວກໃນການເຂົ້າມາບໍລິການພາຍໃນບໍລິສັດເຊັ່ນ: ສະຖານທີ່ນັ່ງເຮັດວຽກ, ເຄື່ອງໃຊ້ ທີ່ຈໍາເປັນ (ປິ້ນເຕີ້, ໂປຣເຈັກເຕີ້, ກະດານ, ເຄື່ອງຂຽນ ແລະ ອຸປະກອນຮັບໃຊ້ຫ້ອງການອື່ນໆ) ໂດຍຈະແຈ້ງໃຫ້ທາງ ຝ່າຍ ກ ຮັບຊາບ.</li><li>ຖ້າທາງບໍລິສັດຫາກສະໜອງຂໍ້ມູນ ຫຼື ເອກະສານທີ່ກ່ຽວຂ້ອງກັບໜ້າວຽກຂອງທັງສອງຝ່າຍຊັກຊ້າ, ຜິດພາດ ຫຼື ບໍ່ຄົບຖ້ວນ ແມ່ນທາງ ຝ່າຍ ຂ ຈະຮັບຜິດຊອບຄ່າປັບໄໝທີ່ເກີດຂຶ້ນແຕ່ພຽງຜູ້ດຽວ. ຝ່າຍ ຂ ຈະຊໍາລະຄ່າບໍລິການ ຂອງ ຝ່າຍ ກ ຕາມມາດຕາ 3 ໃຫ້ຖືກຕ້ອງ ແລະ ກົງເວລາ.</li></ol>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 3: ວ່າດ້ວຍ ຄ່າບໍລິການ ແລະ ຂັ້ນຕອນການຊໍາລະ</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ຝ່າຍ ກ ແລະ ຝ່າຍ ຂ ຕົກລົງຄ່າບໍລິການຮ່ວມກັນເປັນ <b>'+_cbFmt(totY)+' ກີບ/ຕໍ່ປີ</b>, ເຊິ່ງມູນຄ່າດັ່ງກ່າວແມ່ນບໍ່ລວມອາກອນມູນຄ່າເພີ່ມ 10% ແຕ່ບໍ່ລວມຄ່າປັບໄໝ ທີ່ທາງບໍລິສັດບໍ່ປະຕິບັດ ຕາມລະບຽບຂອງສ່ວຍສາອາກອນ ແລະ ຄ່າທໍານຽມໃນການສົ່ງເອກະສານໃຫ້ແກ່ກະຊວງການເງິນ ເເລະ ສ່ວຍສາອາກອນ. ເຊິ່ງມີລາຍລະອຽດຕາມຕາຕະລາງລຸ່ມນີ້:</li></ol>'
+    + '<table style="border-collapse:collapse;width:100%;margin:8px 0;font-size:12px"><tr><td '+th+' style="width:32px;border:'+b+';padding:4px;background:#e2e8f0">ລ/ດ</td><td '+th+'>ເນື້ອໃນບໍລິການ</td><td '+th+'>ສະກຸນເງິນ</td><td '+th+'>ຄ່າບໍລິການ(ກີບ)/ຕໍ່ປີ</td></tr>'+costRowsHtml+totRowHtml+'</table>'
+    + '<p>2) ຂັ້ນຕອນການຊໍາລະຄ່າບໍລິການປະກອບມີດັ່ງນີ້:</p><ul style="margin:0 0 0 22px;padding:0;list-style:none">'+payHtml+'</ul>'
+    + '<div style="margin:6px 0 0 10px"><p style="margin:0">❖ ຊໍາລະຜ່ານ ບັນຊີທະນາຄານການຄ້າຕ່າງປະເທດລາວ</p><p style="margin:0 0 0 16px">- ຊື່ບັນຊີ: TS ACCOUNTING AND AUDITING CO.LTD</p><p style="margin:0 0 0 16px">- ເລກບັນຊີ ສະກຸນເງິນກີບ (LAK): 01011-00011-3808-7001</p><p style="margin:0 0 0 16px">- ສະກຸນເງິນໂດລາ (USD): 01011-01011-3808-7001</p></div>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 4 : ວ່າດ້ວຍ ການກໍານົດຕາຕະລາງໜ້າວຽກ.</p>'
+    + '<table style="border-collapse:collapse;width:100%;margin:6px 0;font-size:12px"><tr><td '+th+' style="width:32px;border:'+b+';padding:4px;background:#e2e8f0">ລ/ດ</td><td '+th+'>ລາຍລະອຽດໜ້າວຽກ</td><td '+th+'>ເວລາກໍານົດ</td></tr><tr><td style="border:'+b+';padding:4px;text-align:center">1</td><td style="border:'+b+';padding:6px">ກຳນົດເວລາຈັດສົ່ງບົດລາຍງານການເງິນສະບັບຮ່າງ.</td><td style="border:'+b+';padding:6px">ພາຍໃນ 7 ວັນລັດຖະການ ຫຼັງຈາກໄດ້ຮັບຂໍ້ມູນທີ່ໄດ້ຖືກເຊັນຢັ້ງຢືນເປັນທີ່ຮຽບຮ້ອຍແລ້ວ.</td></tr><tr><td style="border:'+b+';padding:4px;text-align:center">2</td><td style="border:'+b+';padding:6px">ກຳນົດເວລາຈັດສົ່ງບົດລາຍງານການເງິນສະບັບສົມບູນ.</td><td style="border:'+b+';padding:6px">ພາຍໃນ 7 ວັນລັດຖະການ ຫຼັງຈາກໄດ້ຮັບການຢັ້ງຢືນຈາກ ຝ່າຍ ຂ ໂດຍຜ່ານອີເມວ.</td></tr></table>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 5 : ວ່າດ້ວຍ ການຈັດສົ່ງເອກະສານ</p>'
+    + '<p style="margin:0">1) ເອກະສານປະກອບມີ:</p><ul style="margin:0 0 0 22px;padding:0;list-style:none"><li>− ເອກະສານຫຼັກຖານຕ່າງໆ ທີ່ ຝ່າຍ ຂ ປະກອບໃຫ້ມາແກ່ ຝ່າຍ ກ ຕາມບັນຊີຂໍ້ມູນ</li><li>− ບົດລາຍງານການເງິນ ປະຈໍາເດືອນ ເເລະ ປະຈຳປີ ຂອງ ບໍລິສັດຈໍານວນ 1 ຊຸດ.</li></ul>'
+    + '<p>2) ພາຍຫຼັງມີການສົ່ງມອບໃບປະຕິບັດພັນທະອາກອນ, ປຶ້ມບົດສະຫຼຸບບັນຊີປະຈຳປີ '+Y()+' ແລະ ເອກະສານທີ່ກ່ຽວຂ້ອງອື່ນໆ ໃຫ້ ຝ່າຍ ຂ ຢ່າງເປັນລາຍລັກອັກສອນແລ້ວ ແລະ ມີການຊໍາລະສິ້ນສຸດລົງ ຖືວ່າສັນຍາວ່າຈ້າງ ການບໍລິການບັນຊີ ແລະ ອາກອນສະບັບນີ້ໄດ້ສິ້ນສຸດລົງ.</p>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 6 : ວ່າດ້ວຍ ຜົນສັກສິດ ຂອງ ສັນຍາ</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ສັນຍາສະບັບນີ້ໄດ້ສ້າງຂຶ້ນບົນພື້ນຖານການຕົກລົງ ແລະ ຄວາມເຂົ້າໃຈ ຂອງ ທັງສອງຝ່າຍ. ສະນັ້ນ, ມີຜົນສັກສິດນັບແຕ່ມື້ລົງລາຍເຊັນ, ຈໍ້າກາ ແລະ ລົງທະບຽນສານເປັນຕົ້ນໄປ.</li><li>ສັນຍາສ້າງຂຶ້ນ 2 ສະບັບ ເປັນພາສາລາວ ເຊິ່ງມີເນື້ອໃນຄົບຖ້ວນຄືກັນ.</li></ol>'
+    + '<table style="width:100%;margin-top:24px;text-align:center;font-size:13px"><tr>'
+    +   '<td style="width:50%;vertical-align:top"><div>ວັນທີ '+_cbV(_cbDateFmt(f.signDate||f.createdDate),80)+'</div><div style="font-weight:bold;margin-top:2px">ຜູ້ອໍານວຍການ</div><div style="font-weight:bold">ບໍລິສັດ TSAA ຈຳກັດ</div>'+(ci.signatureImage?('<div style="margin-top:6px">'+(typeof ntSafeImg==='function'?ntSafeImg(ci.signatureImage,'','max-height:120px;max-width:90%;margin:0 auto'):'')+'</div>'):'<div style="height:96px"></div>')+'</td>'
+    +   '<td style="width:50%;vertical-align:top"><div>ວັນທີ ......./........./.........</div><div style="font-weight:bold;margin-top:2px">ຜູ້ອໍານວຍການ</div><div style="font-weight:bold">'+_cbV(f.clientCompany,150)+'</div><div style="height:120px"></div></td>'
+    + '</tr></table>'
+    + '</div>';
+}
+
+function ntCBTemplate(type, lang, f, cost, pay){
+    if(type==='acc-tax') return _ntCBAccTaxLo(f, cost, pay);
+    if(type==='acc-tax-micro') return _ntCBAccTaxMicroLo(f, cost, pay);
+    return '<p>ຍັງບໍ່ມີແບບສຳລັບປະເພດນີ້</p>';
+}
+
+function _ntCBAccTaxLo(f, cost, pay){
+    var yr=(f.year||'').trim();
+    var yrNext = yr && /^\d{4}$/.test(yr) ? (parseInt(yr,10)+1) : '';   // report deadline = service year + 1 (2025 → 2026)
+    var Y=function(w){ return _cbV(yr, w||40); };
+    var ci=(typeof companyInfo!=='undefined'&&companyInfo)?companyInfo:{};
+    // cost rows + auto VAT 10% + total
+    var rows=(cost&&cost.length)?cost:[{desc:'ບໍລິການດ້ານບັນຊີ ແລະ ອາກອນ',cur:'ກີບ',m:'',y:''}];
+    var sumM=0,sumY=0; rows.forEach(function(r){ sumM+=_cbNum(r.m); sumY+=_cbNum(r.y); });
+    var vatM=Math.round(sumM*0.1), vatY=Math.round(sumY*0.1), totM=sumM+vatM, totY=sumY+vatY;
+    var b='1px solid #444';
+    var costRowsHtml=rows.map(function(r,i){ return '<tr><td style="border:'+b+';padding:4px 6px;text-align:center">'+(i+1)+'</td><td style="border:'+b+';padding:4px 6px">'+(_ntEsc(r.desc)||_cbBlank(120))+'</td><td style="border:'+b+';padding:4px 6px;text-align:center">'+_ntEsc(r.cur||'ກີບ')+'</td><td style="border:'+b+';padding:4px 6px;text-align:right">'+(r.m?_cbFmt(_cbNum(r.m)):'')+' ກີບ</td><td style="border:'+b+';padding:4px 6px;text-align:right">'+(r.y?_cbFmt(_cbNum(r.y)):'')+' ກີບ</td></tr>'; }).join('');
+    var vatRowHtml='<tr><td style="border:'+b+';padding:4px 6px;text-align:center">'+(rows.length+1)+'</td><td style="border:'+b+';padding:4px 6px">ອມພ 10%</td><td style="border:'+b+';padding:4px 6px;text-align:center">ກີບ</td><td style="border:'+b+';padding:4px 6px;text-align:right">'+_cbFmt(vatM)+' ກີບ</td><td style="border:'+b+';padding:4px 6px;text-align:right">'+_cbFmt(vatY)+' ກີບ</td></tr>';
+    var totRowHtml='<tr style="font-weight:bold;background:#f1f5f9"><td colspan="2" style="border:'+b+';padding:4px 6px;text-align:center">ລວມ</td><td style="border:'+b+';padding:4px 6px;text-align:center">ກີບ</td><td style="border:'+b+';padding:4px 6px;text-align:right">'+_cbFmt(totM)+' ກີບ</td><td style="border:'+b+';padding:4px 6px;text-align:right">'+_cbFmt(totY)+' ກີບ</td></tr>';
+    var th='style="border:'+b+';padding:4px 6px;background:#e2e8f0;text-align:center;font-weight:bold"';
+    // payment rows
+    var prows=(pay&&pay.length)?pay:ntCBDefaultPay();
+    var payHtml=prows.map(function(p){ return '<li>- ຊໍາລະ '+_cbV(p.pct,30)+'% '+_ntEsc(p.note||'')+'</li>'; }).join('');
+    return ''
+    + '<div style="font-family:'+NT_CB_FONT+';color:#111;line-height:1.7;font-size:13px;">'
+    + _cbLetterhead(f, ci)
+    + '<div style="text-align:center;margin-bottom:8px"><div style="font-weight:bold">ສາທາລະນະລັດ ປະຊາທິປະໄຕ ປະຊາຊົນລາວ</div><div style="font-weight:bold">ສັນຕິພາບ ເອກະລາດ ປະຊາທິປະໄຕ ເອກະພາບ ວັດທະນະຖາວອນ</div><div style="width:120px;height:1px;background:#444;margin:6px auto"></div></div>'
+    + '<div style="text-align:center;margin:14px 0"><div style="font-size:17px;font-weight:bold">ສັນຍາວ່າຈ້າງ ບໍລິການບັນຊີ ແລະ ອາກອນ</div><div style="font-size:16px;font-weight:bold">ປະຈຳປີ '+Y(50)+'</div></div>'
+    + '<p style="text-align:center">ສ້າງຂຶ້ນໃນວັນທີ '+_cbV(_cbDateFmt(f.createdDate),90)+' ທີ່ ບໍລິສັດ TSAA ຈຳກັດ.</p>'
+    + '<p style="text-align:center;font-weight:bold">ລະຫວ່າງ</p>'
+    + '<p><b>ບໍລິສັດ TSAA ຈຳກັດ.</b> ຕ່າງໜ້າໂດຍ ທ່ານ ພອນເທວາ ໂຄຕິເສນ ເຊິ່ງເປັນຜູ້ອຳນວຍການ, ສໍານັກງານຕັ້ງຢູ່ ບ້ານ ດົງປາແຫຼບ, ເມືອງ ຈັນທະບູລີ, ນະຄອນຫຼວງວຽງຈັນ, ເບີໂທລະສັບ 020 56 366 264, E-mail: TSAA.company@yahoo.com <i>(ເຊິ່ງຕໍ່ໄປນີ້ເອີ້ນ ຝ່າຍ ກ)</i></p>'
+    + '<p style="text-align:center;font-weight:bold">ແລະ</p>'
+    + '<p>'+_cbV(f.clientCompany,180)+' ຕ່າງໜ້າໂດຍ ທ່ານ '+_cbV(f.clientRep,120)+', ເຊິ່ງເປັນ ຜູ້'+_cbV(f.clientPosition,90)+', ສໍານັກງານຕັ້ງຢູ່ ບ້ານ '+_cbV(f.clientVillage,90)+', ເມືອງ '+_cbV(f.clientDistrict,90)+', ແຂວງ '+_cbV(f.clientProvince,90)+'. <i>(ເຊິ່ງຕໍ່ໄປນີ້ເອີ້ນ ຝ່າຍ ຂ)</i></p>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 1 : ວ່າດ້ວຍ ຈຸດປະສົງສັນຍາ</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ເພື່ອກຳນົດຈຸດປະສົງ, ເປົ້າໝາຍ, ຂອບເຂດວຽກ, ຄາດໝາຍ, ຄວາມຮັບຜິດຊອບ ແລະ ງົບປະມານຕ່າງໆ ທີ່ກ່ຽວຂ້ອງກັບສັນຍາຂອງສອງຝ່າຍ.</li><li>ເພື່ອກຳນົດບຸກຄະລາກອນ ແລະ ໜ້າວຽກລະອຽດ ຂອງ ການບໍລິການ ບັນຊີ ແລະ ອາກອນ.</li><li>ເພື່ອເປັນຫຼັກຖານ - ບ່ອນອີງການເຄື່ອນໄຫວ ຂອງ ພະນັກງານວິຊາການ ສໍາລັບການປະຕິບັດສັນຍາຂອງສອງຝ່າຍ.</li></ol>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 2 : ວ່າດ້ວຍ ເນື້ອໃນສັນຍາ</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ຝ່າຍ ຂ ຕົກລົງວ່າຈ້າງ ຝ່າຍ ກ ໃຫ້ມາ ບໍລິການດ້ານບັນຊີ ແລະ ອາກອນ ແລະ ພ້ອມກັບ ສ້າງບົດລາຍງານການເງິນປະຈຳປີ '+Y()+'.</li><li>ຝ່າຍ ກ ຕົກລົງຮັບເອົາການວ່າຈ້າງ ຈາກ ຝ່າຍ ຂ ມາບໍລິການ ດ້ານບັນຊີ ແລະ ອາກອນ ແລະ ສ້າງບົດລາຍງານ ການເງິນປະຈຳປີ '+Y()+'.</li><li>ຝ່າຍ ກ ແລະ ຝ່າຍ ຂ ໄດ້ຕົກລົງຂອບເຂດວຽກການໃຫ້ບໍລິການຮ່ວມກັນ ເຊິ່ງປະກອບດ້ວຍລາຍລະອຽດດັ່ງນີ້:</li></ol>'
+    + '<table style="border-collapse:collapse;width:100%;margin:8px 0;font-size:12px">'
+    +   '<tr><td '+th+' style="width:36px;border:'+b+';padding:4px;background:#e2e8f0;font-weight:bold">ລຳດັບ</td><td '+th+'>ເນື້ອໃນ</td></tr>'
+    +   '<tr><td style="border:'+b+';padding:4px;text-align:center;vertical-align:top">1</td><td style="border:'+b+';padding:6px"><b>ບໍລິການດ້ານບັນຊີ ໂດຍມີລາຍລະອຽດດັ່ງນີ້:</b><ul style="margin:4px 0 0 18px;padding:0"><li>ສະຫຼຸບການເຄື່ອນໄຫວທາງບັນຊີທີ່ເກີດຂື້ນໃນປີ '+Y()+' ໃສ່ໂປຣແກຣມບັນຊີ</li><li>ສະຫຼຸບ, ປິດບັນຊີ ຫຼື ສ້າງເອກະສານລາຍງານການເງິນ</li><li>ກວດກາເອກະສານກ່ອນລົງບັນຊີ.</li><li>ສ້າງສາລະບານບັນຊີ.</li><li>ກະກຽມບົດສະຫຼຸບ ແລະ ບົດລາຍງານການເງິນແບບຄົບຖ້ວນປະຈຳເດືອນ, ໄຕມາດ ແລະ ປະຈຳປີ '+Y()+' ໃຫ້ຄະນະຜູ້ບໍລິຫານ.</li><li>ຈັດສົ່ງບົດລາຍງານການເງິນ ໃຫ້ແກ່ຄະນະບໍລິຫານບໍລິສັດ ແລະ ເຈົ້າໜ້າທີ່ສ່ວຍສາອາກອນ ກ່ອນວັນທີ 28 ກຸມພາ ປີ '+_cbV(yrNext,40)+'.</li></ul></td></tr>'
+    +   '<tr><td style="border:'+b+';padding:4px;text-align:center;vertical-align:top">2</td><td style="border:'+b+';padding:6px"><b>ບໍລິການດ້ານອາກອນ ໂດຍມີລາຍລະອຽດດັ່ງນີ້:</b><ul style="margin:4px 0 0 18px;padding:0"><li>ກວດກາໃບບິນທີ່ຕິດພັນກັບອາກອນ.</li><li>ສະຫລຸບ ແລະ ສັງລວມໃບບິນອາກອນມູນຄ່າເພີ່ມ</li><li>ສະຫລຸບ ແລະ ສັງລວມອາກອນລາຍໄດ້</li><li>ສະຫລຸບ ແລະ ສັງລວມອາກອນກຳໄລ</li><li>ບໍລິການ ແລະ ປະສານງານກັບພະແນກສ່ວຍສາອາກອນ ໃນການແຈ້ງເສຍພັນທະຕາມ ກົດໝາຍສ່ວຍສາອາກອນ.</li><li>ປະສານງານ ແລະ ເຮັດວຽກຮ່ວມກັບ ເຈົ້າໜ້າທີ່ຈາກພະແນກສ່ວຍສາອາກອນ ໃນການໄລ່ລ່ຽງປະຈຳປີ, ພ້ອມປະສານງານໃນການອອກໃບຢັ້ງຢືນການມອບພັນທະອາກອນປະຈຳປີ.</li></ul></td></tr>'
+    + '</table>'
+    + '<p style="margin-top:6px"><b>4. ສິດ, ໜ້າທີ່ຮັບຜິດຊອບ ແລະ ຂອບເຂດການບໍລິການ ຂອງ ຝ່າຍ ກ ແລະ ຝ່າຍ ຂ</b></p>'
+    + '<p style="font-weight:bold;margin:4px 0 0">ຝ່າຍ ກ:</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ບໍລິສັດຮັບປະກັນຄວາມຖືກຕ້ອງ, ຄົບຖ້ວນ ແລະ ທັນເວລາດ້ານເອກະສານຕ່າງໆຕາມສັນຍາທີ່ຕົກລົງກັນ ໃຫ້ແກ່ '+_cbV(f.clientCompany,160)+'. ແຕ່ງຕັ້ງຜູ້ປະສານງານ ແລະ ເຮັດວຽກກັບ ຝ່າຍ ຂ ຈົນສໍາເລັດໄລຍະການບໍລິການຕາມສັນຍາ, ເຊິ່ງຜູ້ທີ່ຈະເຮັດວຽກງານຕົວຈິງແມ່ນຕ່າງໜ້າໂດຍ ທ່ານ ພອນເທວາ ໂຄຕິເສນ, ເບີໂທ: 020 56 366 264.</li><li>ເຂົ້າມາບໍລິການພາຍໃນບໍລິສັດຕາມຕາຕະລາງທີ່ຕົກລົງກັນ ແລະ ຈະແຈ້ງໃຫ້ທາງ ຝ່າຍ ຂ ຮັບຮູ້ ລ່ວງໜ້າທຸກໆຄັ້ງ.</li><li>ກໍລະນີບັນດາໜ້າວຽກທີ່ກຳນົດໃນສັນຍາບໍລິການສະບັບນີ້ຫາກຊັກຊ້າ, ເຊິ່ງເປັນເຫດຜົນທີ່ພາໃຫ້ເກີດມີການປັບໄໝຈາກພາກລັດສຳລັບການແຈ້ງອາກອນຕ່າງໆ ຂອງ ຝ່າຍ ຂ ແມ່ນ ຝ່າຍ ກ ຈະຮັບຜິດຊອບຄ່າປັບໄໝທີ່ເກີດຂຶ້ນແຕ່ພຽງຝ່າຍດຽວ.</li></ol>'
+    + '<p style="font-weight:bold;margin:6px 0 0">ຝ່າຍ ຂ:</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ບໍລິສັດຮັບປະກັນຄວາມຖືກຕ້ອງ, ຄວາມຄົບຖ້ວນ ແລະ ຄວາມເປັນຈິງ ທາງດ້ານຂໍ້ມູນ ທີ່ສະໜອງໃຫ້ແກ່ ບໍລິສັດ TSAA ຈຳກັດ. ບັນດາເອກະສານດັ່ງກ່າວຈະສະໜອງໃຫ້ພາຍໃນ 5 ມື້ຫຼັງຈາກເຊັນສັນຍາແລ້ວ.</li><li>ແຕ່ງຕັ້ງຜູ້ປະສານງານໃນການຮ່ວມເຮັດວຽກກັບ ຝ່າຍ ກ ຈົນສໍາເລັດໄລຍະການບໍລິການຕາມສັນຍາ, ເຊິ່ງຜູ້ທີ່ຈະເຮັດວຽກງານຕົວຈິງແມ່ນໂດຍ ທ່ານ '+_cbV(f.clientCoord,120)+', ເບີໂທ: '+_cbV(f.clientCoordPhone,90)+'.</li><li>ອຳນວຍຄວາມສະດວກໃນການເຂົ້າມາບໍລິການພາຍໃນບໍລິສັດເຊັ່ນ: ສະຖານທີ່ນັ່ງເຮັດວຽກ, ເຄື່ອງໃຊ້ ທີ່ຈໍາເປັນ (ປິ້ນເຕີ້, ໂປຣເຈັກເຕີ້, ກະດານ, ເຄື່ອງຂຽນ ແລະ ອຸປະກອນຮັບໃຊ້ຫ້ອງການອື່ນໆ) ໂດຍຈະແຈ້ງໃຫ້ທາງ ຝ່າຍ ກ ຮັບຊາບ.</li><li>ຖ້າທາງບໍລິສັດຫາກສະໜອງຂໍ້ມູນ ຫຼື ເອກະສານທີ່ກ່ຽວຂ້ອງກັບໜ້າວຽກຂອງທັງສອງຝ່າຍຊັກຊ້າ, ຜິດພາດ ຫຼື ບໍ່ຄົບຖ້ວນ ແມ່ນທາງ ຝ່າຍ ຂ ຈະຮັບຜິດຊອບຄ່າປັບໄໝທີ່ເກີດຂຶ້ນແຕ່ພຽງຜູ້ດຽວ. ຝ່າຍ ຂ ຈະຊໍາລະຄ່າບໍລິການ ຂອງ ຝ່າຍ ກ ຕາມມາດຕາ 3 ໃຫ້ຖືກຕ້ອງ ແລະ ກົງເວລາ.</li></ol>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 3: ວ່າດ້ວຍ ຄ່າບໍລິການ ແລະ ຂັ້ນຕອນການຊໍາລະ</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ຝ່າຍ ກ ແລະ ຝ່າຍ ຂ ຕົກລົງຄ່າບໍລິການຮ່ວມກັນ ເປັນ <b>'+_cbFmt(totY)+' ກີບ/ຕໍ່ປີ</b> (ກີບຕໍ່ປີ), ເຊິ່ງມູນຄ່າດັ່ງກ່າວແມ່ນລວມອາກອນມູນຄ່າເພີ່ມ 10% ແຕ່ບໍ່ລວມຄ່າປັບໄໝ ທີ່ທາງບໍລິສັດບໍ່ປະຕິບັດຕາມລະບຽບຂອງສ່ວຍສາອາກອນ ແລະ ຄ່າທໍານຽມໃນການສົ່ງເອກະສານໃຫ້ແກ່ກະຊວງການເງິນ. ເຊິ່ງມີລາຍລະອຽດຕາມຕາຕະລາງລຸ່ມນີ້:</li></ol>'
+    + '<table style="border-collapse:collapse;width:100%;margin:8px 0;font-size:12px"><tr><td '+th+' style="width:32px;border:'+b+';padding:4px;background:#e2e8f0">ລ/ດ</td><td '+th+'>ເນື້ອໃນບໍລິການ</td><td '+th+'>ສະກຸນເງິນ</td><td '+th+'>ຄ່າບໍລິການ/ເດືອນ</td><td '+th+'>ຄ່າບໍລິການ/ປີ</td></tr>'+costRowsHtml+vatRowHtml+totRowHtml+'</table>'
+    + '<p>2) ຂັ້ນຕອນການຊໍາລະຄ່າບໍລິການປະກອບມີດັ່ງນີ້:</p>'
+    + '<ul style="margin:0 0 0 22px;padding:0;list-style:none">'+payHtml+'</ul>'
+    + '<div style="margin:6px 0 0 10px"><p style="margin:0">❖ ຊໍາລະຜ່ານ ບັນຊີທະນາຄານການຄ້າຕ່າງປະເທດລາວ</p><p style="margin:0 0 0 16px">- ຊື່ບັນຊີ: TS ACCOUNTING AND AUDITING CO.LTD</p><p style="margin:0 0 0 16px">- ເລກບັນຊີ ສະກຸນເງິນກີບ (LAK): 01011-00011-3808-7001</p><p style="margin:0 0 0 16px">- ສະກຸນເງິນໂດລາ (USD): 01011-01011-3808-7001</p></div>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 4 : ວ່າດ້ວຍ ການກໍານົດຕາຕະລາງໜ້າວຽກ.</p>'
+    + '<table style="border-collapse:collapse;width:100%;margin:6px 0;font-size:12px"><tr><td '+th+' style="width:32px;border:'+b+';padding:4px;background:#e2e8f0">ລ/ດ</td><td '+th+'>ລາຍລະອຽດໜ້າວຽກ</td><td '+th+'>ເວລາກໍານົດ</td></tr><tr><td style="border:'+b+';padding:4px;text-align:center">1</td><td style="border:'+b+';padding:6px">ກໍານົດເວລາຈັດສົ່ງບົດລາຍງານການເງິນສະບັບຮ່າງ.</td><td style="border:'+b+';padding:6px">ພາຍໃນ 7 ວັນລັດຖະການ ຫຼັງຈາກໄດ້ຮັບຂໍ້ມູນທີ່ໄດ້ຖືກເຊັນຢັ້ງຢືນເປັນທີ່ຮຽບຮ້ອຍແລ້ວ.</td></tr><tr><td style="border:'+b+';padding:4px;text-align:center">2</td><td style="border:'+b+';padding:6px">ກໍານົດເວລາຈັດສົ່ງບົດລາຍງານການເງິນສະບັບສົມບູນ.</td><td style="border:'+b+';padding:6px">ພາຍໃນ 7 ວັນລັດຖະການ ຫຼັງຈາກໄດ້ຮັບການຢັ້ງຢືນຈາກ ຝ່າຍ ຂ ໂດຍຜ່ານອີເມວ.</td></tr></table>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 5 : ວ່າດ້ວຍ ການຈັດສົ່ງເອກະສານ</p>'
+    + '<p style="margin:0">1) ເອກະສານປະກອບມີ:</p><ul style="margin:0 0 0 22px;padding:0;list-style:none"><li>− ເອກະສານຫຼັກຖານຕ່າງໆ ທີ່ ຝ່າຍ ຂ ປະກອບໃຫ້ມາແກ່ ຝ່າຍ ກ ຕາມບັນຊີຂໍ້ມູນ</li><li>− ບົດລາຍງານການເງິນ ປະຈຳປີ ຂອງ ບໍລິສັດຈໍານວນ 1 ຊຸດ.</li></ul>'
+    + '<p>2) ພາຍຫຼັງມີການສົ່ງມອບໃບປະຕິບັດພັນທະອາກອນ, ປຶ້ມບົດສະຫຼຸບບັນຊີປະຈໍາປີ '+Y()+' ແລະ ເອກະສານທີ່ກ່ຽວຂ້ອງອື່ນໆ ໃຫ້ ຝ່າຍ ຂ ຢ່າງເປັນລາຍລັກອັກສອນແລ້ວ ແລະ ມີການຊໍາລະສິ້ນສຸດລົງ ຖືວ່າສັນຍາວ່າຈ້າງ ການບໍລິການບັນຊີ ແລະ ອາກອນສະບັບນີ້ໄດ້ສິ້ນສຸດລົງ.</p>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 6 : ວ່າດ້ວຍ ຜົນສັກສິດ ຂອງ ສັນຍາ</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ສັນຍາສະບັບນີ້ໄດ້ສ້າງຂຶ້ນບົນພື້ນຖານການຕົກລົງ ແລະ ຄວາມເຂົ້າໃຈ ຂອງ ທັງສອງຝ່າຍ. ສະນັ້ນ, ມີຜົນສັກສິດນັບແຕ່ມື້ລົງລາຍເຊັນ, ຈໍ້າກາ ແລະ ລົງທະບຽນສານເປັນຕົ້ນໄປ.</li><li>ສັນຍາສ້າງຂຶ້ນ 2 ສະບັບ ເປັນພາສາລາວ ເຊິ່ງມີເນື້ອໃນຄົບຖ້ວນຄືກັນ.</li></ol>'
+    + '<table style="width:100%;margin-top:24px;text-align:center;font-size:13px"><tr>'
+    +   '<td style="width:50%;vertical-align:top"><div>ວັນທີ '+_cbV(_cbDateFmt(f.signDate||f.createdDate),80)+'</div><div style="font-weight:bold;margin-top:2px">ຜູ້ອໍານວຍການ</div><div style="font-weight:bold">ບໍລິສັດ TSAA ຈຳກັດ</div>'+(ci.signatureImage?('<div style="margin-top:6px">'+(typeof ntSafeImg==='function'?ntSafeImg(ci.signatureImage,'','max-height:120px;max-width:90%;margin:0 auto'):'')+'</div>'):'<div style="height:96px"></div>')+'</td>'
+    +   '<td style="width:50%;vertical-align:top"><div>ວັນທີ ......./........./.........</div><div style="font-weight:bold;margin-top:2px">ຜູ້ອໍານວຍການ</div><div style="font-weight:bold">'+_cbV(f.clientCompany,150)+'</div><div style="height:120px"></div></td>'
+    + '</tr></table>'
+    + '</div>';
+}
+
+// ---- type / language ----
+function ntCBSwitchType(t){ _ntCB.type=t; _ntCB.id=null; var langs=(NT_CB_TYPES[t]||{}).langs||['lo']; if(langs.indexOf(_ntCB.lang)<0)_ntCB.lang=langs[0]; ntCBRenderLangButtons(); ntCBRender(); }
+function ntCBSwitchLang(l){ _ntCB.lang=l; ntCBRenderLangButtons(); ntCBRender(); }
+function ntCBRenderTypeOptions(){ var sel=document.getElementById('cbTypeSel'); if(!sel)return; sel.innerHTML=Object.keys(NT_CB_TYPES).map(function(k){return '<option value="'+k+'"'+(k===_ntCB.type?' selected':'')+'>'+_ntEsc(NT_CB_TYPES[k].name.lo)+'</option>';}).join(''); }
+function ntCBRenderLangButtons(){ var box=document.getElementById('cbLangBtns'); if(!box)return; var langs=(NT_CB_TYPES[_ntCB.type]||{}).langs||['lo']; box.innerHTML=langs.map(function(l){return '<button onclick="ntCBSwitchLang(\''+l+'\')" class="px-3 py-1 rounded-lg text-xs font-bold '+(l===_ntCB.lang?'bg-indigo-600 text-white':'bg-gray-100 text-gray-600')+'">'+(NT_CB_LANG_NAMES[l]||l)+'</button>';}).join(''); }
+function ntCBRenderBranchOptions(){ var sel=document.getElementById('cb_branch'); if(!sel)return; var br=_ntJP('treasury_branches_pro',{}); var cur=sel.value; sel.innerHTML='<option value="">— ເລືອກສາຂາ (ສຳລັບເລກທີ) —</option>'+Object.keys(br).map(function(k){return '<option value="'+k+'"'+(k===cur?' selected':'')+'>'+_ntEsc((br[k].code?'['+br[k].code+'] ':'')+(br[k].name||k))+'</option>';}).join(''); }
+function ntCBRenderYearOptions(){ var sel=document.getElementById('cb_year'); if(!sel)return; var cur=sel.value; var now=new Date().getFullYear(); var o=''; for(var y=now+2;y>=now-3;y--){ o+='<option value="'+y+'"'+(String(y)===String(cur)?' selected':'')+'>'+y+'</option>'; } sel.innerHTML='<option value="">— ປີ —</option>'+o; if(cur) sel.value=cur; }
+
+// ---- save / load / new / view / print ----
+function ntCBSave(){
+    var f=ntCBGetFields();
+    var rec={ id:_ntCB.id||('CB'+Date.now()), type:_ntCB.type, lang:_ntCB.lang, fields:f, cost:JSON.parse(JSON.stringify(_ntCB.cost||[])), pay:JSON.parse(JSON.stringify(_ntCB.pay||[])), status:(f.signDate?'signed':'draft'), createdAt:(new Date()).toISOString() };
+    if(typeof ntStamp==='function') ntStamp(rec);
+    var idx=nt_contractDocs.findIndex(function(x){return x.id===rec.id;});
+    if(idx>=0) nt_contractDocs[idx]=rec; else nt_contractDocs.push(rec);
+    _ntCB.id=rec.id;
+    var ok=(typeof safeSetLocalStorage==='function')?safeSetLocalStorage('nt_contractDocs',JSON.stringify(nt_contractDocs)):(function(){try{localStorage.setItem('nt_contractDocs',JSON.stringify(nt_contractDocs));return true;}catch(_){return false;}})();
+    if(ok===false){ if(typeof showToast==='function') showToast('ພື້ນທີ່ເຕັມ ບັນທຶກບໍ່ໄດ້','error'); return; }
+    if(typeof triggerCloudBackup==='function')try{triggerCloudBackup();}catch(_){}
+    if(typeof showToast==='function') showToast(rec.status==='signed'?'ບັນທຶກ + ສົ່ງເຂົ້າຕາຕະລາງຕິດຕາມ (ເຊັນແລ້ວ)':'ບັນທຶກສັນຍາ (ຮ່າງ)','success');
+    ntCBRenderSavedList();
+    if(typeof renderContractDocTracker==='function') try{ renderContractDocTracker(); }catch(_){}
+}
+function ntCBNew(){ _ntCB.id=null; _ntCB.cost=ntCBDefaultCost(); _ntCB.pay=ntCBDefaultPay(); ntCBSetFields({}); ntCBRenderCostInputs(); ntCBRenderPayInputs(); ntCBRenderBranchOptions(); ntCBRenderYearOptions(); ntCBRender(); if(typeof showToast==='function') showToast('ສ້າງສັນຍາໃໝ່','info'); }
+function ntCBLoad(id){
+    var r=nt_contractDocs.find(function(x){return x.id===id;}); if(!r)return;
+    if(typeof switchTab==='function'){ var t=document.getElementById('tab-contract-builder'); if(t&&t.classList.contains('hidden')) switchTab('contract-builder'); }
+    _ntCB.id=r.id; _ntCB.type=r.type||'acc-tax'; _ntCB.lang=r.lang||'lo'; _ntCB.cost=JSON.parse(JSON.stringify(r.cost||ntCBDefaultCost())); _ntCB.pay=JSON.parse(JSON.stringify(r.pay||ntCBDefaultPay()));
+    ntCBRenderTypeOptions(); ntCBRenderLangButtons(); ntCBRenderBranchOptions(); ntCBRenderYearOptions(); ntCBSetFields(r.fields||{}); ntCBRenderCostInputs(); ntCBRenderPayInputs(); ntCBRender();
+    if(typeof showToast==='function') showToast('ໂຫຼດສັນຍາແລ້ວ','success');
+}
+function ntCBView(id){ ntCBLoad(id); setTimeout(ntCBPrint,400); }
+function ntCBDelete(id){ if(typeof showConfirm==='function'){ showConfirm('ລົບສັນຍານີ້ອອກ?',function(){_ntCBDoDelete(id);}); } else if(confirm('ລົບ?')) _ntCBDoDelete(id); }
+function _ntCBDoDelete(id){ nt_contractDocs=nt_contractDocs.filter(function(x){return x.id!==id;}); try{localStorage.setItem('nt_contractDocs',JSON.stringify(nt_contractDocs));}catch(_){}; if(typeof triggerCloudBackup==='function')try{triggerCloudBackup();}catch(_){}; if(_ntCB.id===id) ntCBNew(); ntCBRenderSavedList(); if(typeof renderContractDocTracker==='function')try{renderContractDocTracker();}catch(_){}; if(typeof showToast==='function') showToast('ລົບແລ້ວ','success'); }
+
+// ---- tracking table (grouped by type -> year) ----
+function ntCBRenderSavedList(){
+    var box=document.getElementById('cbSavedList'); if(!box)return;
+    if(!nt_contractDocs.length){ box.innerHTML='<p class="text-xs text-gray-400 text-center py-2">ຍັງບໍ່ມີສັນຍາທີ່ບັນທຶກ</p>'; return; }
+    var groups={};
+    nt_contractDocs.forEach(function(r){ var t=r.type||'acc-tax'; var y=(r.fields&&r.fields.year)||'-'; groups[t]=groups[t]||{}; groups[t][y]=groups[t][y]||[]; groups[t][y].push(r); });
+    var html='';
+    Object.keys(groups).forEach(function(t){
+        var tn=(NT_CB_TYPES[t]&&NT_CB_TYPES[t].name.lo)||t;
+        html+='<div class="font-bold text-xs text-indigo-700 mt-2 border-b pb-0.5">'+_ntEsc(tn)+'</div>';
+        Object.keys(groups[t]).sort().reverse().forEach(function(y){
+            html+='<div class="text-[11px] text-gray-500 font-bold mt-1">ປີ '+_ntEsc(y)+' ('+groups[t][y].length+')</div>';
+            groups[t][y].forEach(function(r){
+                var f=r.fields||{}; var signed=f.signDate?'<span class="text-emerald-600 font-bold">✔ '+_cbDateFmt(f.signDate)+'</span>':'<span class="text-amber-500">ຮ່າງ</span>';
+                html+='<div class="flex items-center gap-1 border border-gray-100 rounded px-2 py-1 hover:bg-gray-50 text-xs"><div class="flex-1 truncate"><b>'+_ntEsc(f.clientCompany||'(ບໍ່ມີຊື່)')+'</b> · '+_ntEsc(f.contractNo||'-')+' · '+signed+'</div>'
+                  +'<button onclick="ntCBLoad(\''+r.id+'\')" class="text-indigo-500 px-1" title="ແກ້ໄຂ"><i class="fa-solid fa-pen"></i></button>'
+                  +'<button onclick="ntCBView(\''+r.id+'\')" class="text-emerald-500 px-1" title="ເບິ່ງ/ພິມ"><i class="fa-solid fa-print"></i></button>'
+                  +'<button onclick="ntCBDelete(\''+r.id+'\')" class="text-rose-400 px-1"><i class="fa-solid fa-trash"></i></button></div>';
+            });
+        });
+    });
+    box.innerHTML=html;
+}
+
+function ntCBPrint(){
+    var html=document.getElementById('cbPreview')?document.getElementById('cbPreview').innerHTML:'';
+    var w=window.open('','_blank');
+    if(!w){ if(typeof showToast==='function') showToast('ເປີດໜ້າພິມບໍ່ໄດ້ — ອະນຸຍາດ popup','error'); return; }
+    w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>ສັນຍາ</title><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;600;700&display=swap" rel="stylesheet"><style>@page{size:A4;margin:16mm 15mm}body{font-family:'+NT_CB_FONT.replace(/"/g,"'")+';color:#111;padding:0;margin:0}table{border-collapse:collapse}</style></head><body>'+html+'</body></html>');
+    w.document.close();
+    setTimeout(function(){ try{ w.focus(); w.print(); }catch(_){}; },700);
+}
+
+function ntCBInit(){
+    if(!_ntCB.cost||!_ntCB.cost.length) _ntCB.cost=ntCBDefaultCost();
+    if(!_ntCB.pay||!_ntCB.pay.length) _ntCB.pay=ntCBDefaultPay();
+    ntCBRenderTypeOptions(); ntCBRenderLangButtons(); ntCBRenderBranchOptions(); ntCBRenderYearOptions(); ntCBRenderCustomerDL(); ntCBRenderCostInputs(); ntCBRenderPayInputs(); ntCBRenderPayPresetSel(); ntCBRenderSavedList(); ntCBRender();
+}
+
+// renders contract docs into the "ສັນຍາ & ລະດັບລູກຄ້າ" page
+function renderContractDocTracker(){
+    var box=document.getElementById('cbDocTrackerInContract'); if(!box) return;
+    var docs=(typeof nt_contractDocs!=='undefined')?nt_contractDocs:[];
+    if(!docs.length){ box.innerHTML='<p class="text-xs text-indigo-400 text-center py-2">ຍັງບໍ່ມີເອກະສານສັນຍາ — ກົດ "ສ້າງສັນຍາໃໝ່"</p>'; return; }
+    var groups={};
+    docs.forEach(function(r){ var t=r.type||'acc-tax'; var y=(r.fields&&r.fields.year)||'-'; groups[t]=groups[t]||{}; groups[t][y]=groups[t][y]||[]; groups[t][y].push(r); });
+    var TN=(typeof NT_CB_TYPES!=='undefined')?NT_CB_TYPES:{};
+    var html='';
+    Object.keys(groups).forEach(function(t){
+        var tn=(TN[t]&&TN[t].name&&TN[t].name.lo)||t;
+        html+='<div class="font-bold text-xs text-indigo-700 mt-2">'+_ntEsc(tn)+'</div>';
+        Object.keys(groups[t]).sort().reverse().forEach(function(y){
+            html+='<div class="text-[11px] text-indigo-400 font-bold mt-1">ປີ '+_ntEsc(y)+'</div>';
+            groups[t][y].forEach(function(r){
+                var f=r.fields||{}; var signed=f.signDate?'<span class="text-emerald-600 font-bold">✔ ເຊັນ '+_cbDateFmt(f.signDate)+'</span>':'<span class="text-amber-500">ຮ່າງ</span>';
+                html+='<div class="flex items-center gap-1 bg-white border border-indigo-100 rounded px-2 py-1.5 text-xs"><div class="flex-1 truncate"><b>'+_ntEsc(f.clientCompany||'(ບໍ່ມີຊື່)')+'</b> · '+_ntEsc(f.contractNo||'-')+' · '+signed+'</div>'
+                  +'<button onclick="ntCBLoad(\''+r.id+'\')" class="text-indigo-500 px-1.5" title="ແກ້ໄຂ"><i class="fa-solid fa-pen"></i></button>'
+                  +'<button onclick="ntCBView(\''+r.id+'\')" class="text-emerald-600 px-1.5" title="ເບິ່ງ/ພິມ"><i class="fa-solid fa-print"></i></button></div>';
+            });
+        });
+    });
+    box.innerHTML=html;
+}
+
+        </script>
 
 
 <!-- CONTRACT MODAL -->
