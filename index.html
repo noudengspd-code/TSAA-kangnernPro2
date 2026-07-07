@@ -480,6 +480,12 @@
 <button onclick="switchTab('contract-builder')" id="btn-contract-builder" class="menu-btn flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-700 hover:text-white w-full text-left">
     <i class="fa-solid fa-file-signature w-5 text-indigo-400"></i> ສ້າງສັນຍາ
 </button>
+<button onclick="switchTab('workplan')" id="btn-workplan" class="menu-btn flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-700 hover:text-white w-full text-left">
+    <i class="fa-solid fa-diagram-project w-5 text-purple-400"></i> ແຜນວຽກ
+</button>
+<button onclick="switchTab('branch-loans')" id="btn-branch-loans" class="menu-btn flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-700 hover:text-white w-full text-left">
+    <i class="fa-solid fa-hand-holding-dollar w-5 text-amber-400"></i> ຢືມເງິນສາຂາ
+</button>
 <button onclick="switchTab('aftersales')" id="btn-aftersales" class="menu-btn flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-700 hover:text-white w-full text-left">
     <i class="fa-solid fa-headset w-5 text-fuchsia-400"></i> ບໍລິການຫຼັງການຂາຍ
 </button>
@@ -2399,6 +2405,59 @@
                 </div>
             </div>
 
+                        <div id="tab-branch-loans" class="tab-content hidden space-y-4">
+                <div class="bg-gradient-to-r from-amber-700 to-orange-800 text-white p-6 rounded-2xl shadow-lg flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-xl font-bold"><i class="fa-solid fa-hand-holding-dollar mr-2"></i>ການຢືມເງິນ ຕາມສາຂາ (Branch Loans)</h2>
+                        <p class="text-xs text-amber-100">ຕິດຕາມການຢືມ-ຊຳລະຄືນ ແບບລະອຽດ · ຕາຕະລາງຍົກຍອດແຕ່ລະເດືອນ · ພິມบົດລາຍງານໄດ້</p>
+                    </div>
+                    <button onclick="ntLoanOpenAdd()" class="bg-white text-amber-700 hover:bg-amber-50 px-4 py-2 rounded-lg text-sm font-bold"><i class="fa-solid fa-plus mr-1"></i>ບັນທຶກການຢືມ</button>
+                </div>
+                <div class="flex flex-col md:flex-row justify-between gap-3">
+                    <div class="flex gap-2 items-center bg-white p-1.5 rounded-xl shadow-sm border border-gray-100">
+                        <i class="fa-solid fa-building-columns text-slate-400 ml-1"></i>
+                        <select id="ntLoanFilterBranch" onchange="ntLoanFilterChange()" class="bg-transparent border-none text-sm font-bold text-slate-700 outline-none cursor-pointer"></select>
+                    </div>
+                    <div class="flex gap-1 p-1 bg-gray-100 rounded-xl">
+                        <button id="ntLoanTab-LIST" onclick="ntLoanSetView('LIST')" class="px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 bg-white shadow text-amber-700"><i class="fa-solid fa-list-ul"></i> ລາຍການ</button>
+                        <button id="ntLoanTab-CARRY" onclick="ntLoanSetView('CARRY')" class="px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 text-slate-500"><i class="fa-solid fa-arrow-right-arrow-left"></i> ຍົກຍອດເດືອນ</button>
+                        <button id="ntLoanTab-REPORT" onclick="ntLoanSetView('REPORT')" class="px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 text-slate-500"><i class="fa-solid fa-chart-pie"></i> ບົດລາຍງານ</button>
+                    </div>
+                </div>
+                <div id="ntLoanBody"></div>
+            </div>
+
+<div id="tab-workplan" class="tab-content hidden space-y-4">
+                <div class="bg-gradient-to-r from-indigo-800 to-purple-900 text-white p-6 rounded-2xl shadow-lg flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-xl font-bold"><i class="fa-solid fa-diagram-project mr-2"></i>ລະບົບແຜນວຽກ 2 ລະດັບ (Dual-Layer Planning)</h2>
+                        <p class="text-xs text-indigo-200">ແຜນປະຈຳປີ (Annual) + ແຜນປະຈຳເດືອນ (Monthly) · ປະສານກັບສັນຍາ ແລະ ໃບແຈ້ງໜີ້</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span id="ntPlanUserArea"></span>
+                        <button onclick="ntPlanManageStaff()" class="bg-white/15 hover:bg-white/25 px-3 py-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-users-gear mr-1"></i>ຈັດການຜູ້ໃຊ້</button>
+                        <button onclick="ntPlanGenRecurNow()" class="bg-white/15 hover:bg-white/25 px-3 py-2 rounded-lg text-xs font-bold" title="ສ້າງວຽກປະຈຳສຳລັບເດືອນທີ່ກຳລັງເບິ່ງ"><i class="fa-solid fa-repeat mr-1"></i>ສ້າງວຽກປະຈຳ</button>
+                        <button onclick="ntPlanOpenAnnual()" class="bg-white/15 hover:bg-white/25 px-3 py-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-layer-group mr-1"></i>ພາບລວມປະຈຳປີ</button>
+                        <button onclick="ntPlanNewTask()" class="bg-emerald-500 hover:bg-emerald-600 px-3 py-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>ສ້າງວຽກໃໝ່</button>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row justify-between gap-3">
+                    <div class="flex gap-2 items-center bg-white p-1.5 rounded-xl shadow-sm border border-gray-100">
+                        <i class="fa-solid fa-filter text-slate-400 ml-1"></i>
+                        <select id="ntPlanFilterDept" onchange="ntPlanFilterChange()" class="bg-transparent border-none text-sm font-bold text-slate-700 outline-none cursor-pointer"></select>
+                        <span class="text-slate-200">|</span>
+                        <select id="ntPlanFilterStatus" onchange="ntPlanFilterChange()" class="bg-transparent border-none text-sm font-bold text-slate-700 outline-none cursor-pointer"></select>
+                        <label id="ntPlanMineWrap" class="items-center gap-1 ml-1 pl-2 border-l border-slate-200 cursor-pointer text-xs font-bold text-indigo-700" style="display:none"><input type="checkbox" id="ntPlanMineChk" onchange="_ntPlan.mineOnly=this.checked;ntPlanRender()" class="w-3.5 h-3.5"> ວຽກຂອງຂ້ອຍ</label>
+                    </div>
+                    <div class="flex gap-1 p-1 bg-gray-100 rounded-xl">
+                        <button id="ntPlanTab-BOARD" onclick="ntPlanSetView('BOARD')" class="px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 bg-white shadow text-indigo-700"><i class="fa-solid fa-table-columns"></i> ກະດານ</button>
+                        <button id="ntPlanTab-CALENDAR" onclick="ntPlanSetView('CALENDAR')" class="px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 text-slate-500"><i class="fa-solid fa-calendar-days"></i> ປະຕິທິນ</button>
+                        <button id="ntPlanTab-REPORT" onclick="ntPlanSetView('REPORT')" class="px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 text-slate-500"><i class="fa-solid fa-chart-column"></i> ບົດລາຍງານ</button>
+                    </div>
+                </div>
+                <div id="ntPlanBody"></div>
+            </div>
+
 <div id="tab-doc-tracker" class="tab-content hidden space-y-6">
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
@@ -4118,14 +4177,30 @@
                     };
 
                     // If the cloud data is sharded across overflow documents, fetch + reassemble first.
-                    if (cloudData._ovf && cloudData._ovf > 0 && db) {
+                    // ROBUST: retry any failed/missing shard; NEVER apply incomplete data — applying a
+                    // partial copy would persist it locally (and could re-upload it), which is exactly
+                    // how "some devices have incomplete transactions/contracts" happens. If the shards
+                    // can't all be read after retries, keep the current local data untouched and retry.
+                    const loadShardedAndApply = (attempt) => {
                         const col2 = db.collection('treasury_backups');
+                        const N = cloudData._ovf;
                         let chain = Promise.resolve([]);
-                        for (let i = 1; i <= cloudData._ovf; i++) {
-                            chain = chain.then(acc => col2.doc('main_data_o' + i).get().then(s => { acc.push(s && s.exists ? s.data() : {}); return acc; }).catch(() => { acc.push({}); return acc; }));
+                        for (let i = 1; i <= N; i++) {
+                            (function(idx){ chain = chain.then(acc => col2.doc('main_data_o' + idx).get()
+                                .then(s => { acc.push(s && s.exists ? s.data() : null); return acc; })
+                                .catch(() => { acc.push(null); return acc; })); })(i);
                         }
-                        chain.then(ovfDocs => proceed(_ntReassemble(cloudData, ovfDocs)))
-                             .catch(e => { console.warn('overflow fetch failed', e); proceed(cloudData); });
+                        chain.then(ovfDocs => {
+                            if (ovfDocs.some(d => d === null)) {
+                                if (attempt < 4) { setTimeout(() => loadShardedAndApply(attempt + 1), 700 * (attempt + 1)); }
+                                else { console.warn('NT sync: overflow shards incomplete after retries — keeping local data intact'); if (typeof showToast==='function') showToast('ໂຫຼດຂໍ້ມູນບາງສ່ວນຊ້າ — ຈະລອງໃໝ່ອັດຕະໂນມັດ','info'); }
+                                return;   // do NOT apply partial data
+                            }
+                            proceed(_ntReassemble(cloudData, ovfDocs));
+                        }).catch(() => { if (attempt < 4) setTimeout(() => loadShardedAndApply(attempt + 1), 700 * (attempt + 1)); });
+                    };
+                    if (cloudData._ovf && cloudData._ovf > 0 && db) {
+                        loadShardedAndApply(0);
                     } else {
                         proceed(cloudData);
                     }
@@ -4871,11 +4946,14 @@
         }
 
         function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
             const targetTab = document.getElementById(`tab-${tabId}`);
-            if (targetTab) targetTab.classList.remove('hidden');
+            if (!targetTab) { console.warn('switchTab: unknown tab "'+tabId+'" — ignored'); return; }
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            targetTab.classList.remove('hidden');
             if (tabId === 'contract-builder' && typeof ntCBInit === 'function') { try { ntCBInit(); } catch(e){} }
             if (tabId === 'contract-track' && typeof renderContractDocTracker === 'function') { try { renderContractDocTracker(); } catch(e){} }
+            if (tabId === 'workplan' && typeof ntPlanInit === 'function') { try { ntPlanInit(); } catch(e){} }
+            if (tabId === 'branch-loans' && typeof ntLoanInit === 'function') { try { ntLoanInit(); } catch(e){} }
 
             document.querySelectorAll('.menu-btn').forEach(btn => {
                 btn.classList.remove('bg-emerald-600', 'text-white', 'font-medium');
@@ -8788,6 +8866,9 @@ ${metrics.netMargin > 20 ? 'ທຸລະກຳຂອງທ່ານມີອັ�
                 var arr = _ntCollByKey(key); if (!Array.isArray(arr)) return;
                 try { localStorage.setItem(key, JSON.stringify(_ntLightColl(key, arr))); } catch(_){}
             });
+            // Daily snapshots (full data copies) are the biggest quota consumer — strip their images
+            // and keep only the 2 newest whenever we're under memory pressure.
+            try { if (typeof _ntTrimStoredSnapshots === 'function') _ntTrimStoredSnapshots(2); } catch(_){}
         }
         // Save a collection with images offloaded; on quota error, free the other collections + retry.
         function ntSaveColl(key, arr) {
@@ -9061,11 +9142,22 @@ var costRows = [];
                 if (typeof nt_aftersales    !== 'undefined' && m.nt_aftersales)    { nt_aftersales = m.nt_aftersales; localStorage.setItem('nt_aftersales', JSON.stringify(nt_aftersales)); }
                 if (m.nt_costTrack) localStorage.setItem('nt_costTrack', JSON.stringify(m.nt_costTrack));
                 if (typeof nt_proposalLetters !== 'undefined' && m.nt_proposalLetters) { nt_proposalLetters = m.nt_proposalLetters; localStorage.setItem('nt_proposalLetters', JSON.stringify(nt_proposalLetters)); }
+                if (typeof nt_contractDocs !== 'undefined' && m.nt_contractDocs) { nt_contractDocs = m.nt_contractDocs; localStorage.setItem('nt_contractDocs', JSON.stringify(nt_contractDocs)); }
+                if (typeof nt_tasks !== 'undefined' && m.nt_tasks) { nt_tasks = m.nt_tasks; localStorage.setItem('nt_tasks', JSON.stringify(nt_tasks)); }
+                if (typeof nt_cbPayPresets !== 'undefined' && m.nt_cbPayPresets) { nt_cbPayPresets = m.nt_cbPayPresets; localStorage.setItem('nt_cbPayPresets', JSON.stringify(nt_cbPayPresets)); }
+                if (typeof nt_planStaff !== 'undefined' && m.nt_planStaff) { nt_planStaff = m.nt_planStaff; localStorage.setItem('nt_planStaff', JSON.stringify(nt_planStaff)); }
+                if (typeof nt_planDepts !== 'undefined' && m.nt_planDepts) { nt_planDepts = m.nt_planDepts; localStorage.setItem('nt_planDepts', JSON.stringify(nt_planDepts)); }
+                if (typeof nt_planUsers !== 'undefined' && m.nt_planUsers) { nt_planUsers = m.nt_planUsers; localStorage.setItem('nt_planUsers', JSON.stringify(nt_planUsers)); }
+                if (typeof nt_loans !== 'undefined' && m.nt_loans) { nt_loans = m.nt_loans; localStorage.setItem('nt_loans', JSON.stringify(nt_loans)); }
                 if (m.nt_staffDuties) { if (typeof nt_staffDuties !== 'undefined') nt_staffDuties = m.nt_staffDuties; localStorage.setItem('nt_staffDuties', JSON.stringify(m.nt_staffDuties)); }
                 if (m.nt_accrualProj) { if (typeof nt_accrualProj !== 'undefined') nt_accrualProj = m.nt_accrualProj; localStorage.setItem('nt_accrualProj', JSON.stringify(m.nt_accrualProj)); }
             } catch(e) { console.warn('adopt merged error', e); }
             const busy = (function(){ const a=document.activeElement; return (a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.tagName==='SELECT')) || Array.from(document.querySelectorAll('.fixed.inset-0')).some(mo=>!mo.classList.contains('hidden')&&mo.offsetParent!==null); })();
-            if (!busy) { try { if (typeof refreshAllViews === 'function') refreshAllViews(); } catch(e){} }
+            if (!busy) { try { if (typeof refreshAllViews === 'function') refreshAllViews(); } catch(e){}
+                try { var _wp=document.getElementById('tab-workplan'); if(_wp && !_wp.classList.contains('hidden') && typeof ntPlanRender==='function') ntPlanRender(); } catch(e){}
+                try { var _bl=document.getElementById('tab-branch-loans'); if(_bl && !_bl.classList.contains('hidden') && typeof ntLoanRender==='function') ntLoanRender(); } catch(e){}
+                try { if(typeof renderContractDocTracker==='function') renderContractDocTracker(); var _cb=document.getElementById('tab-contract-builder'); if(_cb && !_cb.classList.contains('hidden') && typeof ntCBRenderSavedList==='function') ntCBRenderSavedList(); } catch(e){}
+            }
             setTimeout(() => { _ntApplyingRemote = false; }, 50);
         }
 
@@ -9114,6 +9206,13 @@ var costRows = [];
                     nt_staffDuties:   A(localStaff, 'nt_staffDuties'),
                     nt_accrualProj:   Object.assign({}, cloud.nt_accrualProj || {}, localAccrual),
                     nt_proposalLetters: A((typeof nt_proposalLetters!=='undefined')?nt_proposalLetters:[], 'nt_proposalLetters'),
+                    nt_contractDocs:  A((typeof nt_contractDocs!=='undefined')?nt_contractDocs:[], 'nt_contractDocs'),
+                    nt_tasks:         A((typeof nt_tasks!=='undefined')?nt_tasks:[], 'nt_tasks'),
+                    nt_cbPayPresets:  ((typeof nt_cbPayPresets!=='undefined')&&nt_cbPayPresets&&nt_cbPayPresets.length)?nt_cbPayPresets:(cloud.nt_cbPayPresets||[]),
+                    nt_planStaff:     ((typeof nt_planStaff!=='undefined')&&nt_planStaff&&nt_planStaff.length)?nt_planStaff:(cloud.nt_planStaff||[]),
+                    nt_planDepts:     ((typeof nt_planDepts!=='undefined')&&nt_planDepts&&nt_planDepts.length)?nt_planDepts:(cloud.nt_planDepts||[]),
+                    nt_planUsers:     ((typeof nt_planUsers!=='undefined')&&nt_planUsers&&nt_planUsers.length)?nt_planUsers:(cloud.nt_planUsers||[]),
+                    nt_loans:         A((typeof nt_loans!=='undefined')?nt_loans:[], 'nt_loans'),
                     nt_deletions:     (typeof nt_deletions!=='undefined')?nt_deletions:{},
                     _updatedBy: NT_DEVICE_ID, _stamp: stamp, updatedAt: new Date()
                 };
@@ -15861,24 +15960,46 @@ function ntClearAllData(){
 // DATED BACKUP SNAPSHOTS (local, auto-daily) — guards against staff mistakes
 // ============================================================
 // Captures a full snapshot of all data keyed by date. Keeps the last ~7 days.
+// Strip base64 images from a snapshot copy — snapshots are a data safety-net and must stay SMALL.
+// (Images live in IndexedDB tied to the live collections; keeping 7 days of full base64 images in
+// localStorage is what fills the quota. This returns a NEW object; live arrays are never mutated.)
+function _ntStripSnapshotImages(snap){
+    if(!snap||typeof snap!=='object') return snap;
+    var imgFields=['image','receiptImage','slipImage','qrImage','logoImage','signatureImage'];
+    var strip=function(arr){ if(!Array.isArray(arr)) return arr; return arr.map(function(r){ if(!r||typeof r!=='object') return r; var c=Object.assign({},r); imgFields.forEach(function(f){ if(typeof c[f]==='string' && c[f].length>150) c[f]=''; }); return c; }); };
+    ['transactions','invoices','aps','nt_budgetCalcs','nt_budgetPropols','nt_contracts','nt_contactLogs','nt_aftersales','nt_costTrack'].forEach(function(k){ if(snap[k]) snap[k]=strip(snap[k]); });
+    if(snap.companyInfo && typeof snap.companyInfo==='object'){ var ci=Object.assign({},snap.companyInfo); ['logoImage','signatureImage','qrImage'].forEach(function(f){ if(typeof ci[f]==='string'&&ci[f].length>150) ci[f]=''; }); snap.companyInfo=ci; }
+    return snap;
+}
+// Trim the stored daily-snapshots blob: strip images from any legacy full snapshots + keep newest few.
+function _ntTrimStoredSnapshots(maxKeep){
+    try{
+        var raw=localStorage.getItem('nt_dailySnapshots'); if(!raw) return;
+        var snaps=JSON.parse(raw); var keys=Object.keys(snaps).sort();
+        keys.forEach(function(k){ snaps[k]=_ntStripSnapshotImages(snaps[k]); });
+        while(keys.length>(maxKeep||3)){ delete snaps[keys.shift()]; }
+        localStorage.setItem('nt_dailySnapshots', JSON.stringify(snaps));
+    }catch(e){ try{ localStorage.removeItem('nt_dailySnapshots'); }catch(_){}}
+}
 function ntCaptureLocalSnapshot() {
     try {
         const today = new Date().toISOString().split('T')[0];
         let snaps = _ntJP('nt_dailySnapshots', {});
         // Only one snapshot per day (the first of the day = start-of-day state)
         if (snaps[today]) return;  // already captured today
-        snaps[today] = {
+        snaps[today] = _ntStripSnapshotImages({
             transactions, invoices, aps,
             customers, branches, categories, companyInfo,
             nt_quotations, nt_budgetCalcs, nt_budgetPropols, nt_contracts, nt_contactLogs, nt_aftersales,
             nt_costTrack: _ntJP('nt_costTrack', []),
             nt_fixedExpenses: (typeof nt_fixedExpenses!=='undefined'?nt_fixedExpenses:[]),
             nt_staffDuties: (typeof nt_staffDuties!=='undefined'?nt_staffDuties:[])
-        };
-        // Keep only the last 7 dates
+        });
+        // Keep only the last 3 dates (safety-net, not an archive → keeps localStorage small)
         const dates = Object.keys(snaps).sort();
-        while (dates.length > 7) { delete snaps[dates.shift()]; }
-        localStorage.setItem('nt_dailySnapshots', JSON.stringify(snaps));
+        while (dates.length > 3) { delete snaps[dates.shift()]; }
+        try { localStorage.setItem('nt_dailySnapshots', JSON.stringify(snaps)); }
+        catch(e){ try { var one={}; one[today]=snaps[today]; localStorage.setItem('nt_dailySnapshots', JSON.stringify(one)); } catch(_){ try{ localStorage.removeItem('nt_dailySnapshots'); }catch(__){} } }
     } catch(e) { console.warn('snapshot failed', e); }
 }
 
@@ -15887,16 +16008,17 @@ function ntMakeManualSnapshot() {
     try {
         const stamp = new Date().toISOString().replace('T',' ').substring(0,16);
         let snaps = _ntJP('nt_dailySnapshots', {});
-        snaps[stamp] = {
+        snaps[stamp] = _ntStripSnapshotImages({
             transactions, invoices, aps, customers, branches, categories, companyInfo,
             nt_quotations, nt_budgetCalcs, nt_budgetPropols, nt_contracts, nt_contactLogs, nt_aftersales,
             nt_costTrack: _ntJP('nt_costTrack', []),
             nt_fixedExpenses: (typeof nt_fixedExpenses!=='undefined'?nt_fixedExpenses:[]),
             nt_staffDuties: (typeof nt_staffDuties!=='undefined'?nt_staffDuties:[])
-        };
+        });
         const dates = Object.keys(snaps).sort();
-        while (dates.length > 10) { delete snaps[dates.shift()]; }
-        localStorage.setItem('nt_dailySnapshots', JSON.stringify(snaps));
+        while (dates.length > 3) { delete snaps[dates.shift()]; }
+        try { localStorage.setItem('nt_dailySnapshots', JSON.stringify(snaps)); }
+        catch(e){ try { var one={}; one[stamp]=snaps[stamp]; localStorage.setItem('nt_dailySnapshots', JSON.stringify(one)); }catch(_){}}
         renderBackupSnapshotList();
         showToast('ສຳຮອງຂໍ້ມູນດຽວນີ້ສຳເລັດ','success');
     } catch(e) { showToast('ສຳຮອງລົ້ມເຫຼວ: '+e.message,'error'); }
@@ -16015,7 +16137,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 if(document.getElementById('dbAppId2')) document.getElementById('dbAppId2').value = cfg2.appId||'';
             }
         } catch(e){}
-        // Capture today's snapshot (once per day) + render the backup list
+        // Trim any legacy oversized snapshots (full base64 images from older versions) FIRST,
+        // then capture today's (now image-free) snapshot. This reclaims localStorage space.
+        try { _ntTrimStoredSnapshots(3); } catch(e){}
         try { ntCaptureLocalSnapshot(); } catch(e){}
         try { renderBackupSnapshotList(); } catch(e){}
     }, 600);
@@ -16030,10 +16154,14 @@ var _ntCB = { type: 'acc-tax', lang: 'lo', id: null, cost: [], pay: [] };
 var NT_CB_TYPES = {
     'acc-tax': {
         name: { lo: 'ສັນຍາວ່າຈ້າງ ບໍລິການບັນຊີ ແລະ ອາກອນ', en: 'Accounting & Tax Service Agreement', zh: '会计与税务服务合同' },
-        langs: ['lo']
+        langs: ['lo','en']
     },
     'acc-tax-micro': {
         name: { lo: 'ສັນຍາບັນຊີ-ອາກອນ ຈຸນລະວິສາຫະກິດ', en: 'Micro-Enterprise Accounting & Tax Agreement', zh: '微型企业会计与税务合同' },
+        langs: ['lo']
+    },
+    'acc-tax-micro2': {
+        name: { lo: 'ສັນຍາ ບໍລິການບັນຊີ-ອາກອນ ຈຸນລະວິສາຫະກິດ (50/50)', en: 'Micro-Enterprise Acc & Tax (MkJ, 50/50)', zh: '微型企业会计税务合同 (50/50)' },
         langs: ['lo']
     }
 };
@@ -16148,20 +16276,20 @@ function ntCBRender(){
 }
 
 // Shared letterhead: company info (logo+name+address+contact) on LEFT, ເລກທີ on RIGHT (table layout)
-function _cbLetterhead(f, ci){
-    ci=ci||{};
+function _cbLetterhead(f, ci, suffix, lang){
+    ci=ci||{}; suffix=suffix||'Mk-TSAA'; var en=(lang==='en');
     var logoHtml=(ci.logoImage && typeof ntSafeImg==='function') ? ntSafeImg(ci.logoImage,'','height:58px;width:auto;object-fit:contain') : '';
     return '<table style="width:100%;border-bottom:2px solid #1e3a8a;padding-bottom:6px;margin-bottom:10px"><tr>'
       + '<td style="vertical-align:top;width:72%">'
       +   '<table style="border-collapse:collapse"><tr>'
       +     '<td style="width:64px;vertical-align:middle;padding-right:6px">'+logoHtml+'</td>'
       +     '<td style="vertical-align:middle;line-height:1.35">'
-      +       '<div style="font-weight:bold;font-size:14px;color:#1e3a8a">'+_ntEsc(ci.name||'ບໍລິສັດ TSAA ຈຳກັດ')+'</div>'
+      +       '<div style="font-weight:bold;font-size:14px;color:#1e3a8a">'+_ntEsc(ci.name||(en?'TSAA Company Limited':'ບໍລິສັດ TSAA ຈຳກັດ'))+'</div>'
       +       (ci.address?'<div style="font-size:10.5px">'+_ntEsc(ci.address)+'</div>':'')
-      +       '<div style="font-size:10.5px">'+(ci.contact?'ໂທ: '+_ntEsc(ci.contact):'')+(ci.taxId?' | ເລກເສຍພາສີ: '+_ntEsc(ci.taxId):'')+'</div>'
+      +       '<div style="font-size:10.5px">'+(ci.contact?(en?'Tel: ':'ໂທ: ')+_ntEsc(ci.contact):'')+(ci.taxId?(en?' | Tax ID: ':' | ເລກເສຍພາສີ: ')+_ntEsc(ci.taxId):'')+'</div>'
       +     '</td></tr></table>'
       + '</td>'
-      + '<td style="vertical-align:top;text-align:right;width:28%;padding-top:4px"><div style="font-size:12px"><i>ເລກທີ: </i>'+_cbV(f.contractNo,46)+'/Mk-TSAA</div></td>'
+      + '<td style="vertical-align:top;text-align:right;width:28%;padding-top:4px"><div style="font-size:12px"><i>'+(en?'Contract no.: ':'ເລກທີ: ')+'</i>'+_cbV(f.contractNo,46)+'/'+suffix+'</div></td>'
       + '</tr></table>';
 }
 
@@ -16181,8 +16309,8 @@ function _ntCBAccTaxMicroLo(f, cost, pay){
     var payHtml=prows.map(function(p){ return '<li>- ຊໍາລະ '+_cbV(p.pct,30)+'% '+_ntEsc(p.note||'')+'</li>'; }).join('');
     return ''
     + '<div style="font-family:'+NT_CB_FONT+';color:#111;line-height:1.7;font-size:13px;">'
+    + '<div style="text-align:center;margin-bottom:6px"><div style="font-weight:bold">ສາທາລະນະລັດ ປະຊາທິປະໄຕ ປະຊາຊົນລາວ</div><div style="font-weight:bold">ສັນຕິພາບ ເອກະລາດ ປະຊາທິປະໄຕ ເອກະພາບ ວັດທະນະຖາວອນ</div></div>'
     + _cbLetterhead(f, ci)
-    + '<div style="text-align:center;margin-bottom:8px"><div style="font-weight:bold">ສາທາລະນະລັດ ປະຊາທິປະໄຕ ປະຊາຊົນລາວ</div><div style="font-weight:bold">ສັນຕິພາບ ເອກະລາດ ປະຊາທິປະໄຕ ເອກະພາບ ວັດທະນະຖາວອນ</div><div style="width:120px;height:1px;background:#444;margin:6px auto"></div></div>'
     + '<div style="text-align:center;margin:14px 0"><div style="font-size:17px;font-weight:bold">ສັນຍາວ່າຈ້າງ ສັນຍາບັນຊີ-ອາກອນ ຈຸນລະວິສາຫະກິດ</div><div style="font-size:16px;font-weight:bold">ປະຈຳປີ '+Y(50)+'</div></div>'
     + '<p style="text-align:center">ສ້າງຂຶ້ນໃນວັນທີ '+_cbV(_cbDateFmt(f.createdDate),90)+' ທີ່ ບໍລິສັດ TSAA ຈຳກັດ.</p>'
     + '<p style="text-align:center;font-weight:bold">ລະຫວ່າງ</p>'
@@ -16220,9 +16348,125 @@ function _ntCBAccTaxMicroLo(f, cost, pay){
 }
 
 function ntCBTemplate(type, lang, f, cost, pay){
-    if(type==='acc-tax') return _ntCBAccTaxLo(f, cost, pay);
+    if(type==='acc-tax') return (lang==='en') ? _ntCBAccTaxEn(f, cost, pay) : _ntCBAccTaxLo(f, cost, pay);
     if(type==='acc-tax-micro') return _ntCBAccTaxMicroLo(f, cost, pay);
+    if(type==='acc-tax-micro2') return _ntCBAccTaxMicro2Lo(f, cost, pay);
     return '<p>ຍັງບໍ່ມີແບບສຳລັບປະເພດນີ້</p>';
+}
+
+// English version of acc-tax (Contract for Accounting and Tax Services) — 7 articles, VAT, 50/50, USD
+function _ntCBAccTaxEn(f, cost, pay){
+    var yr=(f.year||'').trim();
+    var yrN = yr && /^\d{4}$/.test(yr) ? (parseInt(yr,10)+1) : '';
+    var Y=function(w){ return _cbV(yr, w||40); };
+    var YN=function(w){ return _cbV(yrN, w||40); };
+    var ci=(typeof companyInfo!=='undefined'&&companyInfo)?companyInfo:{};
+    var rows=(cost&&cost.length)?cost:[{desc:'Accounting and Tax service',cur:'USD',m:'',y:''}];
+    var sumM=0,sumY=0; rows.forEach(function(r){ sumM+=_cbNum(r.m); sumY+=_cbNum(r.y); });
+    var vatM=Math.round(sumM*0.1), vatY=Math.round(sumY*0.1), totM=sumM+vatM, totY=sumY+vatY;
+    var b='1px solid #444';
+    var costRowsHtml=rows.map(function(r,i){ return '<tr><td style="border:'+b+';padding:4px 6px;text-align:center">'+(i+1)+'</td><td style="border:'+b+';padding:4px 6px">'+(_ntEsc(r.desc)||_cbBlank(120))+'</td><td style="border:'+b+';padding:4px 6px;text-align:right">'+(r.m?_cbFmt(_cbNum(r.m)):'')+'</td><td style="border:'+b+';padding:4px 6px;text-align:right">'+(r.y?_cbFmt(_cbNum(r.y)):'')+'</td></tr>'; }).join('');
+    var vatRowHtml='<tr><td style="border:'+b+';padding:4px 6px;text-align:center">'+(rows.length+1)+'</td><td style="border:'+b+';padding:4px 6px">VAT 10%</td><td style="border:'+b+';padding:4px 6px;text-align:right">'+_cbFmt(vatM)+'</td><td style="border:'+b+';padding:4px 6px;text-align:right">'+_cbFmt(vatY)+'</td></tr>';
+    var totRowHtml='<tr style="font-weight:bold;background:#f1f5f9"><td colspan="2" style="border:'+b+';padding:4px 6px;text-align:center">Total</td><td style="border:'+b+';padding:4px 6px;text-align:right">'+_cbFmt(totM)+'</td><td style="border:'+b+';padding:4px 6px;text-align:right">'+_cbFmt(totY)+'</td></tr>';
+    var th='style="border:'+b+';padding:4px 6px;background:#e2e8f0;text-align:center;font-weight:bold"';
+    var prows=(pay&&pay.length)?pay:[{pct:'50',note:'on or about the time of signing the contract'},{pct:'50',note:'on or about submitting the Accounting Monitoring Certificate and Tax payment certificate'}];
+    var payHtml=prows.map(function(p){ return '<li>- Pay '+_cbV(p.pct,30)+'% '+_ntEsc(p.note||'')+'</li>'; }).join('');
+    return ''
+    + '<div style="font-family:'+NT_CB_FONT+';color:#111;line-height:1.6;font-size:13px;">'
+    + '<div style="text-align:center;margin-bottom:6px"><div style="font-weight:bold">LAO PEOPLE\u2019S DEMOCRATIC REPUBLIC</div><div style="font-weight:bold">PEACE INDEPENDENCE DEMOCRACY UNITY PROSPERITY</div></div>'
+    + _cbLetterhead(f, ci, 'Mk-TSAA', 'en')
+    + '<div style="text-align:center;margin:14px 0"><div style="font-size:17px;font-weight:bold">Contract for Accounting and Tax Services '+Y(50)+'</div></div>'
+    + '<p>Created on '+_cbV(_cbDateFmt(f.createdDate),90)+' by TSAA Company Limited.</p>'
+    + '<p style="font-weight:bold">Between</p>'
+    + '<p><b>TSAA Company Limited.</b> Represented by Mr. Phonetheva KHAUTISEN, Director. The office is located at Dongpalap Village, Chanthabouly District, Vientiane Capital, Mobile: (856-20) 56 366 264, E-mail: tsaamarketingandsale2013@gmail.com <i>(Hereinafter referred to as Party A)</i></p>'
+    + '<p style="font-weight:bold">And</p>'
+    + '<p>'+_cbV(f.clientCompany,170)+' Represented by '+_cbV(f.clientRep,120)+', '+_cbV(f.clientPosition,80)+'. The office is located at '+_cbV(f.clientVillage,80)+' Village, '+_cbV(f.clientDistrict,80)+' District, '+_cbV(f.clientProvince,80)+' Province, Mobile: '+_cbV(f.clientCoordPhone,80)+'. <i>(Hereinafter referred to as Party B)</i></p>'
+    + '<p style="font-weight:bold;margin-top:12px">Article 1: Purpose of the contract</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>To determine the objectives, goals, scope of work, projections, responsibilities and budgets of the bilateral agreement.</li><li>To identify personnel and detailed duties of accounting and tax services.</li><li>To be evidence and for reference to technical staff activities in implementing the bilateral agreement.</li></ol>'
+    + '<p style="font-weight:bold;margin-top:12px">Article 2: Content of the contract</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>Party B agrees to hire Party A to provide accounting and tax services and to accomplish the annual financial report for '+Y()+'.</li><li>Party A agrees to accept employment from Party B for accounting, tax services, and accomplish the annual financial report for '+Y()+'.</li><li>Party A and Party B have agreed on the scope of services, which includes the following details:</li></ol>'
+    + '<table style="border-collapse:collapse;width:100%;margin:8px 0;font-size:12px"><tr><td '+th+' style="width:36px;border:'+b+';padding:4px;background:#e2e8f0;font-weight:bold">No.</td><td '+th+'>Content</td></tr>'
+    +   '<tr><td style="border:'+b+';padding:4px;text-align:center;vertical-align:top">1</td><td style="border:'+b+';padding:6px"><b>Accounting and tax services</b><ul style="margin:4px 0 0 18px;padding:0"><li>Recording the transactions onto the accounting system.</li><li>Checking and investigating the documents before posting into the accounting system.</li><li>Review and set up the chart of accounts.</li><li>Preparing financial statements for monthly, quarterly and annual.</li><li>Submit the financial statement for quarterly and annual to the management and tax department based on Tax Law before 28 February '+YN()+'.</li><li>Providing the accounting knowledge on implementing the accounting and tax practice.</li><li>Checking the assets of the company before closing.</li></ul></td></tr>'
+    +   '<tr><td style="border:'+b+';padding:4px;text-align:center;vertical-align:top">2</td><td style="border:'+b+';padding:6px"><b>Tax Service</b><ul style="margin:4px 0 0 18px;padding:0"><li>Checking the bills related to tax matters or issues.</li><li>Summarize and report the value added tax (VAT) for monthly, quarterly and annual.</li><li>Summarize and report the personal income tax (PIT) for monthly, quarterly and annual.</li><li>Summarize and report the profit tax for quarterly and annual.</li><li>Service and coordinate with the tax department regarding declaring the tax based on tax law.</li><li>Coordinate and work with the tax officer to finalize the annual tax calculation and get the annual tax payment certificate.</li></ul></td></tr>'
+    + '</table>'
+    + '<p style="margin-top:6px"><b>Rights, responsibilities and scope of services of Party A and Party B.</b></p>'
+    + '<p style="font-weight:bold;margin:4px 0 0">Party A:</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>The company guarantees the accuracy, completeness and timeliness of the documents as agreed in the contract with '+_cbV(f.clientCompany,150)+'. Appoint a coordinator and work with Party B until the end of the contracted service period; the person who will do the actual work is the accounting team, Tel: (856-20) 56 366 264.</li><li>Come to provide the services in the company office according to the agreed schedule and will inform Party B in advance every time.</li><li>In case the work specified in this service contract is delayed, which causes the government to adjust the tax for Party B, Party A will be responsible for the adjustment fees incurred.</li></ol>'
+    + '<p style="font-weight:bold;margin:6px 0 0">Party B:</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>Ensure accurate, complete and true information provided to TS Accounting and Auditing Company Limited. These documents will be provided to Party A within 5 days of signing the contract.</li><li>Assign a coordinator to join and complete the service phase; the person who will do the actual work is '+_cbV(f.clientCoord,110)+', Tel: '+_cbV(f.clientCoordPhone,80)+'.</li><li>Facilitating access to services in the company office such as workplace, necessary equipment (printer, projector, whiteboard, and other office supplies), and will notify Party A one week in advance.</li><li>If the company provides information or documents related to the work of both parties late, wrong or incomplete \u2013 not in accordance with the agreed requirements in the contract \u2013 the impact will occur, such as delays in accounting, incomplete reports and incorrect programming; Party B will be responsible for the adjustment fees incurred.</li><li>Party B will pay the service fees in accordance with Article 3 correctly and on time.</li></ol>'
+    + '<p style="font-weight:bold;margin-top:12px">Article 3: Service fee and procedure for payment</p>'
+    + '<p>The service fees are <b>'+_cbFmt(totY)+' USD/year</b>. This value includes VAT 10% but excludes the fine for the company failing to perform a required act under the tax regulations and the document fee for submitting the report to the MOF. Details are as follows:</p>'
+    + '<table style="border-collapse:collapse;width:100%;margin:8px 0;font-size:12px"><tr><td '+th+' style="width:32px;border:'+b+';padding:4px;background:#e2e8f0">No.</td><td '+th+'>Service description</td><td '+th+'>Amount (USD)/month</td><td '+th+'>Amount (USD)/year</td></tr>'+costRowsHtml+vatRowHtml+totRowHtml+'</table>'
+    + '<p>Procedure for payment of services:</p><ul style="margin:0 0 0 22px;padding:0;list-style:none">'+payHtml+'</ul>'
+    + '<div style="margin:6px 0 0 10px"><p style="margin:0">Detail Payment to: Bank for Foreign Trade of Laos (BCEL)</p><p style="margin:0 0 0 16px">- Account name: TS ACCOUNTING AND AUDITING CO.LTD</p><p style="margin:0 0 0 16px">- Bank account (LAK): 01011-00011-3808-7001</p><p style="margin:0 0 0 16px">- Bank account (USD): 01011-01011-3808-7001</p></div>'
+    + '<p style="font-weight:bold;margin-top:12px">Article 4: Schedule of work.</p>'
+    + '<table style="border-collapse:collapse;width:100%;margin:6px 0;font-size:12px"><tr><td '+th+' style="width:32px;border:'+b+';padding:4px;background:#e2e8f0">No.</td><td '+th+'>Detail of work</td><td '+th+'>Date</td></tr><tr><td style="border:'+b+';padding:4px;text-align:center">1</td><td style="border:'+b+';padding:6px">The day of submitting the draft of the Financial Statement report.</td><td style="border:'+b+';padding:6px">Submit within 7 working days after receiving the monthly complete data with the client\u2019s signature.</td></tr><tr><td style="border:'+b+';padding:4px;text-align:center">2</td><td style="border:'+b+';padding:6px">The day of submitting the final Financial Statement report.</td><td style="border:'+b+';padding:6px">Submit within 7 working days after getting confirmation and agreement from the client side via email.</td></tr></table>'
+    + '<p style="font-weight:bold;margin-top:12px">Article 5: Document submission.</p>'
+    + '<p style="margin:0">Documents include:</p><ul style="margin:0 0 0 22px;padding:0;list-style:none"><li>- The evidence documents provided by Party B to Party A according to the list of information.</li><li>- 1 set of annual financial report of the company.</li></ul>'
+    + '<p>After delivering the tax obligations certificate, the annual financial report for '+YN()+' and other relevant documents to Party B and the payment is completed, this contract for accounting service is terminated.</p>'
+    + '<p style="font-weight:bold;margin-top:12px">Article 6: Outstanding issues at the time of signing the contract.</p>'
+    + '<p>Party B: There are outstanding issues at the time of signing the contract with TSAA. Details are as follows:</p><ul style="margin:0 0 0 22px;padding:0"><li>Accounting manual</li></ul>'
+    + '<p style="font-weight:bold;margin-top:12px">Article 7: The effect of the contract</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>This contract is made based on the agreement and understanding of both parties. Therefore, it is effective from the date of signing, stamping and court registration onwards.</li><li>The contract is made in 2 sets in English and Lao, which have equal content.</li></ol>'
+    + '<table style="width:100%;margin-top:24px;text-align:center;font-size:13px"><tr>'
+    +   '<td style="width:50%;vertical-align:top"><div style="font-weight:bold">Your very truth,</div>'+(ci.signatureImage?('<div style="margin-top:6px">'+(typeof ntSafeImg==='function'?ntSafeImg(ci.signatureImage,'','max-height:120px;max-width:90%;margin:0 auto'):'')+'</div>'):'<div style="height:96px"></div>')+'<div style="font-weight:bold">Director</div><div style="font-weight:bold">TSAA Company Limited</div></td>'
+    +   '<td style="width:50%;vertical-align:top"><div style="font-weight:bold">Agreed and accepted by,</div><div style="height:120px"></div><div style="font-weight:bold">Director</div><div style="font-weight:bold">'+_cbV(f.clientCompany,150)+'</div></td>'
+    + '</tr></table>'
+    + '</div>';
+}
+
+// Contract type 3: Micro-enterprise acc-tax (MkJ suffix, editable position, 50/50 payment, fee notes, fixed coordinator ໄຂ່ນຸ້ນ)
+function _ntCBAccTaxMicro2Lo(f, cost, pay){
+    var yr=(f.year||'').trim();
+    var Y=function(w){ return _cbV(yr, w||40); };
+    var ci=(typeof companyInfo!=='undefined'&&companyInfo)?companyInfo:{};
+    var rows=(cost&&cost.length)?cost:[{desc:'ບໍລິການດ້ານບັນຊີ ແລະ ອາກອນ',cur:'ກີບ',m:'',y:''}];
+    var sumY=0; rows.forEach(function(r){ sumY+=_cbNum(r.y); });
+    var totY=sumY;   // micro: amount does NOT include VAT
+    var b='1px solid #444';
+    var costRowsHtml=rows.map(function(r,i){ return '<tr><td style="border:'+b+';padding:4px 6px;text-align:center">'+(i+1)+'</td><td style="border:'+b+';padding:4px 6px">'+(_ntEsc(r.desc)||_cbBlank(120))+'</td><td style="border:'+b+';padding:4px 6px;text-align:center">'+_ntEsc(r.cur||'ກີບ')+'</td><td style="border:'+b+';padding:4px 6px;text-align:right">'+(r.y?_cbFmt(_cbNum(r.y)):'')+' ກີບ</td></tr>'; }).join('');
+    var totRowHtml='<tr style="font-weight:bold;background:#f1f5f9"><td colspan="2" style="border:'+b+';padding:4px 6px;text-align:center">ລວມ</td><td style="border:'+b+';padding:4px 6px;text-align:center">ກີບ</td><td style="border:'+b+';padding:4px 6px;text-align:right">'+_cbFmt(totY)+' ກີບ</td></tr>';
+    var th='style="border:'+b+';padding:4px 6px;background:#e2e8f0;text-align:center;font-weight:bold"';
+    var prows=(pay&&pay.length)?pay:[{pct:'50',note:'ໃນມື້ເຊັນສັນຍາບໍລິການບັນຊີ-ອາກອນ ປະຈໍາປີ '+(yr||'……')},{pct:'50',note:'ໃນມື້ຈັດສົ່ງ ບົດສະຫຼຸບປະຈໍາປີ '+(yr||'……')+', ໃບຖືບັນຊີ ແລະ ໃບຢັ້ງຢືນການມອບພັນທະອາກອນ'}];
+    var payHtml=prows.map(function(p){ return '<li>- ຊໍາລະ '+_cbV(p.pct,30)+'% '+_ntEsc(p.note||'')+'</li>'; }).join('');
+    return ''
+    + '<div style="font-family:'+NT_CB_FONT+';color:#111;line-height:1.7;font-size:13px;">'
+    + '<div style="text-align:center;margin-bottom:6px"><div style="font-weight:bold">ສາທາລະນະລັດ ປະຊາທິປະໄຕ ປະຊາຊົນລາວ</div><div style="font-weight:bold">ສັນຕິພາບ ເອກະລາດ ປະຊາທິປະໄຕ ເອກະພາບ ວັດທະນະຖາວອນ</div></div>'
+    + _cbLetterhead(f, ci, 'MkJ-TSAA')
+    + '<div style="text-align:center;margin:14px 0"><div style="font-size:17px;font-weight:bold">ສັນຍາວ່າຈ້າງ ບໍລິການບັນຊີ ແລະ ອາກອນ ຈຸນລະວິສາຫະກິດ</div><div style="font-size:16px;font-weight:bold">ປະຈຳປີ '+Y(50)+'</div></div>'
+    + '<p style="text-align:center">ສ້າງຂຶ້ນໃນວັນທີ '+_cbV(_cbDateFmt(f.createdDate),90)+' ທີ່ ບໍລິສັດ TSAA ຈຳກັດ.</p>'
+    + '<p style="text-align:center;font-weight:bold">ລະຫວ່າງ</p>'
+    + '<p><b>ບໍລິສັດ TSAA ຈຳກັດ.</b> ຕ່າງໜ້າໂດຍ ທ່ານ ພອນເທວາ ໂຄຕິເສນ ເຊິ່ງເປັນຜູ້ອຳນວຍການ, ສໍານັກງານຕັ້ງຢູ່ ບ້ານ ໂພນຕ້ອງສະຫວາດ, ເມືອງ ຈັນທະບູລີ, ນະຄອນຫຼວງວຽງຈັນ, ເບີໂທລະສັບ 020 56 366 264, E-mail: tsaamarketingandsale2013@gmail.com <i>(ເຊິ່ງຕໍ່ໄປນີ້ເອີ້ນ ຝ່າຍ ກ)</i></p>'
+    + '<p style="text-align:center;font-weight:bold">ແລະ</p>'
+    + '<p>'+_cbV(f.clientCompany,180)+' ຕ່າງໜ້າໂດຍ ທ່ານ '+_cbV(f.clientRep,120)+', ເຊິ່ງເປັນ '+_cbV(f.clientPosition,90)+', ສໍານັກງານຕັ້ງຢູ່ ບ້ານ '+_cbV(f.clientVillage,90)+', ເມືອງ '+_cbV(f.clientDistrict,90)+', ເເຂວງ '+_cbV(f.clientProvince,90)+'. <i>(ເຊິ່ງຕໍ່ໄປນີ້ເອີ້ນ ຝ່າຍ ຂ)</i></p>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 1 : ວ່າດ້ວຍ ຈຸດປະສົງສັນຍາ</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ເພື່ອກຳນົດຈຸດປະສົງ, ເປົ້າໝາຍ, ຂອບເຂດວຽກ, ຄາດໝາຍ, ຄວາມຮັບຜິດຊອບ ແລະ ງົບປະມານ ຕ່າງໆ ທີ່ກ່ຽວຂ້ອງກັບສັນຍາຂອງສອງຝ່າຍ.</li><li>ເພື່ອກຳນົດບຸກຄະລາກອນ ແລະ ໜ້າວຽກລະອຽດ ຂອງ ການບໍລິການ ບັນຊີ ແລະ ອາກອນ.</li><li>ເພື່ອເປັນຫຼັກຖານ - ບ່ອນອີງການເຄື່ອນໄຫວ ຂອງ ພະນັກງານວິຊາການ ສໍາລັບການປະຕິບັດສັນຍາ ຂອງສອງຝ່າຍ.</li></ol>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 2 : ວ່າດ້ວຍ ເນື້ອໃນສັນຍາ</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ຝ່າຍ ຂ ຕົກລົງວ່າຈ້າງ ຝ່າຍ ກ ໃຫ້ມາ ບໍລິການດ້ານບັນຊີ ແລະ ອາກອນ ແລະ ພ້ອມກັບ ສ້າງບົດ ລາຍງານການເງິນປະຈຳປີ '+Y()+'.</li><li>ຝ່າຍ ກ ຕົກລົງຮັບເອົາການວ່າຈ້າງ ຈາກ ຝ່າຍ ຂ ມາບໍລິການ ດ້ານບັນຊີ ແລະ ອາກອນ ແລະ ສ້າງບົດລາຍງານ ການເງິນປະຈຳປີ '+Y()+'.</li><li>ຝ່າຍ ກ ແລະ ຝ່າຍ ຂ ໄດ້ຕົກລົງຂອບເຂດວຽກການໃຫ້ບໍລິການຮ່ວມກັນ ເຊິ່ງປະກອບດ້ວຍລາຍ ລະອຽດດັ່ງນີ້:</li></ol>'
+    + '<table style="border-collapse:collapse;width:100%;margin:8px 0;font-size:12px"><tr><td '+th+' style="width:36px;border:'+b+';padding:4px;background:#e2e8f0;font-weight:bold">ລຳດັບ</td><td '+th+'>ເນື້ອໃນ</td></tr>'
+    +   '<tr><td style="border:'+b+';padding:4px;text-align:center;vertical-align:top">1</td><td style="border:'+b+';padding:6px"><b>ຂອບເຂດໃນການບໍລິການ ໂດຍມີລາຍລະອຽດດັ່ງນີ້:</b><ol style="margin:4px 0 0 18px;padding:0"><li>ໂປຮແກຣມບັນທຶກເຄຶ່ອງຂາຍການຄ້າ - ການບໍລິການ ທີ່ໄດ້ບິນເກັບເງິນ ອມພ ທີ່ເຊື່ອມຕໍ່ກັບລະບົບ Taxris ແລະ ພ້ອມການເຝຶກການນຳໃຊ້</li><li>ໄດ້ທີ່ປືກສາບັນຊີ - ອາກອນ</li><li>ວາງລະບົບບັນຊີ ແລະ ສ້າງຜັງບັນຊີ</li><li>ຜູ້ບັນທຶກ ແລະ ສະຫລຸບບັນຊີ, ສ້າງບົດລາຍງານການເງິນປະຈຳເດືອນ, 6 ເດືອນຕົ້ນປີ ແລະ ທ້າຍປີ</li><li>ວາງລະບົບເກັບເອກະສານຫລັກຖານທາງບັນຊີ - ການເງິນ - ອາກອນ</li><li>ປື້ມຄູ່ມືບັນຊີ ( ບໍ່ລວມຄ່າທຳນຽມປິ້ນເອກະສານ )</li><li>ແຈ້ງພັນທະອາກອນແຕ່ລະເດືອນຕາມກົດໝາຍອາກອນທີວາງອອກ</li><li>ປິ້ນບົດລາຍງານການເງິນປະຈຳປີ ໃຫ້ແກ່ຂະແໜ່ງບັນຊີ ແລະ ອາກອນ</li><li>ປະກອບ ແລະ ປິ້ນຟອມນຳຂະແໜງບັນຊີ ເພື່ອອອກໃບຕິດຕາມຖືບັນຊີປະຈຳປີ</li><li>ປະກອບ ແລະ ປິ້ນຟອມນຳຂະແໜງອາກອນ ເພີ່ອອອກໃບຢັ້ງຢືນການມອບພັນທະອາກອນປະຈຳປີ</li><li>ເປັນຕົວແທນປະສານງານ ແລະ ຮ່ວມເຮັດວຽກກັບເຈົ້າໜ້າທີ່ໄລ່ລ່ຽງກວດກາປະຈຳປີ</li><li>ປະກອບຟອມຢືນຕໍ່ໃບອະນຸຍາດເຄື່ອງບັນທຶກຂາຍປະຈຳປີ ( ບໍ່ລວມຄ່າທຳນຽມຢືນເອກະສານ )</li></ol></td></tr></table>'
+    + '<p style="margin-top:6px"><b>4. ສິດ, ໜ້າທີ່ຮັບຜິດຊອບ ແລະ ຂອບເຂດການບໍລິການ ຂອງ ຝ່າຍ ກ ແລະ ຝ່າຍ ຂ</b></p>'
+    + '<p style="font-weight:bold;margin:4px 0 0">ຝ່າຍ ກ:</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ບໍລິສັດຮັບປະກັນຄວາມຖືກຕ້ອງ, ຄົບຖ້ວນ ແລະ ທັນເວລາດ້ານເອກະສານຕ່າງໆຕາມສັນຍາທີ່ຕົກລົງກັນ ໃຫ້ແກ່ '+_cbV(f.clientCompany,160)+'. ແຕ່ງຕັ້ງຜູ້ປະສານງານ ແລະ ເຮັດວຽກກັບ ຝ່າຍ ຂ ຈົນສໍາເລັດ ໄລຍະການບໍລິການຕາມສັນຍາ, ເຊິ່ງຜູ້ທີ່ຈະເຮັດວຽກງານຕົວຈິງແມ່ນຕ່າງໜ້າໂດຍ ທ່ານ ນາງ ໄຂ່ນຸ້ນ ສຸວາລັດ, ເບີໂທ: 020 58 991 842.</li><li>ເຂົ້າມາບໍລິການພາຍໃນບໍລິສັດຕາມຕາຕະລາງທີ່ຕົກລົງກັນ ແລະ ຈະແຈ້ງໃຫ້ທາງ ຝ່າຍ ຂ ຮັບຮູ້ລ່ວງ ໜ້າທຸກໆຄັ້ງ.</li><li>ກໍລະນີບັນດາໜ້າວຽກທີ່ກຳນົດໃນສັນຍາບໍລິການສະບັບນີ້ຫາກຊັກຊ້າ, ເຊິ່ງເປັນເຫດຜົນທີ່ພາໃຫ້ເກີດມີ ການປັບໄໝຈາກພາກລັດສຳລັບການແຈ້ງອາກອນຕ່າງໆ ຂອງ ຝ່າຍ ຂ ແມ່ນ ຝ່າຍ ກ ຈະຮັບຜິດຊອບຄ່າປັບໄໝທີ່ເກີດຂຶ້ນແຕ່ພຽງຝ່າຍດຽວ.</li></ol>'
+    + '<p style="font-weight:bold;margin:6px 0 0">ຝ່າຍ ຂ:</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ບໍລິສັດຮັບປະກັນຄວາມຖືກຕ້ອງ, ຄວາມຄົບຖ້ວນ ແລະ ຄວາມເປັນຈິງ ທາງດ້ານຂໍ້ມູນ ທີ່ສະໜອງໃຫ້ແກ່ ບໍລິສັດ ທີເອັດສ ທີ່ປຶກສາບັນຊີ ແລະ ກວດສອບ ຈຳກັດ. ບັນດາເອກະສານດັ່ງ ກ່າວຈະສະໜອງໃຫ້ພາຍໃນ 5 ມື້ຫຼັງຈາກເຊັນສັນຍາແລ້ວ.</li><li>ແຕ່ງຕັ້ງຜູ້ປະສານງານໃນການຮ່ວມເຮັດວຽກກັບ ຝ່າຍ ກ ຈົນສໍາເລັດໄລຍະການບໍລິການຕາມສັນຍາ ເຊິ່ງຜູ້ທີ່ຈະເຮັດວຽກງານຕົວຈິງແມ່ນໂດຍ ທ່ານ '+_cbV(f.clientCoord,120)+', ເບີໂທ: '+_cbV(f.clientCoordPhone,90)+'.</li><li>ອຳນວຍຄວາມສະດວກໃນການເຂົ້າມາບໍລິການພາຍໃນບໍລິສັດເຊັ່ນ: ສະຖານທີ່ນັ່ງເຮັດວຽກ, ເຄື່ອງໃຊ້ ທີ່ຈໍາເປັນ (ປິ້ນເຕີ້, ໂປຣເຈັກເຕີ້, ກະດານ, ເຄື່ອງຂຽນ ແລະ ອຸປະກອນຮັບໃຊ້ຫ້ອງການອື່ນໆ) ໂດຍຈະ ແຈ້ງໃຫ້ທາງ ຝ່າຍ ກ ຮັບຊາບ.</li><li>ຖ້າທາງບໍລິສັດຫາກສະໜອງຂໍ້ມູນ ຫຼື ເອກະສານທີ່ກ່ຽວຂ້ອງກັບໜ້າວຽກຂອງທັງສອງຝ່າຍຊັກຊ້າ, ຜິດພາດ ຫຼື ບໍ່ຄົບຖ້ວນ ແມ່ນທາງ ຝ່າຍ ຂ ຈະຮັບຜິດຊອບຄ່າປັບໄໝທີ່ເກີດຂຶ້ນແຕ່ພຽງຜູ້ດຽວ. ຝ່າຍ ຂ ຈະຊໍາລະຄ່າບໍລິການ ຂອງ ຝ່າຍ ກ ຕາມມາດຕາ 3 ໃຫ້ຖືກຕ້ອງ ແລະ ກົງເວລາ.</li></ol>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 3: ວ່າດ້ວຍ ຄ່າບໍລິການ ແລະ ຂັ້ນຕອນການຊໍາລະ</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ຝ່າຍ ກ ແລະ ຝ່າຍ ຂ ຕົກລົງຄ່າບໍລິການຮ່ວມກັນເປັນ <b>'+_cbFmt(totY)+' ກີບ/ຕໍ່ປີ</b>, ເຊິ່ງມູນຄ່າດັ່ງກ່າວແມ່ນບໍ່ລວມອາກອນມູນຄ່າເພີ່ມ 10% ແຕ່ບໍ່ລວມຄ່າປັບໄໝ ທີ່ທາງບໍລິສັດບໍ່ປະຕິບັດ ຕາມລະບຽບຂອງສ່ວຍສາອາກອນ ແລະ ລວມຄ່າທໍານຽມໃນການສົ່ງເອກະສານໃຫ້ແກ່ກະຊວງການເງິນ ເເລະ ສ່ວຍສາອາກອນ. ເຊິ່ງມີລາຍລະອຽດຕາມຕາຕະລາງລຸ່ມນີ້:</li></ol>'
+    + '<table style="border-collapse:collapse;width:100%;margin:8px 0;font-size:12px"><tr><td '+th+' style="width:32px;border:'+b+';padding:4px;background:#e2e8f0">ລ/ດ</td><td '+th+'>ເນື້ອໃນບໍລິການ</td><td '+th+'>ສະກຸນເງິນ</td><td '+th+'>ຄ່າບໍລິການ(ກີບ)/ຕໍ່ປີ</td></tr>'+costRowsHtml+totRowHtml+'</table>'
+    + '<p>2) ຂັ້ນຕອນການຊໍາລະຄ່າບໍລິການປະກອບມີດັ່ງນີ້:</p><ul style="margin:0 0 0 22px;padding:0;list-style:none">'+payHtml+'</ul>'
+    + '<div style="margin:6px 0 0 10px"><p style="margin:0">❖ ຊໍາລະຜ່ານ ບັນຊີທະນາຄານການຄ້າຕ່າງປະເທດລາວ</p><p style="margin:0 0 0 16px">- ຊື່ບັນຊີ: TS ACCOUNTING AND AUDITING CO.LTD</p><p style="margin:0 0 0 16px">- ເລກບັນຊີ ສະກຸນເງິນກີບ (LAK): 01011-00011-3808-7001</p><p style="margin:0 0 0 16px">- ສະກຸນເງິນໂດລາ (USD): 01011-01011-3808-7001</p></div>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 4 : ວ່າດ້ວຍ ການກໍານົດຕາຕະລາງໜ້າວຽກ.</p>'
+    + '<table style="border-collapse:collapse;width:100%;margin:6px 0;font-size:12px"><tr><td '+th+' style="width:32px;border:'+b+';padding:4px;background:#e2e8f0">ລ/ດ</td><td '+th+'>ລາຍລະອຽດໜ້າວຽກ</td><td '+th+'>ເວລາກໍານົດ</td></tr><tr><td style="border:'+b+';padding:4px;text-align:center">1</td><td style="border:'+b+';padding:6px">ກຳນົດເວລາຈັດສົ່ງບົດລາຍງານການເງິນສະບັບຮ່າງ.</td><td style="border:'+b+';padding:6px">ພາຍໃນ 7 ວັນລັດຖະການ ຫຼັງຈາກໄດ້ຮັບຂໍ້ມູນທີ່ໄດ້ຖືກເຊັນຢັ້ງຢືນເປັນທີ່ຮຽບຮ້ອຍແລ້ວ.</td></tr><tr><td style="border:'+b+';padding:4px;text-align:center">2</td><td style="border:'+b+';padding:6px">ກຳນົດເວລາຈັດສົ່ງບົດລາຍງານການເງິນສະບັບສົມບູນ.</td><td style="border:'+b+';padding:6px">ພາຍໃນ 7 ວັນລັດຖະການ ຫຼັງຈາກໄດ້ຮັບການຢັ້ງຢືນຈາກ ຝ່າຍ ຂ ໂດຍຜ່ານອີເມວ.</td></tr></table>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 5 : ວ່າດ້ວຍ ການຈັດສົ່ງເອກະສານ</p>'
+    + '<p style="margin:0">1) ເອກະສານປະກອບມີ:</p><ul style="margin:0 0 0 22px;padding:0;list-style:none"><li>− ເອກະສານຫຼັກຖານຕ່າງໆ ທີ່ ຝ່າຍ ຂ ປະກອບໃຫ້ມາແກ່ ຝ່າຍ ກ ຕາມບັນຊີຂໍ້ມູນ</li><li>− ບົດລາຍງານການເງິນ ປະຈໍາເດືອນ ເເລະ ປະຈຳປີ ຂອງ ບໍລິສັດຈໍານວນ 1 ຊຸດ.</li></ul>'
+    + '<p>2) ພາຍຫຼັງມີການສົ່ງມອບໃບປະຕິບັດພັນທະອາກອນ, ປຶ້ມບົດສະຫຼຸບບັນຊີປະຈຳປີ '+Y()+' ແລະ ເອກະສານທີ່ກ່ຽວຂ້ອງອື່ນໆ ໃຫ້ ຝ່າຍ ຂ ຢ່າງເປັນລາຍລັກອັກສອນແລ້ວ ແລະ ມີການຊໍາລະສິ້ນສຸດລົງ ຖືວ່າສັນຍາວ່າຈ້າງ ການບໍລິການບັນຊີ ແລະ ອາກອນສະບັບນີ້ໄດ້ສິ້ນສຸດລົງ.</p>'
+    + '<p style="font-weight:bold;margin-top:12px">ມາດຕາທີ 6 : ວ່າດ້ວຍ ຜົນສັກສິດ ຂອງ ສັນຍາ</p>'
+    + '<ol style="margin:0 0 0 22px;padding:0"><li>ສັນຍາສະບັບນີ້ໄດ້ສ້າງຂຶ້ນບົນພື້ນຖານການຕົກລົງ ແລະ ຄວາມເຂົ້າໃຈ ຂອງ ທັງສອງຝ່າຍ. ສະນັ້ນ, ມີຜົນສັກສິດນັບແຕ່ມື້ລົງລາຍເຊັນ, ຈໍ້າກາ ແລະ ລົງທະບຽນສານເປັນຕົ້ນໄປ.</li><li>ສັນຍາສ້າງຂຶ້ນ 2 ສະບັບ ເປັນພາສາລາວ ເຊິ່ງມີເນື້ອໃນຄົບຖ້ວນຄືກັນ.</li></ol>'
+    + '<table style="width:100%;margin-top:24px;text-align:center;font-size:13px"><tr>'
+    +   '<td style="width:50%;vertical-align:top"><div>ວັນທີ '+_cbV(_cbDateFmt(f.signDate||f.createdDate),80)+'</div><div style="font-weight:bold;margin-top:2px">ຜູ້ອໍານວຍການ</div><div style="font-weight:bold">ບໍລິສັດ TSAA ຈຳກັດ</div>'+(ci.signatureImage?('<div style="margin-top:6px">'+(typeof ntSafeImg==='function'?ntSafeImg(ci.signatureImage,'','max-height:120px;max-width:90%;margin:0 auto'):'')+'</div>'):'<div style="height:96px"></div>')+'</td>'
+    +   '<td style="width:50%;vertical-align:top"><div>ວັນທີ ......./........./.........</div><div style="font-weight:bold;margin-top:2px">ຜູ້ອໍານວຍການ</div><div style="font-weight:bold">'+_cbV(f.clientCompany,150)+'</div><div style="height:120px"></div></td>'
+    + '</tr></table>'
+    + '</div>';
 }
 
 function _ntCBAccTaxLo(f, cost, pay){
@@ -16244,8 +16488,8 @@ function _ntCBAccTaxLo(f, cost, pay){
     var payHtml=prows.map(function(p){ return '<li>- ຊໍາລະ '+_cbV(p.pct,30)+'% '+_ntEsc(p.note||'')+'</li>'; }).join('');
     return ''
     + '<div style="font-family:'+NT_CB_FONT+';color:#111;line-height:1.7;font-size:13px;">'
+    + '<div style="text-align:center;margin-bottom:6px"><div style="font-weight:bold">ສາທາລະນະລັດ ປະຊາທິປະໄຕ ປະຊາຊົນລາວ</div><div style="font-weight:bold">ສັນຕິພາບ ເອກະລາດ ປະຊາທິປະໄຕ ເອກະພາບ ວັດທະນະຖາວອນ</div></div>'
     + _cbLetterhead(f, ci)
-    + '<div style="text-align:center;margin-bottom:8px"><div style="font-weight:bold">ສາທາລະນະລັດ ປະຊາທິປະໄຕ ປະຊາຊົນລາວ</div><div style="font-weight:bold">ສັນຕິພາບ ເອກະລາດ ປະຊາທິປະໄຕ ເອກະພາບ ວັດທະນະຖາວອນ</div><div style="width:120px;height:1px;background:#444;margin:6px auto"></div></div>'
     + '<div style="text-align:center;margin:14px 0"><div style="font-size:17px;font-weight:bold">ສັນຍາວ່າຈ້າງ ບໍລິການບັນຊີ ແລະ ອາກອນ</div><div style="font-size:16px;font-weight:bold">ປະຈຳປີ '+Y(50)+'</div></div>'
     + '<p style="text-align:center">ສ້າງຂຶ້ນໃນວັນທີ '+_cbV(_cbDateFmt(f.createdDate),90)+' ທີ່ ບໍລິສັດ TSAA ຈຳກັດ.</p>'
     + '<p style="text-align:center;font-weight:bold">ລະຫວ່າງ</p>'
@@ -16308,6 +16552,16 @@ function ntCBSave(){
     if(typeof showToast==='function') showToast(rec.status==='signed'?'ບັນທຶກ + ສົ່ງເຂົ້າຕາຕະລາງຕິດຕາມ (ເຊັນແລ້ວ)':'ບັນທຶກສັນຍາ (ຮ່າງ)','success');
     ntCBRenderSavedList();
     if(typeof renderContractDocTracker==='function') try{ renderContractDocTracker(); }catch(_){}
+    // INTEGRATION: signed contract -> create a tracking task in the work planner
+    if(rec.status==='signed' && typeof ntPlanAddAutoTask==='function'){
+        try{
+            var _f=rec.fields||{};
+            if(!(typeof nt_tasks!=='undefined' && nt_tasks.some(function(x){return x._srcContract===rec.id;}))){
+                ntPlanAddAutoTask({ title:'ເຊັນສັນຍາ: '+(_f.clientCompany||'ລູກຄ້າ'), description:'ສັນຍາເລກທີ '+(_f.contractNo||'-')+' ປະຈຳປີ '+(_f.year||'-'), date:(_f.signDate||'').slice(0,10), department:'ບັນຊີ', status:'COMPLETED', isUnplanned:true });
+                var _last=nt_tasks[nt_tasks.length-1]; if(_last) { _last._srcContract=rec.id; ntPlanSave(); }
+            }
+        }catch(_){}
+    }
 }
 function ntCBNew(){ _ntCB.id=null; _ntCB.cost=ntCBDefaultCost(); _ntCB.pay=ntCBDefaultPay(); ntCBSetFields({}); ntCBRenderCostInputs(); ntCBRenderPayInputs(); ntCBRenderBranchOptions(); ntCBRenderYearOptions(); ntCBRender(); if(typeof showToast==='function') showToast('ສ້າງສັນຍາໃໝ່','info'); }
 function ntCBLoad(id){
@@ -16384,6 +16638,774 @@ function renderContractDocTracker(){
     });
     box.innerHTML=html;
 }
+
+        
+/* ===================== DUAL-LAYER WORK PLAN MODULE (ແຜນວຽກ 2 ລະດັບ) ===================== */
+var nt_tasks      = _ntJP('nt_tasks', []);
+var nt_planStaff  = _ntJP('nt_planStaff', []);
+var nt_planDepts  = _ntJP('nt_planDepts', ['ບັນຊີ','ອາກອນ','ກວດສອບ','ການເງິນ','ການຕະຫຼາດ','ບໍລິຫານ']);
+var _ntPlan = { view:'BOARD', month:(function(){var d=new Date();return new Date(d.getFullYear(),d.getMonth(),1);})(), selDate:new Date(), filterDept:'ທັງໝົດ', filterStatus:'ທັງໝົດ', boardDate:'', reportMonth:(new Date()).toISOString().slice(0,7), reportDept:'ທັງໝົດ', editId:null };
+var NT_PLAN_STATUSES = [
+    {v:'PENDING', lo:'ລໍຖ້າ', en:'Pending', col:'slate'},
+    {v:'IN_PROGRESS', lo:'ກຳລັງເຮັດ', en:'In Progress', col:'blue'},
+    {v:'WAITING_APPROVAL', lo:'ລໍຖ້າອະນຸມັດ', en:'Waiting', col:'indigo'},
+    {v:'COMPLETED', lo:'ສຳເລັດແລ້ວ', en:'Completed', col:'teal'}
+];
+var NT_PLAN_PRIOS = ['ສູງ','ກາງ','ຕ່ຳ'];
+var NT_PLAN_WORKTYPES = [
+    {v:'ປະຈຳ', lo:'ວຽກປະຈຳ (ທຸກເດືອນ)'},
+    {v:'ຕ້ອງເຮັດ', lo:'ວຽກທີ່ຕ້ອງເຮັດ'},
+    {v:'ທົ່ວໄປ', lo:'ວຽກທົ່ວໄປ'}
+];
+var nt_planUsers = _ntJP('nt_planUsers', []);
+
+function _ntpPad(n){ return (n<10?'0':'')+n; }
+function _ntpISO(d){ return d.getFullYear()+'-'+_ntpPad(d.getMonth()+1)+'-'+_ntpPad(d.getDate()); }
+function _ntpLao(iso){ if(!iso) return ''; var p=String(iso).slice(0,10).split('-'); return p.length===3?(p[2]+'/'+p[1]+'/'+p[0]):iso; }
+function _ntpStatusInfo(v){ return NT_PLAN_STATUSES.find(function(s){return s.v===v;})||NT_PLAN_STATUSES[0]; }
+function _ntpReportDay(t){ if(t && t.workType==='ທົ່ວໄປ' && t.status==='COMPLETED' && t.completedDate) return String(t.completedDate).slice(0,10); return (t&&t.startDate||'').slice(0,10); }
+function _ntpEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function ntPlanSave(){
+    var ok=(typeof ntSaveColl==='function')?ntSaveColl('nt_tasks',nt_tasks):(function(){try{localStorage.setItem('nt_tasks',JSON.stringify(nt_tasks));return true;}catch(_){return false;}})();
+    if(ok===false){ if(typeof showToast==='function') showToast('ພື້ນທີ່ເຕັມ ບັນທຶກບໍ່ໄດ້','error'); return false; }
+    if(typeof triggerCloudBackup==='function') try{ triggerCloudBackup(); }catch(_){}
+    return true;
+}
+function ntPlanSaveStaff(){ try{ localStorage.setItem('nt_planStaff',JSON.stringify(nt_planStaff)); }catch(_){}; if(typeof triggerCloudBackup==='function') try{triggerCloudBackup();}catch(_){}; }
+
+// ---------- filtered tasks ----------
+function ntPlanFiltered(){
+    var cu=(typeof ntPlanCurrentUser==='function')?ntPlanCurrentUser():null;
+    return nt_tasks.filter(function(t){
+        if(_ntPlan.mineOnly && cu && !(t.assignee===cu.name || t.assigneeId===cu.id)) return false;
+        return (_ntPlan.filterDept==='ທັງໝົດ'||t.department===_ntPlan.filterDept)
+            && (_ntPlan.filterStatus==='ທັງໝົດ'||t.status===_ntPlan.filterStatus);
+    });
+}
+function ntPlanPeople(){
+    var names={};
+    (nt_planUsers||[]).forEach(function(u){ if(u&&u.name) names[u.name]={name:u.name,dept:u.dept}; });
+    (nt_planStaff||[]).forEach(function(s){ if(s&&s.name&&!names[s.name]) names[s.name]=s; });
+    return Object.keys(names).map(function(k){return names[k];});
+}
+
+// ---------- cross-module calendar events (ປະສານກັບທຸກໂມດູນ) ----------
+function ntPlanDayEvents(dateStr){
+    var ev=[];
+    ntPlanFiltered().forEach(function(t){
+        var s=(t.startDate||'').slice(0,10), d=(t.dueDate||'').slice(0,10);
+        if(s===dateStr || d===dateStr || (s&&d&&dateStr>=s&&dateStr<=d)) ev.push({kind:'task',data:t});
+    });
+    // contract documents (sign date) — from Contract Builder
+    if(typeof nt_contractDocs!=='undefined') nt_contractDocs.forEach(function(c){
+        var sd=((c.fields&&c.fields.signDate)||'').slice(0,10);
+        if(sd===dateStr) ev.push({kind:'contract',data:c});
+    });
+    // contract schedule deadlines (IV/RV due) — from contract-track
+    if(typeof nt_contracts!=='undefined') nt_contracts.forEach(function(ct){
+        (ct.schedule||[]).forEach(function(sc){
+            var mo=parseInt(sc.month,10), dd=parseInt(sc.dueDay,10), yr=parseInt(ct.contractYear,10);
+            if(yr&&mo>=1&&mo<=12&&dd>=1&&dd<=31){
+                var ds=yr+'-'+_ntpPad(mo)+'-'+_ntpPad(dd);
+                if(ds===dateStr && !sc.invoiced) ev.push({kind:'cschedule',data:{ct:ct,sc:sc}});
+            }
+        });
+    });
+    // invoices
+    if(typeof invoices!=='undefined') invoices.forEach(function(iv){
+        if((iv.date||'').slice(0,10)===dateStr) ev.push({kind:'invoice',data:iv});
+    });
+    return ev;
+}
+function ntPlanMonthEventCount(){
+    // count events per day in current view month for badges
+    return null;
+}
+
+// ---------- main render ----------
+function ntPlanInit(){ try{ ntPlanGenerateRecurring((new Date()).toISOString().slice(0,7)); }catch(_){}; ntPlanRenderHeaderControls(); ntPlanRender(); var ua=document.getElementById('ntPlanUserArea'); if(ua&&typeof ntPlanUserAreaHTML==='function') ua.innerHTML=ntPlanUserAreaHTML(); }
+function ntPlanSetView(v){ _ntPlan.view=v; ntPlanRenderHeaderControls(); ntPlanRender(); }
+function ntPlanRender(){
+    var box=document.getElementById('ntPlanBody'); if(!box) return;
+    if(_ntPlan.view==='BOARD') box.innerHTML=ntPlanBoardHTML();
+    else if(_ntPlan.view==='CALENDAR') box.innerHTML=ntPlanCalendarHTML();
+    else box.innerHTML=ntPlanReportHTML();
+    if(_ntPlan.view==='REPORT') setTimeout(ntPlanDrawChart,60);
+}
+function ntPlanRenderHeaderControls(){
+    var dsel=document.getElementById('ntPlanFilterDept');
+    if(dsel){ dsel.innerHTML=['ທັງໝົດ'].concat(nt_planDepts).map(function(d){return '<option value="'+_ntpEsc(d)+'"'+(d===_ntPlan.filterDept?' selected':'')+'>'+_ntpEsc(d)+'</option>';}).join(''); }
+    var ssel=document.getElementById('ntPlanFilterStatus');
+    if(ssel){ ssel.innerHTML='<option value="ທັງໝົດ">ທັງໝົດ (ສະຖານະ)</option>'+NT_PLAN_STATUSES.map(function(s){return '<option value="'+s.v+'"'+(s.v===_ntPlan.filterStatus?' selected':'')+'>'+s.lo+'</option>';}).join(''); }
+    ['BOARD','CALENDAR','REPORT'].forEach(function(v){
+        var b=document.getElementById('ntPlanTab-'+v); if(b) b.className='px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 '+(v===_ntPlan.view?'bg-white shadow text-indigo-700':'text-slate-500 hover:text-slate-700');
+    });
+    var ua=document.getElementById('ntPlanUserArea'); if(ua&&typeof ntPlanUserAreaHTML==='function') ua.innerHTML=ntPlanUserAreaHTML();
+    var mine=document.getElementById('ntPlanMineWrap'); if(mine){ var cu=(typeof ntPlanCurrentUser==='function')?ntPlanCurrentUser():null; mine.style.display=cu?'inline-flex':'none'; var cb=document.getElementById('ntPlanMineChk'); if(cb) cb.checked=!!_ntPlan.mineOnly; }
+}
+function ntPlanFilterChange(){ var d=document.getElementById('ntPlanFilterDept'),s=document.getElementById('ntPlanFilterStatus'); if(d)_ntPlan.filterDept=d.value; if(s)_ntPlan.filterStatus=s.value; ntPlanRender(); }
+
+// ---------- BOARD (Kanban) ----------
+function ntPlanBoardHTML(){
+    var bd=_ntPlan.boardDate;
+    var cols=NT_PLAN_STATUSES.map(function(col){
+        var tks=ntPlanFiltered().filter(function(t){ return t.status===col.v && (!bd || ((t.startDate&&t.startDate.slice(0,10)===bd)||(t.dueDate&&t.dueDate.slice(0,10)===bd))); });
+        var cards=tks.map(function(t){
+            var pr=t.priority===NT_PLAN_PRIOS[0]?'bg-rose-100 text-rose-600':t.priority===NT_PLAN_PRIOS[1]?'bg-amber-100 text-amber-600':'bg-slate-100 text-slate-600';
+            return '<div draggable="true" ondragstart="event.dataTransfer.setData(\'tid\',\''+t.id+'\')" onclick="ntPlanDetails(\''+t.id+'\')" class="bg-white p-3 rounded-xl shadow-sm border border-slate-100 cursor-grab hover:shadow-md hover:-translate-y-0.5 transition">'
+              +'<div class="flex justify-between items-start mb-1"><span class="text-[9px] px-2 py-0.5 rounded-full font-bold '+pr+'">'+_ntpEsc(t.priority)+'</span>'
+              +'<span onclick="event.stopPropagation()"><select onchange="ntPlanSetStatus(\''+t.id+'\',this.value)" class="text-[9px] bg-transparent border-none text-slate-500 cursor-pointer outline-none font-bold">'+NT_PLAN_STATUSES.map(function(s){return '<option value="'+s.v+'"'+(s.v===t.status?' selected':'')+'>'+s.lo+'</option>';}).join('')+'</select>'
+              +'<button onclick="event.stopPropagation();ntPlanDeleteTask(\''+t.id+'\')" class="text-slate-300 hover:text-rose-500 ml-1"><i class="fa-solid fa-xmark text-xs"></i></button></span></div>'
+              +'<p class="text-xs font-bold text-slate-800 leading-tight mb-1">'+_ntpEsc(t.title)+(t.isUnplanned?' <span class="text-[8px] bg-rose-100 text-rose-700 px-1 rounded">ດ່ວນ</span>':'')+(t.failureReason?' <span class="text-[8px] bg-amber-100 text-amber-700 px-1 rounded">ເລື່ອນ/ຄືນ</span>':'')+'</p>'
+              +(t.description?'<p class="text-[10px] text-slate-500 mb-1 line-clamp-2">'+_ntpEsc(t.description)+'</p>':'')
+              +'<div class="text-[9px] text-slate-500 space-y-0.5 mt-1">'
+              +(t.assignee?'<div class="flex justify-between text-indigo-600"><span>ຜູ້ຮັບຜິດຊອບ:</span><span>'+_ntpEsc(t.assignee)+'</span></div>':'')
+              +(t.dueDate?'<div class="flex justify-between text-purple-600"><span>ສົ່ງ:</span><span>'+_ntpLao(t.dueDate)+(t.endTime?' '+t.endTime:'')+'</span></div>':'')
+              +'</div>'
+              +(t.failureReason?'<div class="mt-1 p-1 bg-rose-50 text-rose-700 text-[9px] rounded">'+_ntpEsc(t.failureReason)+'</div>':'')
+              +(t.status!=='COMPLETED'?'<button onclick="event.stopPropagation();ntPlanDelay(\''+t.id+'\')" class="mt-1.5 w-full text-[10px] py-1 bg-amber-50 text-amber-700 font-bold rounded hover:bg-amber-100">ເລື່ອນໄປມື້ຕໍ່ໄປ</button>':'')
+              +'</div>';
+        }).join('');
+        return '<div ondragover="event.preventDefault()" ondrop="event.preventDefault();ntPlanSetStatus(event.dataTransfer.getData(\'tid\'),\''+col.v+'\')" class="rounded-2xl p-3 flex flex-col border border-slate-200/60 bg-'+col.col+'-50/40 min-w-[260px] flex-1">'
+          +'<h4 class="text-xs font-bold text-slate-700 mb-3 uppercase tracking-wide">'+col.lo+' ('+tks.length+')</h4>'
+          +'<div class="space-y-2 overflow-y-auto" style="max-height:60vh">'+(cards||'<div class="h-20 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[11px] text-slate-400">ລາກວຽກມາທີ່ນີ້</div>')+'</div></div>';
+    }).join('');
+    return '<div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">'
+      +'<div class="flex flex-wrap justify-between items-center gap-2 mb-4"><h3 class="font-bold text-slate-800 text-sm">ໜ້າວຽກກະດານ (Task Board)</h3>'
+      +'<div class="flex items-center gap-1 text-xs"><span class="text-slate-500 font-bold">ກັ່ນຕອງວັນທີ:</span><input type="date" value="'+bd+'" onchange="_ntPlan.boardDate=this.value;ntPlanRender()" class="border border-gray-200 rounded px-2 py-1">'+(bd?'<button onclick="_ntPlan.boardDate=\'\';ntPlanRender()" class="text-rose-400 px-1"><i class="fa-solid fa-xmark"></i></button>':'')+'</div></div>'
+      +'<div class="flex gap-3 overflow-x-auto pb-2">'+cols+'</div></div>';
+}
+
+// ---------- CALENDAR (with cross-module events) ----------
+function ntPlanCalendarHTML(){
+    var m=_ntPlan.month, y=m.getFullYear(), mo=m.getMonth();
+    var first=new Date(y,mo,1), startDow=first.getDay(), days=new Date(y,mo+1,0).getDate();
+    var monthNames=['ມັງກອນ','ກຸມພາ','ມີນາ','ເມສາ','ພຶດສະພາ','ມິຖຸນາ','ກໍລະກົດ','ສິງຫາ','ກັນຍາ','ຕຸລາ','ພະຈິກ','ທັນວາ'];
+    var todayStr=_ntpISO(new Date());
+    var cells='';
+    var dow=['ອາ','ຈ','ອ','ພ','ພຫ','ສຸ','ສ'];
+    var head=dow.map(function(d){return '<div class="text-center text-[10px] font-bold text-slate-400 py-1">'+d+'</div>';}).join('');
+    for(var i=0;i<startDow;i++) cells+='<div class="bg-slate-50/40 rounded-lg"></div>';
+    for(var dn=1;dn<=days;dn++){
+        var ds=y+'-'+_ntpPad(mo+1)+'-'+_ntpPad(dn);
+        var ev=ntPlanDayEvents(ds);
+        var sel=(_ntPlan.selDate&&_ntpISO(_ntPlan.selDate)===ds);
+        var isToday=(ds===todayStr);
+        var dots=ev.slice(0,4).map(function(e){
+            var c=e.kind==='task'?(_ntpStatusInfo(e.data.status).col):e.kind==='contract'?'emerald':e.kind==='cschedule'?'rose':'blue';
+            return '<span class="w-1.5 h-1.5 rounded-full bg-'+c+'-500 inline-block"></span>';
+        }).join('');
+        cells+='<button onclick="ntPlanSelDate(\''+ds+'\')" class="rounded-lg p-1 flex flex-col items-center border transition hover:shadow min-h-[46px] '+(sel?'bg-indigo-50 border-indigo-400':isToday?'bg-teal-50 border-teal-200':'bg-white/60 border-white')+'">'
+          +'<span class="text-[11px] font-bold '+(sel?'text-indigo-700':isToday?'text-teal-700':'text-slate-600')+'">'+dn+'</span>'
+          +(ev.length?'<span class="flex gap-0.5 flex-wrap justify-center mt-0.5">'+dots+(ev.length>4?'<span class="text-[7px] text-slate-400">+'+(ev.length-4)+'</span>':'')+'</span>':'')+'</button>';
+    }
+    return '<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">'
+      +'<div class="lg:col-span-2 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">'
+      +'<div class="flex justify-between items-center mb-3"><h3 class="font-bold text-slate-800">'+monthNames[mo]+' '+y+'</h3><div class="flex gap-1"><button onclick="ntPlanShiftMonth(-1)" class="p-1.5 hover:bg-slate-100 rounded-full"><i class="fa-solid fa-chevron-left"></i></button><button onclick="ntPlanShiftMonth(1)" class="p-1.5 hover:bg-slate-100 rounded-full"><i class="fa-solid fa-chevron-right"></i></button></div></div>'
+      +'<div class="grid grid-cols-7 gap-1">'+head+'</div><div class="grid grid-cols-7 gap-1 mt-1">'+cells+'</div>'
+      +'<div class="flex flex-wrap gap-3 mt-3 text-[10px] text-slate-500"><span><span class="w-2 h-2 rounded-full bg-slate-500 inline-block"></span> ວຽກ</span><span><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> ເຊັນສັນຍາ</span><span><span class="w-2 h-2 rounded-full bg-rose-500 inline-block"></span> ກຳນົດໃບ IV/RV</span><span><span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span> ໃບແຈ້ງໜີ້</span></div>'
+      +'</div>'
+      +'<div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">'+ntPlanDayPanelHTML()+'</div>'
+      +'</div>';
+}
+function ntPlanDayPanelHTML(){
+    if(!_ntPlan.selDate) return '<p class="text-xs text-slate-400 text-center py-6">ເລືອກວັນທີ</p>';
+    var ds=_ntpISO(_ntPlan.selDate); var ev=ntPlanDayEvents(ds);
+    var html='<h4 class="font-bold text-slate-800 border-b pb-2 mb-3 text-sm">'+_ntpLao(ds)+'</h4>';
+    if(!ev.length) return html+'<p class="text-xs text-slate-400 text-center py-6">ບໍ່ມີເຫດການ</p>';
+    html+='<div class="space-y-2" style="max-height:60vh;overflow-y:auto">';
+    ev.forEach(function(e){
+        if(e.kind==='task'){ var t=e.data; var si=_ntpStatusInfo(t.status);
+            html+='<div onclick="ntPlanDetails(\''+t.id+'\')" class="p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 cursor-pointer"><div class="flex justify-between items-start"><span class="text-[9px] px-1.5 py-0.5 rounded-full font-bold bg-'+si.col+'-100 text-'+si.col+'-700">'+si.lo+'</span><span class="text-[9px] text-slate-400">'+_ntpEsc(t.department||'')+'</span></div><p class="text-xs font-bold text-slate-800 mt-1">'+_ntpEsc(t.title)+'</p>'+(t.assignee?'<p class="text-[10px] text-indigo-600 mt-0.5"><i class="fa-solid fa-user mr-1"></i>'+_ntpEsc(t.assignee)+'</p>':'')+'</div>';
+        } else if(e.kind==='contract'){ var c=e.data; var f=c.fields||{};
+            html+='<div onclick="switchTab(\'contract-builder\');ntCBLoad(\''+c.id+'\')" class="p-2.5 rounded-xl border border-emerald-100 bg-emerald-50/40 hover:bg-emerald-50 cursor-pointer"><span class="text-[9px] px-1.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-700">ເຊັນສັນຍາ</span><p class="text-xs font-bold text-slate-800 mt-1">'+_ntpEsc(f.clientCompany||'-')+'</p><p class="text-[10px] text-slate-500">'+_ntpEsc(f.contractNo||'')+'</p></div>';
+        } else if(e.kind==='cschedule'){ var ct=e.data.ct, sc=e.data.sc;
+            html+='<div onclick="switchTab(\'contract-track\')" class="p-2.5 rounded-xl border border-rose-100 bg-rose-50/40 hover:bg-rose-50 cursor-pointer"><span class="text-[9px] px-1.5 py-0.5 rounded-full font-bold bg-rose-100 text-rose-700">ກຳນົດອອກໃບ</span><p class="text-xs font-bold text-slate-800 mt-1">'+_ntpEsc(ct.customerName||'-')+'</p><p class="text-[10px] text-slate-500">'+_ntpEsc(sc.detail||('ງວດ '+(sc.seq||'')))+'</p></div>';
+        } else if(e.kind==='invoice'){ var iv=e.data;
+            html+='<div onclick="switchTab(\'invoice\')" class="p-2.5 rounded-xl border border-blue-100 bg-blue-50/40 hover:bg-blue-50 cursor-pointer"><span class="text-[9px] px-1.5 py-0.5 rounded-full font-bold bg-blue-100 text-blue-700">'+(iv.type||'ໃບແຈ້ງ')+' '+_ntpEsc(iv.invoiceNo||'')+'</span><p class="text-xs font-bold text-slate-800 mt-1">'+_ntpEsc(iv.item||iv.customerName||'-')+'</p></div>';
+        }
+    });
+    return html+'</div>';
+}
+function ntPlanSelDate(ds){ var p=ds.split('-'); _ntPlan.selDate=new Date(+p[0],+p[1]-1,+p[2]); ntPlanRender(); }
+function ntPlanShiftMonth(n){ _ntPlan.month=new Date(_ntPlan.month.getFullYear(),_ntPlan.month.getMonth()+n,1); ntPlanRender(); }
+
+// ---------- REPORT (monthly, 26→25 cycle, per-assignee) ----------
+function ntPlanReportData(){
+    var rm=_ntPlan.reportMonth; if(!rm) return null;
+    var p=rm.split('-'), yr=+p[0], mo=+p[1]; if(!yr||!mo) return null;
+    var start=new Date(yr,mo-2,26), end=new Date(yr,mo-1,25);
+    var relevant=nt_tasks.filter(function(t){
+        if(_ntPlan.reportDept!=='ທັງໝົດ'&&t.department!==_ntPlan.reportDept) return false;
+        var rd=_ntpReportDay(t); if(!rd) return false;
+        var rdt=new Date(rd); return !isNaN(rdt) && rdt>=start && rdt<=end;
+    });
+    // group by assignee → days
+    var byA={};
+    var cur=new Date(start);
+    var chart=[];
+    while(cur<=end){
+        var dow=cur.getDay();
+        if(dow!==0&&dow!==6){
+            var ds=_ntpISO(cur);
+            var dayTasks=relevant.filter(function(t){ return _ntpReportDay(t)===ds; });
+            chart.push({name:String(cur.getDate()), done:dayTasks.filter(function(t){return t.status==='COMPLETED';}).length, wait:dayTasks.filter(function(t){return t.status==='WAITING_APPROVAL';}).length, undone:dayTasks.filter(function(t){return t.status!=='COMPLETED'&&t.status!=='WAITING_APPROVAL';}).length});
+            var dayName=['ອາທິດ','ຈັນ','ອັງຄານ','ພຸດ','ພະຫັດ','ສຸກ','ເສົາ'][dow];
+            var grp={};
+            dayTasks.forEach(function(t){ var a=t.assignee||'ບໍ່ລະບຸ'; (grp[a]=grp[a]||[]).push(t); });
+            Object.keys(grp).forEach(function(a){ byA[a]=byA[a]||[]; byA[a].push({date:ds,label:_ntpLao(ds),dayName:dayName,tasks:grp[a]}); });
+        }
+        cur.setDate(cur.getDate()+1);
+    }
+    return { employees:Object.keys(byA).map(function(a){return {assignee:a,days:byA[a]};}),
+        summary:{ total:relevant.length, done:relevant.filter(function(t){return t.status==='COMPLETED';}).length, undone:relevant.filter(function(t){return t.status!=='COMPLETED';}).length, unplanned:relevant.filter(function(t){return t.isUnplanned;}).length, planned:relevant.filter(function(t){return !t.isUnplanned;}).length },
+        chart:chart };
+}
+function ntPlanReportHTML(){
+    var d=ntPlanReportData();
+    var ci=(typeof companyInfo!=='undefined'&&companyInfo)?companyInfo:{};
+    var ctrl='<div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-wrap items-end justify-between gap-3 mb-4 print:hidden">'
+      +'<div class="flex flex-wrap items-end gap-3"><div><label class="text-[11px] text-gray-500 block">ເດືອນລາຍງານ</label><input type="month" value="'+_ntPlan.reportMonth+'" onchange="_ntPlan.reportMonth=this.value;ntPlanRender()" class="border border-gray-200 rounded-lg px-2 py-1.5 text-sm"></div>'
+      +'<div><label class="text-[11px] text-gray-500 block">ພະແນກ</label><select onchange="_ntPlan.reportDept=this.value;ntPlanRender()" class="border border-gray-200 rounded-lg px-2 py-1.5 text-sm">'+['ທັງໝົດ'].concat(nt_planDepts).map(function(x){return '<option value="'+_ntpEsc(x)+'"'+(x===_ntPlan.reportDept?' selected':'')+'>'+_ntpEsc(x)+'</option>';}).join('')+'</select></div>'
+      +'<span class="text-[11px] text-slate-500 bg-slate-100 px-2 py-1.5 rounded-lg"><i class="fa-solid fa-bell text-amber-500 mr-1"></i>ລວມຍອດທຸກວັນທີ 25 (ຮອບ 26→25)</span></div>'
+      +'<div class="flex gap-2"><button onclick="ntPlanPrintReport()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>ພິມ</button><button onclick="ntPlanExportHTML()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-download mr-1"></i>HTML</button></div></div>';
+    if(!d) return ctrl+'<p class="text-center text-slate-400 py-8">ເລືອກເດືອນ</p>';
+    var s=d.summary;
+    var cards=[['ລວມວຽກ',s.total,'indigo'],['ສຳເລັດ',s.done,'teal'],['ຍັງຄ້າງ',s.undone,'rose'],['ໃນແຜນ',s.planned,'blue'],['ດ່ວນ',s.unplanned,'amber']].map(function(c){
+        return '<div class="bg-'+c[2]+'-50 p-3 rounded-xl border border-'+c[2]+'-100 text-center"><div class="text-2xl font-bold text-'+c[2]+'-700">'+c[1]+'</div><div class="text-[11px] font-bold text-'+c[2]+'-600">'+c[0]+'</div></div>';
+    }).join('');
+    var emps=d.employees.map(function(emp){
+        var rowsHtml=emp.days.map(function(day){
+            if(!day.tasks.length) return '';
+            return day.tasks.map(function(t,ti){
+                var si=_ntpStatusInfo(t.status);
+                return '<tr class="text-sm text-slate-700 border-b border-slate-100">'
+                  +'<td class="p-2 text-center align-top">'+(ti+1)+'</td>'
+                  +(ti===0?'<td class="p-2 align-top border-r border-dashed bg-slate-50/40 whitespace-nowrap" rowspan="'+day.tasks.length+'"><b>'+day.dayName+'</b><br><span class="text-xs text-slate-500">'+day.label+'</span></td>':'')
+                  +'<td class="p-2 align-top"><b>'+_ntpEsc(t.title)+'</b>'+(t.isUnplanned?' <span class="text-[9px] bg-amber-100 text-amber-700 px-1 rounded">ດ່ວນ</span>':'')+(t.carriedOverTo?' <span class="text-[9px] bg-rose-100 text-rose-700 px-1 rounded">ຍົກຍອດ</span>':'')+'</td>'
+                  +'<td class="p-2 align-top text-xs text-slate-600">'+_ntpEsc(t.description||'-')+'</td>'
+                  +'<td class="p-2 align-top text-xs whitespace-nowrap">'+_ntpEsc((t.department||'').split(' ')[0])+'</td>'
+                  +'<td class="p-2 align-top text-[11px] whitespace-nowrap"><span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">'+_ntpEsc(t.workType||'ຕ້ອງເຮັດ')+'</span></td>'
+                  +'<td class="p-2 align-top"><span class="px-2 py-0.5 rounded text-[11px] font-bold border bg-'+si.col+'-50 text-'+si.col+'-700 border-'+si.col+'-200">'+si.lo+'</span>'+(t.failureReason?'<div class="text-[10px] bg-rose-50 p-1 rounded border border-rose-100 mt-1">'+_ntpEsc(t.failureReason)+'</div>':'')+'</td></tr>';
+            }).join('');
+        }).join('');
+        if(!rowsHtml) rowsHtml='<tr><td colspan="7" class="p-3 text-center text-xs text-slate-400">ບໍ່ມີວຽກ</td></tr>';
+        return '<div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm"><div class="bg-slate-100/70 px-4 py-2.5 border-b font-bold text-slate-800 text-sm">ພະນັກງານ: '+_ntpEsc(emp.assignee)+'</div>'
+          +'<div class="overflow-x-auto"><table class="w-full text-left border-collapse min-w-[760px]"><thead><tr class="bg-slate-50 text-[11px] text-slate-500 uppercase"><th class="p-2 text-center w-10">ລ/ດ</th><th class="p-2 w-32 border-r border-dashed">ວັນທີ</th><th class="p-2 w-44">ຫົວຂໍ້</th><th class="p-2">ເນື້ອໃນ</th><th class="p-2 w-24">ພະແນກ</th><th class="p-2 w-20">ປະເພດ</th><th class="p-2 w-32">ສະຖານະ</th></tr></thead><tbody>'+rowsHtml+'</tbody></table></div></div>';
+    }).join('');
+    if(!emps) emps='<p class="text-center text-slate-400 py-8">ບໍ່ມີວຽກໃນຮອບນີ້</p>';
+    return ctrl+'<div id="ntPlanReportContent" class="space-y-5">'
+      +'<div class="hidden print:block text-center mb-4"><div class="font-bold text-base">ສາທາລະນະລັດ ປະຊາທິປະໄຕ ປະຊາຊົນລາວ</div><div class="font-bold">ສັນຕິພາບ ເອກະລາດ ປະຊາທິປະໄຕ ເອກະພາບ ວັດທະນະຖາວອນ</div><div class="text-lg font-bold underline mt-3">ບົດລາຍງານແຜນວຽກປະຈຳເດືອນ '+_ntpEsc(_ntPlan.reportMonth)+'</div></div>'
+      +'<div class="grid grid-cols-2 md:grid-cols-5 gap-3">'+cards+'</div>'
+      +'<div class="bg-white rounded-xl p-4 border border-slate-100"><h4 class="text-sm font-bold text-slate-700 mb-3 text-center">ກຣາຟໜ້າວຽກແຕ່ລະວັນ</h4><div style="height:220px"><canvas id="ntPlanChart"></canvas></div></div>'
+      +emps+'</div>';
+}
+var _ntPlanChartInst=null;
+function ntPlanDrawChart(){
+    var cv=document.getElementById('ntPlanChart'); if(!cv||typeof Chart==='undefined') return;
+    var d=ntPlanReportData(); if(!d) return;
+    try{ if(_ntPlanChartInst) _ntPlanChartInst.destroy(); }catch(_){}
+    _ntPlanChartInst=new Chart(cv.getContext('2d'),{type:'bar',data:{labels:d.chart.map(function(x){return x.name;}),datasets:[
+        {label:'ສຳເລັດ',data:d.chart.map(function(x){return x.done;}),backgroundColor:'#14B8A6'},
+        {label:'ລໍຖ້າອະນຸມັດ',data:d.chart.map(function(x){return x.wait;}),backgroundColor:'#6366F1'},
+        {label:'ຍັງບໍ່ສຳເລັດ',data:d.chart.map(function(x){return x.undone;}),backgroundColor:'#F43F5E'}
+    ]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}},plugins:{legend:{labels:{font:{size:10}}}}}});
+}
+function ntPlanPrintReport(){
+    var el=document.getElementById('ntPlanReportContent'); if(!el){ if(typeof showToast==='function')showToast('ບໍ່ມີຂໍ້ມູນ','error'); return; }
+    var w=window.open('','_blank'); if(!w){ if(typeof showToast==='function')showToast('ອະນຸຍາດ popup','error'); return; }
+    w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>ບົດລາຍງານແຜນວຽກ</title><script src="https://cdn.tailwindcss.com"><\/script><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;600;700&display=swap" rel="stylesheet"><style>body{font-family:\'Noto Sans Lao\',sans-serif;padding:18px}@media print{@page{size:A4}}</style></head><body><div class="max-w-5xl mx-auto">'+el.innerHTML.replace(/hidden print:block/g,'block')+'</div></body></html>');
+    w.document.close(); setTimeout(function(){try{w.focus();w.print();}catch(_){}; },700);
+}
+function ntPlanExportHTML(){
+    var el=document.getElementById('ntPlanReportContent'); if(!el) return;
+    var html='<!DOCTYPE html><html lang="lo"><head><meta charset="UTF-8"><title>ບົດສະຫຼຸບແຜນວຽກ '+_ntPlan.reportMonth+'</title><script src="https://cdn.tailwindcss.com"><\/script><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;600;700&display=swap" rel="stylesheet"><style>body{font-family:\'Noto Sans Lao\',sans-serif;background:#f8fafc;padding:20px}</style></head><body><div class="max-w-5xl mx-auto bg-white p-8">'+el.innerHTML.replace(/hidden print:block/g,'block')+'</div></body></html>';
+    var blob=new Blob([html],{type:'text/html;charset=utf-8'}); var url=URL.createObjectURL(blob);
+    var a=document.createElement('a'); a.href=url; a.download='DualPlan_'+_ntPlan.reportMonth+'_'+(_ntPlan.reportDept==='ທັງໝົດ'?'All':_ntPlan.reportDept)+'.html';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    if(typeof showToast==='function') showToast('ດາວໂຫຼດ HTML ແລ້ວ','success');
+}
+
+// ---------- TASK CRUD ----------
+function ntPlanOpenAdd(id){
+    _ntPlan.editId=id||null;
+    var t=id?nt_tasks.find(function(x){return x.id===id;}):null;
+    var today=_ntpISO(new Date());
+    var staffOpts='<option value="">— ເລືອກ/ພິມຊື່ —</option>'+ntPlanPeople().map(function(s){return '<option value="'+_ntpEsc(s.name)+'">'+_ntpEsc(s.name)+(s.dept?' ('+_ntpEsc(s.dept)+')':'')+'</option>';}).join('');
+    var deptOpts=nt_planDepts.map(function(d){return '<option value="'+_ntpEsc(d)+'"'+((t&&t.department===d)?' selected':'')+'>'+_ntpEsc(d)+'</option>';}).join('');
+    var prioOpts=NT_PLAN_PRIOS.map(function(p){return '<option value="'+p+'"'+((t&&t.priority===p)?' selected':(!t&&p==='ຕ່ຳ'?' selected':''))+'>'+p+'</option>';}).join('');
+    var statOpts=NT_PLAN_STATUSES.map(function(s){return '<option value="'+s.v+'"'+((t&&t.status===s.v)?' selected':'')+'>'+s.lo+'</option>';}).join('');
+    var html='<div class="bg-white rounded-2xl w-full max-w-3xl shadow-2xl max-h-[92vh] overflow-y-auto"><div class="bg-slate-900 text-white px-5 py-3 flex justify-between items-center sticky top-0"><h3 class="font-bold">'+(id?'ແກ້ໄຂວຽກ':'ເພີ່ມວຽກໃໝ່')+'</h3><button onclick="ntPlanCloseModal()" class="text-gray-300 hover:text-white"><i class="fa-solid fa-xmark"></i></button></div>'
+      +'<div class="p-5 grid grid-cols-1 md:grid-cols-4 gap-3 text-sm">'
+      +'<div class="md:col-span-4"><label class="text-[11px] font-bold text-slate-600">ຫົວຂໍ້ວຽກ *</label><input id="ntpf_title" value="'+_ntpEsc(t?t.title:'')+'" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200"></div>'
+      +'<div class="md:col-span-3"><label class="text-[11px] font-bold text-slate-600">ເນື້ອໃນ</label><textarea id="ntpf_desc" rows="2" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200">'+_ntpEsc(t?t.description:'')+'</textarea></div>'
+      +'<div class="md:col-span-1"><label class="text-[11px] font-bold text-slate-600">ປະເພດວຽກ</label><select id="ntpf_worktype" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200">'+NT_PLAN_WORKTYPES.map(function(w){return '<option value="'+w.v+'"'+(((t&&t.workType===w.v)||(!t&&w.v==='ຕ້ອງເຮັດ'))?' selected':'')+'>'+w.lo+'</option>';}).join('')+'</select><p class="text-[9px] text-slate-400 mt-0.5">ປະຈຳ=ເກີດທຸກເດືອນ</p></div>'
+      +'<div><label class="text-[11px] font-bold text-slate-600">ມື້ເລີ່ມ *</label><input type="date" id="ntpf_start" value="'+(t?(t.startDate||'').slice(0,10):today)+'" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200"></div>'
+      +'<div><label class="text-[11px] font-bold text-slate-600">ກຳນົດສົ່ງ</label><input type="date" id="ntpf_due" value="'+(t?(t.dueDate||'').slice(0,10):'')+'" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200"></div>'
+      +'<div><label class="text-[11px] font-bold text-slate-600">ເວລາເລີ່ມ</label><input type="time" id="ntpf_stime" value="'+(t?t.startTime||'':'')+'" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200"></div>'
+      +'<div><label class="text-[11px] font-bold text-slate-600">ເວລາສິ້ນສຸດ</label><input type="time" id="ntpf_etime" value="'+(t?t.endTime||'':'')+'" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200"></div>'
+      +'<div><label class="text-[11px] font-bold text-slate-600">ຄວາມສຳຄັນ</label><select id="ntpf_prio" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200">'+prioOpts+'</select></div>'
+      +'<div><label class="text-[11px] font-bold text-slate-600">ພະແນກ</label><select id="ntpf_dept" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200">'+deptOpts+'</select></div>'
+      +'<div><label class="text-[11px] font-bold text-slate-600">ສະຖານະ</label><select id="ntpf_status" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200">'+statOpts+'</select></div>'
+      +'<div><label class="text-[11px] font-bold text-slate-600">ຜູ້ຮັບຜິດຊອບ</label><input id="ntpf_assignee" list="ntpStaffList" value="'+_ntpEsc(t?t.assignee:'')+'" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200" placeholder="ພິມ ຫຼື ເລືອກ"><datalist id="ntpStaffList">'+staffOpts+'</datalist></div>'
+      +'<div class="md:col-span-4"><label class="flex items-center gap-2 cursor-pointer bg-gray-50 border border-gray-200 p-2 rounded-lg"><input type="checkbox" id="ntpf_unplanned" '+((t&&t.isUnplanned)?'checked':'')+' class="w-4 h-4"><span class="text-sm font-bold text-slate-700">ວຽກດ່ວນ/ກະທັນຫັນ (Unplanned)</span></label></div>'
+      +'<div class="md:col-span-4 flex justify-end gap-2 pt-3 border-t"><button onclick="ntPlanCloseModal()" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-slate-600 text-sm font-medium">ຍົກເລີກ</button><button onclick="ntPlanSaveTask()" class="px-5 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700"><i class="fa-solid fa-circle-check mr-1"></i>ບັນທຶກ</button></div>'
+      +'</div></div>';
+    ntPlanShowModal(html);
+}
+function ntPlanSaveTask(){
+    var g=function(id){var el=document.getElementById(id);return el?el.value:'';};
+    var title=g('ntpf_title').trim(); if(!title){ if(typeof showToast==='function')showToast('ກະລຸນາໃສ່ຫົວຂໍ້','error'); return; }
+    var rec={ id:_ntPlan.editId||('TK'+Date.now()), title:title, description:g('ntpf_desc'), startDate:g('ntpf_start')||_ntpISO(new Date()), dueDate:g('ntpf_due'), startTime:g('ntpf_stime'), endTime:g('ntpf_etime'), priority:g('ntpf_prio'), department:g('ntpf_dept'), status:g('ntpf_status')||'PENDING', assignee:g('ntpf_assignee').trim(), workType:g('ntpf_worktype')||'ຕ້ອງເຮັດ', isUnplanned:!!(document.getElementById('ntpf_unplanned')&&document.getElementById('ntpf_unplanned').checked) };
+    if(rec.status==='COMPLETED' && !rec.completedDate) rec.completedDate=_ntpISO(new Date());
+    var old=_ntPlan.editId?nt_tasks.find(function(x){return x.id===_ntPlan.editId;}):null;
+    if(old){ rec.failureReason=old.failureReason||''; rec.carriedOverTo=old.carriedOverTo||''; rec.createdAt=old.createdAt; rec._recurFrom=old._recurFrom; rec._recurYM=old._recurYM; if(old.completedDate&&rec.status==='COMPLETED') rec.completedDate=old.completedDate; if(rec.status!=='COMPLETED') rec.completedDate=''; if(rec.assigneeId===undefined) rec.assigneeId=old.assigneeId; }
+    else rec.createdAt=(new Date()).toISOString();
+    if(rec.assigneeId===undefined && typeof ntPlanCurrentUser==='function'){ var _cu=ntPlanCurrentUser(); if(_cu && _cu.name===rec.assignee) rec.assigneeId=_cu.id; }
+    if(typeof ntStamp==='function') ntStamp(rec);
+    // auto-add new assignee to staff list
+    if(rec.assignee && !nt_planStaff.some(function(s){return s.name===rec.assignee;})){ nt_planStaff.push({name:rec.assignee,dept:rec.department}); ntPlanSaveStaff(); }
+    var idx=nt_tasks.findIndex(function(x){return x.id===rec.id;});
+    if(idx>=0) nt_tasks[idx]=rec; else nt_tasks.push(rec);
+    if(!ntPlanSave()) return;
+    ntPlanCloseModal(); ntPlanRender();
+    if(typeof showToast==='function') showToast(_ntPlan.editId?'ແກ້ໄຂວຽກແລ້ວ':'ເພີ່ມວຽກແລ້ວ','success');
+    _ntPlan.editId=null;
+}
+function ntPlanDeleteTask(id){
+    var go=function(){ nt_tasks=nt_tasks.filter(function(x){return x.id!==id;}); ntPlanSave(); ntPlanCloseModal(); ntPlanRender(); if(typeof showToast==='function')showToast('ລົບວຽກແລ້ວ','success'); };
+    if(typeof showConfirm==='function') showConfirm('ລົບວຽກນີ້ອອກ?',go); else if(confirm('ລົບ?')) go();
+}
+
+// ---------- status workflow + delay + carry-over ----------
+function ntPlanSetStatus(id, status){
+    var t=nt_tasks.find(function(x){return x.id===id;}); if(!t) return;
+    if(status==='COMPLETED'||status==='WAITING_APPROVAL'||(status==='IN_PROGRESS'&&t.status!=='PENDING')){
+        ntPlanStatusDialog(id, status); return;
+    }
+    t.status=status; if(typeof ntStamp==='function') ntStamp(t); ntPlanSave(); ntPlanRender();
+}
+function ntPlanDelay(id){ ntPlanStatusDialog(id, null, 'DELAY'); }
+function ntPlanStatusDialog(id, targetStatus, type){
+    type=type||(targetStatus==='WAITING_APPROVAL'?'WAITING_APPROVAL':targetStatus==='COMPLETED'?'COMPLETE':'PROGRESS');
+    var titles={DELAY:'ເຫດຜົນທີ່ເລື່ອນວຽກ',WAITING_APPROVAL:'ຄຳອະທິບາຍສຳລັບຫົວໜ້າ (ຂໍອະນຸມັດ)',PROGRESS:'ເຫດຜົນ / ວິທີແກ້ໄຂ',COMPLETE:'ໝາຍເຫດ (ສຳເລັດ)'};
+    var html='<div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-5"><h3 class="font-bold text-slate-800 mb-3">'+titles[type]+'</h3>'
+      +'<textarea id="ntpStatusComment" rows="3" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm mb-3" placeholder="ພິມລາຍລະອຽດ (ຖ້າມີ)..."></textarea>';
+    if(type==='DELAY'||type==='PROGRESS') html+='<label class="flex items-center gap-2 cursor-pointer mb-4 border border-gray-200 p-2 rounded-lg bg-gray-50"><input type="checkbox" id="ntpCarry" class="w-4 h-4"><span class="text-sm font-bold text-slate-700">ຍົກຍອດໄປມື້ໃໝ່ທັນທີ</span></label>';
+    html+='<div class="flex justify-end gap-2"><button onclick="ntPlanCloseModal()" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-slate-600 text-sm">ຍົກເລີກ</button>'
+      +'<button onclick="ntPlanSubmitStatus(\''+id+'\',\''+(targetStatus||'')+'\',\''+type+'\')" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700">ບັນທຶກ</button></div></div>';
+    ntPlanShowModal(html);
+}
+function ntPlanSubmitStatus(id, targetStatus, type){
+    var t=nt_tasks.find(function(x){return x.id===id;}); if(!t){ ntPlanCloseModal(); return; }
+    var comment=(document.getElementById('ntpStatusComment')||{}).value||'';
+    var carry=!!(document.getElementById('ntpCarry')&&document.getElementById('ntpCarry').checked);
+    if(type==='DELAY'){
+        var tm=new Date(); tm.setDate(tm.getDate()+1);
+        t.dueDate=_ntpISO(tm); t.failureReason=comment||t.failureReason;
+    } else {
+        t.status=targetStatus||t.status; t.failureReason=comment||t.failureReason;
+        if(t.status==='COMPLETED') t.completedDate=_ntpISO(new Date()); else t.completedDate='';
+    }
+    if(carry){
+        var tm2=new Date(); tm2.setDate(tm2.getDate()+1);
+        var nid='TK'+Date.now();
+        t.carriedOverTo=nid;
+        var clone={ id:nid, title:t.title+' (ຍົກຍອດ)', description:t.description, startDate:_ntpISO(tm2), dueDate:_ntpISO(tm2), startTime:t.startTime, endTime:t.endTime, priority:t.priority, department:t.department, status:'PENDING', assignee:t.assignee, isUnplanned:t.isUnplanned, failureReason:'', carriedOverTo:'', createdAt:(new Date()).toISOString() };
+        if(typeof ntStamp==='function') ntStamp(clone);
+        nt_tasks.push(clone);
+    }
+    if(typeof ntStamp==='function') ntStamp(t);
+    ntPlanSave(); ntPlanCloseModal(); ntPlanRender();
+    if(typeof showToast==='function') showToast('ບັນທຶກສະຖານະແລ້ວ','success');
+}
+
+// ---------- details ----------
+function ntPlanDetails(id){
+    var t=nt_tasks.find(function(x){return x.id===id;}); if(!t) return;
+    var si=_ntpStatusInfo(t.status);
+    var html='<div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto p-5">'
+      +'<div class="flex justify-between items-start mb-3"><span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-'+si.col+'-100 text-'+si.col+'-700">'+si.lo+'</span><button onclick="ntPlanCloseModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark"></i></button></div>'
+      +'<h2 class="text-lg font-bold text-slate-800 mb-2">'+_ntpEsc(t.title)+(t.isUnplanned?' <span class="text-[10px] bg-rose-100 text-rose-700 px-1.5 rounded">ດ່ວນ</span>':'')+'</h2>'
+      +(t.description?'<div class="mb-3 p-3 bg-slate-50 border border-slate-100 rounded-xl text-sm text-slate-700 whitespace-pre-wrap">'+_ntpEsc(t.description)+'</div>':'')
+      +'<div class="grid grid-cols-2 gap-3 mb-3 text-sm">'
+      +'<div class="p-2.5 bg-white border border-slate-100 rounded-xl"><span class="block text-[10px] text-slate-500 font-bold">ເລີ່ມ</span>'+_ntpLao(t.startDate)+(t.startTime?' ('+t.startTime+')':'')+'</div>'
+      +'<div class="p-2.5 bg-white border border-slate-100 rounded-xl"><span class="block text-[10px] text-slate-500 font-bold">ກຳນົດສົ່ງ</span><span class="text-purple-600 font-medium">'+(_ntpLao(t.dueDate)||'-')+(t.endTime?' ('+t.endTime+')':'')+'</span></div>'
+      +'<div class="p-2.5 bg-white border border-slate-100 rounded-xl"><span class="block text-[10px] text-slate-500 font-bold">ພະແນກ</span>'+_ntpEsc(t.department||'-')+'</div>'
+      +'<div class="p-2.5 bg-white border border-slate-100 rounded-xl"><span class="block text-[10px] text-slate-500 font-bold">ຜູ້ຮັບຜິດຊອບ</span><span class="text-indigo-600">'+_ntpEsc(t.assignee||'-')+'</span></div></div>'
+      +(t.failureReason?'<div class="mb-3 p-3 bg-rose-50 border border-rose-100 rounded-xl text-sm text-rose-800"><b class="block text-xs">ໝາຍເຫດ/ເຫດຜົນ:</b>'+_ntpEsc(t.failureReason)+'</div>':'')
+      +'<div class="flex justify-between gap-2 pt-3 border-t"><button onclick="ntPlanCloseModal();ntPlanOpenAdd(\''+t.id+'\')" class="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-bold hover:bg-indigo-100"><i class="fa-solid fa-pen mr-1"></i>ແກ້ໄຂ</button><button onclick="ntPlanDeleteTask(\''+t.id+'\')" class="px-4 py-2 bg-rose-50 text-rose-600 rounded-lg text-sm font-bold hover:bg-rose-100"><i class="fa-solid fa-trash mr-1"></i>ລົບ</button></div></div>';
+    ntPlanShowModal(html);
+}
+
+// ---------- annual plan (quarters → months) ----------
+var _ntPlanQ=null;
+function ntPlanOpenAnnual(){ _ntPlanQ=null; ntPlanRenderAnnual(); }
+function ntPlanRenderAnnual(){
+    var inner;
+    var year=new Date().getFullYear();
+    if(_ntPlanQ===null){
+        inner='<div class="grid grid-cols-1 md:grid-cols-4 gap-4">'+[1,2,3,4].map(function(q){
+            var qt=nt_tasks.filter(function(t){ if(!t.startDate)return false; var d=new Date(t.startDate.slice(0,10)); if(isNaN(d))return false; return Math.floor(d.getMonth()/3)+1===q; });
+            var done=qt.filter(function(t){return t.status==='COMPLETED';}).length; var pct=qt.length?Math.round(done/qt.length*100):0;
+            return '<div onclick="_ntPlanQ='+q+';ntPlanRenderAnnual()" class="bg-white rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:border-indigo-300 hover:shadow transition"><div class="p-4 border-b bg-indigo-50/50"><h3 class="font-bold text-indigo-800 mb-2">ໄຕມາດ '+q+' (Q'+q+')</h3><div class="w-full h-2 bg-indigo-100 rounded-full overflow-hidden"><div class="h-full bg-indigo-500" style="width:'+pct+'%"></div></div><div class="flex justify-between text-[10px] font-bold text-indigo-600 mt-2"><span>'+done+'/'+qt.length+' ສຳເລັດ</span><span>'+pct+'%</span></div></div><div class="p-4 text-center text-xs text-slate-400 min-h-[80px] flex items-center justify-center">ກົດເບິ່ງ 3 ເດືອນ</div></div>';
+        }).join('')+'</div>';
+    } else {
+        var mn=['ມັງກອນ','ກຸມພາ','ມີນາ','ເມສາ','ພຶດສະພາ','ມິຖຸນາ','ກໍລະກົດ','ສິງຫາ','ກັນຍາ','ຕຸລາ','ພະຈິກ','ທັນວາ'];
+        inner='<button onclick="_ntPlanQ=null;ntPlanRenderAnnual()" class="mb-4 text-sm font-bold text-indigo-600 hover:text-indigo-800"><i class="fa-solid fa-chevron-left mr-1"></i>ກັບຄືນ</button><div class="grid grid-cols-1 md:grid-cols-3 gap-4">'+[0,1,2].map(function(off){
+            var mi=(_ntPlanQ-1)*3+off;
+            var mt=nt_tasks.filter(function(t){ if(!t.startDate)return false; var d=new Date(t.startDate.slice(0,10)); if(isNaN(d))return false; return d.getMonth()===mi; });
+            var done=mt.filter(function(t){return t.status==='COMPLETED';}).length; var pct=mt.length?Math.round(done/mt.length*100):0;
+            var list=mt.map(function(t){ var si=_ntpStatusInfo(t.status); return '<div class="p-2 border border-slate-100 rounded-lg bg-slate-50/50"><span class="text-[9px] px-1 py-0.5 rounded font-bold bg-'+si.col+'-100 text-'+si.col+'-700">'+si.lo+'</span><p class="text-xs font-bold text-slate-800 mt-0.5">'+_ntpEsc(t.title)+'</p><div class="text-[10px] text-slate-500 flex justify-between"><span>'+_ntpLao(t.startDate)+'</span><span class="text-indigo-600">'+_ntpEsc((t.department||'').split(' ')[0])+'</span></div></div>'; }).join('')||'<div class="text-center py-6 text-slate-400 text-xs">ບໍ່ມີແຜນ</div>';
+            return '<div class="bg-white rounded-xl border border-slate-200 shadow-sm"><div class="p-3 border-b bg-indigo-50/50"><h3 class="font-bold text-indigo-800 mb-1">ເດືອນ '+mn[mi]+'</h3><div class="w-full h-2 bg-indigo-100 rounded-full overflow-hidden"><div class="h-full bg-indigo-500" style="width:'+pct+'%"></div></div><div class="flex justify-between text-[10px] font-bold text-indigo-600 mt-1"><span>'+done+'/'+mt.length+'</span><span>'+pct+'%</span></div></div><div class="p-2 space-y-2" style="max-height:340px;overflow-y:auto">'+list+'</div></div>';
+        }).join('')+'</div>';
+    }
+    var html='<div class="bg-white rounded-2xl w-full max-w-5xl shadow-2xl max-h-[90vh] flex flex-col"><div class="p-5 border-b flex justify-between items-center bg-slate-50"><h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-layer-group text-indigo-600 mr-2"></i>ແຜນປະຈຳປີພາບລວມ '+year+'</h2><button onclick="ntPlanCloseModal()" class="p-2 bg-slate-200 hover:bg-slate-300 rounded-full"><i class="fa-solid fa-xmark"></i></button></div><div class="p-5 overflow-y-auto bg-slate-50/50">'+inner+'</div></div>';
+    ntPlanShowModal(html);
+}
+
+// ---------- modal infra ----------
+function ntPlanShowModal(html){
+    var m=document.getElementById('ntPlanModal');
+    if(!m){ m=document.createElement('div'); m.id='ntPlanModal'; m.className='fixed inset-0 z-[120] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm'; m.onclick=function(e){ if(e.target===m) ntPlanCloseModal(); }; document.body.appendChild(m); }
+    m.innerHTML=html; m.style.display='flex';
+}
+function ntPlanCloseModal(){ var m=document.getElementById('ntPlanModal'); if(m){ m.style.display='none'; m.innerHTML=''; } }
+
+// ---------- staff manager ----------
+function ntPlanManageStaff(){
+    var admin=ntPlanIsAdmin();
+    var rows=(nt_planUsers||[]).map(function(u,i){ return '<div class="grid grid-cols-12 gap-1 mb-1 items-center">'
+      +'<input value="'+_ntpEsc(u.name)+'" oninput="nt_planUsers['+i+'].name=this.value" placeholder="ຊື່" class="col-span-3 bg-gray-50 border border-gray-200 rounded px-1.5 py-1 text-xs">'
+      +'<select onchange="nt_planUsers['+i+'].dept=this.value" class="col-span-2 bg-gray-50 border border-gray-200 rounded px-1 py-1 text-xs">'+nt_planDepts.map(function(d){return '<option value="'+_ntpEsc(d)+'"'+(u.dept===d?' selected':'')+'>'+_ntpEsc(d)+'</option>';}).join('')+'</select>'
+      +'<input value="'+_ntpEsc(u.username||'')+'" oninput="nt_planUsers['+i+'].username=this.value" placeholder="username" class="col-span-2 bg-gray-50 border border-gray-200 rounded px-1.5 py-1 text-xs">'
+      +'<input value="'+_ntpEsc(u.password||'')+'" oninput="nt_planUsers['+i+'].password=this.value" placeholder="ລະຫັດ" class="col-span-2 bg-gray-50 border border-gray-200 rounded px-1.5 py-1 text-xs">'
+      +'<select onchange="nt_planUsers['+i+'].role=this.value" class="col-span-2 bg-gray-50 border border-gray-200 rounded px-1 py-1 text-xs"><option value="staff"'+(u.role!=='admin'?' selected':'')+'>staff</option><option value="admin"'+(u.role==='admin'?' selected':'')+'>admin</option></select>'
+      +'<button onclick="nt_planUsers.splice('+i+',1);ntPlanSaveUsers();ntPlanManageStaff()" class="col-span-1 text-rose-400"><i class="fa-solid fa-xmark"></i></button></div>'; }).join('')||'<p class="text-xs text-slate-400 text-center py-2">ຍັງບໍ່ມີຜູ້ໃຊ້</p>';
+    if(!admin) rows='<p class="text-xs text-rose-500 text-center py-3 bg-rose-50 rounded">ສະເພາະແອັດມິນເທົ່ານັ້ນທີ່ສ້າງ/ແກ້ຜູ້ໃຊ້ໄດ້<br>(ເຂົ້າສູ່ລະບົບແອັດມິນກ່ອນ)</p>';
+    var html='<div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl p-5 max-h-[85vh] overflow-y-auto"><div class="flex justify-between items-center mb-3"><h3 class="font-bold text-slate-800"><i class="fa-solid fa-users-gear mr-1 text-indigo-600"></i>ຈັດການຜູ້ໃຊ້/ພະນັກງານ</h3><button onclick="ntPlanCloseModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark"></i></button></div>'
+      +(admin?'<div class="grid grid-cols-12 gap-1 mb-1 text-[10px] font-bold text-slate-400 px-1"><span class="col-span-3">ຊື່</span><span class="col-span-2">ພະແນກ</span><span class="col-span-2">username</span><span class="col-span-2">ລະຫັດ</span><span class="col-span-2">ສິດ</span><span class="col-span-1"></span></div>':'')
+      +'<div>'+rows+'</div>'
+      +(admin?'<div class="flex gap-2 mt-3 pt-2 border-t"><button onclick="nt_planUsers.push({id:\'U\'+Date.now(),name:\'\',dept:nt_planDepts[0],username:\'\',password:\'\',role:\'staff\'});ntPlanManageStaff()" class="bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg text-xs font-bold"><i class="fa-solid fa-plus mr-1"></i>ເພີ່ມຜູ້ໃຊ້</button><button onclick="ntPlanSaveUsers();ntPlanCloseModal();ntPlanRender()" class="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold ml-auto">ບັນທຶກ</button></div>':'')
+      +'</div>';
+    ntPlanShowModal(html);
+}
+
+// ---------- USER ACCOUNTS + LOGIN (per-person attribution) ----------
+function ntPlanSaveUsers(){ try{ localStorage.setItem('nt_planUsers',JSON.stringify(nt_planUsers)); }catch(_){}; if(typeof triggerCloudBackup==='function') try{triggerCloudBackup();}catch(_){}; }
+function ntPlanCurrentUser(){ try{ var id=sessionStorage.getItem('nt_planUserId'); if(!id) return null; return (nt_planUsers||[]).find(function(u){return u.id===id;})||null; }catch(_){ return null; } }
+function ntPlanIsAdmin(){ var appAdmin=(typeof currentUserRole!=='undefined' && currentUserRole==='admin'); var cu=ntPlanCurrentUser(); return appAdmin || !!(cu && cu.role==='admin'); }
+function ntPlanUserAreaHTML(){
+    var cu=ntPlanCurrentUser();
+    if(cu) return '<span class="bg-white/15 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2"><i class="fa-solid fa-user-check"></i>'+_ntpEsc(cu.name)+(cu.role==='admin'?' (ແອັດມິນ)':'')+' <button onclick="ntPlanLogout()" class="ml-1 text-rose-200 hover:text-white" title="ອອກ"><i class="fa-solid fa-right-from-bracket"></i></button></span>';
+    return '<button onclick="ntPlanLogin()" class="bg-white/15 hover:bg-white/25 px-3 py-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-right-to-bracket mr-1"></i>ເຂົ້າສູ່ລະບົບ</button>';
+}
+function ntPlanLogin(){
+    var opts=(nt_planUsers||[]).map(function(u){return '<option value="'+u.id+'">'+_ntpEsc(u.name)+(u.username?' ('+_ntpEsc(u.username)+')':'')+'</option>';}).join('');
+    var html='<div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-5"><div class="flex justify-between items-center mb-3"><h3 class="font-bold text-slate-800"><i class="fa-solid fa-right-to-bracket mr-1 text-indigo-600"></i>ເຂົ້າສູ່ລະບົບ ຜູ້ໃຊ້</h3><button onclick="ntPlanCloseModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark"></i></button></div>'
+      +((nt_planUsers&&nt_planUsers.length)?('<label class="text-[11px] font-bold text-slate-600">ເລືອກຜູ້ໃຊ້</label><select id="ntpLoginUser" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200 mb-2">'+opts+'</select>'):'<p class="text-xs text-rose-500 mb-2 bg-rose-50 p-2 rounded">ຍັງບໍ່ມີຜູ້ໃຊ້ — ໃຫ້ແອັດມິນກົດ "ຈັດການຜູ້ໃຊ້" ເພື່ອສ້າງກ່ອນ</p>')
+      +'<label class="text-[11px] font-bold text-slate-600">ລະຫັດຜ່ານ</label><input type="password" id="ntpLoginPwd" onkeydown="if(event.key===\'Enter\')ntPlanLoginSubmit()" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200 mb-3">'
+      +'<div class="flex justify-end gap-2"><button onclick="ntPlanCloseModal()" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-slate-600 text-sm">ຍົກເລີກ</button><button onclick="ntPlanLoginSubmit()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold">ເຂົ້າສູ່ລະບົບ</button></div></div>';
+    ntPlanShowModal(html);
+}
+function ntPlanLoginSubmit(){
+    var uid=(document.getElementById('ntpLoginUser')||{}).value, pwd=(document.getElementById('ntpLoginPwd')||{}).value||'';
+    var u=(nt_planUsers||[]).find(function(x){return x.id===uid;});
+    if(!u){ if(typeof showToast==='function')showToast('ບໍ່ພົບຜູ້ໃຊ້','error'); return; }
+    if(String(u.password||'')!==pwd){ if(typeof showToast==='function')showToast('ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ','error'); return; }
+    try{ sessionStorage.setItem('nt_planUserId', u.id); }catch(_){}
+    ntPlanCloseModal(); ntPlanInit();
+    if(typeof showToast==='function') showToast('ສະບາຍດີ '+u.name,'success');
+}
+function ntPlanLogout(){ try{ sessionStorage.removeItem('nt_planUserId'); }catch(_){}; _ntPlan.mineOnly=false; ntPlanInit(); if(typeof showToast==='function') showToast('ອອກຈາກລະບົບແລ້ວ','info'); }
+
+// ---------- RECURRING (ວຽກປະຈຳ) — auto monthly instances ----------
+function ntPlanGenerateRecurring(ym){
+    if(!ym) return 0;
+    var yr=parseInt(ym.slice(0,4),10), mo=parseInt(ym.slice(5,7),10);
+    if(!yr||!mo) return 0;
+    var dim=new Date(yr,mo,0).getDate();
+    var templates=nt_tasks.filter(function(t){ return t.workType==='ປະຈຳ' && !t._recurFrom; });
+    var made=0;
+    templates.forEach(function(tpl){
+        if((tpl.startDate||'').slice(0,7)===ym) return;                 // template itself lives this month
+        if(nt_tasks.some(function(t){ return t._recurFrom===tpl.id && t._recurYM===ym; })) return; // already generated
+        var sDay=Math.min(parseInt((tpl.startDate||'').slice(8,10),10)||1, dim);
+        var startDate=ym+'-'+_ntpPad(sDay);
+        var dueDate=startDate;
+        if(tpl.dueDate){ var dDay=Math.min(parseInt(tpl.dueDate.slice(8,10),10)||sDay, dim); dueDate=ym+'-'+_ntpPad(dDay); }
+        var clone={ id:'TK'+Date.now()+Math.floor(Math.random()*99999), title:tpl.title, description:tpl.description, startDate:startDate, dueDate:dueDate, startTime:tpl.startTime, endTime:tpl.endTime, priority:tpl.priority, department:tpl.department, status:'PENDING', assignee:tpl.assignee, assigneeId:tpl.assigneeId, workType:'ປະຈຳ', isUnplanned:false, failureReason:'', carriedOverTo:'', completedDate:'', _recurFrom:tpl.id, _recurYM:ym, createdAt:(new Date()).toISOString() };
+        if(typeof ntStamp==='function') ntStamp(clone);
+        nt_tasks.push(clone); made++;
+    });
+    if(made) ntPlanSave();
+    return made;
+}
+function ntPlanGenRecurNow(){
+    var ym=(_ntPlan.view==='REPORT')?_ntPlan.reportMonth:(_ntPlan.view==='CALENDAR'?_ntpISO(_ntPlan.month).slice(0,7):(new Date()).toISOString().slice(0,7));
+    var n=ntPlanGenerateRecurring(ym);
+    ntPlanRender();
+    if(typeof showToast==='function') showToast(n>0?('ສ້າງວຽກປະຈຳ '+n+' ລາຍການ ສຳລັບ '+ym):'ບໍ່ມີວຽກປະຈຳໃໝ່ສຳລັບ '+ym, n>0?'success':'info');
+}
+
+// ---------- comment gate: overdue incomplete tasks must be commented before new work ----------
+var _ntPlanBlockProceed=null, _ntPlanBlockList=null;
+function ntPlanBlockingTasks(assignee){
+    var today=_ntpISO(new Date());
+    return nt_tasks.filter(function(t){
+        if(t.status==='COMPLETED') return false;
+        var dd=(t.dueDate||'').slice(0,10); if(!dd || dd>=today) return false;
+        if(t.failureReason && String(t.failureReason).trim()) return false;
+        if(assignee && t.assignee!==assignee) return false;
+        return true;
+    });
+}
+function ntPlanNewTask(){
+    var cu=ntPlanCurrentUser();
+    var blk=ntPlanBlockingTasks(cu?cu.name:null);
+    if(!blk.length){ ntPlanOpenAdd(); return; }
+    var rows=blk.map(function(t){ return '<div class="border border-rose-200 rounded-lg p-2 mb-2 bg-rose-50/50"><p class="text-xs font-bold text-slate-800">'+_ntpEsc(t.title)+' <span class="text-rose-600 font-normal">(ກຳນົດ '+_ntpLao(t.dueDate)+')</span></p><textarea id="ntpblk_'+t.id+'" rows="2" class="w-full mt-1 p-2 bg-white border border-gray-200 rounded text-xs" placeholder="ໃສ່ຄຳຄິດເຫັນ/ເຫດຜົນວ່າເປັນຫຍັງຍັງບໍ່ແລ້ວ..."></textarea></div>'; }).join('');
+    var html='<div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl p-5 max-h-[88vh] overflow-y-auto"><h3 class="font-bold text-rose-700 mb-1"><i class="fa-solid fa-triangle-exclamation mr-1"></i>ມີວຽກເກີນກຳນົດທີ່ຍັງບໍ່ສຳເລັດ</h3><p class="text-xs text-slate-500 mb-3">ກະລຸນາໃສ່ຄຳຄິດເຫັນທຸກລາຍການກ່ອນ ຈຶ່ງຈະສ້າງ/ເຮັດວຽກໃໝ່ໄດ້</p>'+rows+'<div class="flex justify-end gap-2 pt-2 border-t"><button onclick="ntPlanCloseModal()" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-slate-600 text-sm">ຍົກເລີກ</button><button onclick="ntPlanSubmitBlocking()" class="px-4 py-2 bg-rose-600 text-white rounded-lg text-sm font-bold">ບັນທຶກ ແລະ ສືບຕໍ່</button></div></div>';
+    _ntPlanBlockProceed=function(){ ntPlanOpenAdd(); }; _ntPlanBlockList=blk;
+    ntPlanShowModal(html);
+}
+function ntPlanSubmitBlocking(){
+    var allFilled=true;
+    (_ntPlanBlockList||[]).forEach(function(t){ var el=document.getElementById('ntpblk_'+t.id); if(!el||!el.value.trim()) allFilled=false; });
+    if(!allFilled){ if(typeof showToast==='function')showToast('ກະລຸນາໃສ່ຄຳຄິດເຫັນທຸກລາຍການ','error'); return; }
+    (_ntPlanBlockList||[]).forEach(function(t){ var el=document.getElementById('ntpblk_'+t.id); t.failureReason=el.value.trim(); if(typeof ntStamp==='function') ntStamp(t); });
+    ntPlanSave();
+    var fn=_ntPlanBlockProceed; _ntPlanBlockProceed=null; _ntPlanBlockList=null;
+    ntPlanCloseModal(); ntPlanRender();
+    if(typeof showToast==='function') showToast('ບັນທຶກຄຳຄິດເຫັນແລ້ວ','success');
+    if(fn) setTimeout(fn,80);
+}
+
+// ---------- integration hook: create a task from another module ----------
+function ntPlanAddAutoTask(opts){
+    opts=opts||{}; if(!opts.title) return;
+    var today=_ntpISO(new Date());
+    var rec={ id:'TK'+Date.now()+Math.floor(Math.random()*999), title:opts.title, description:opts.description||'', startDate:opts.date||today, dueDate:opts.date||today, startTime:'', endTime:'', priority:opts.priority||'ກາງ', department:opts.department||nt_planDepts[0], status:opts.status||'COMPLETED', assignee:opts.assignee||'', isUnplanned:opts.isUnplanned!==false, failureReason:'', carriedOverTo:'', createdAt:(new Date()).toISOString() };
+    if(typeof ntStamp==='function') ntStamp(rec);
+    nt_tasks.push(rec); ntPlanSave();
+    var b=document.getElementById('ntPlanBody'); if(b && document.getElementById('tab-workplan') && !document.getElementById('tab-workplan').classList.contains('hidden')) ntPlanRender();
+}
+
+        
+/* ===================== BRANCH LOAN / BORROWING TRACKER (ການຢືມເງິນສາຂາ) ===================== */
+var nt_loans = _ntJP('nt_loans', []);
+var _ntLoan = { view:'LIST', month:(new Date()).toISOString().slice(0,7), filterBranch:'ALL', editId:null, repayId:null };
+var NT_LOAN_CCY = ['LAK','THB','USD'];
+
+function _ntlEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function _ntlFmt(n){ n=Number(n)||0; return n.toLocaleString('en-US',{maximumFractionDigits:2}); }
+function _ntlPad(n){ return (n<10?'0':'')+n; }
+function _ntlISO(d){ return d.getFullYear()+'-'+_ntlPad(d.getMonth()+1)+'-'+_ntlPad(d.getDate()); }
+function _ntlLao(iso){ if(!iso) return ''; var p=String(iso).slice(0,10).split('-'); return p.length===3?(p[2]+'/'+p[1]+'/'+p[0]):iso; }
+function _ntlRepaid(loan){ var s=0; (loan.repayments||[]).forEach(function(r){ s+=Number(r.amount)||0; }); return s; }
+function _ntlBal(loan){ return (Number(loan.amount)||0)-_ntlRepaid(loan); }
+function _ntlDays(iso){ if(!iso) return 0; var d=new Date(String(iso).slice(0,10)); if(isNaN(d)) return 0; return Math.max(0, Math.floor((Date.now()-d.getTime())/86400000)); }
+function _ntlStatus(loan){ var b=_ntlBal(loan); if(b<=0.0001) return {v:'ຊຳລະແລ້ວ',col:'teal'}; if(_ntlRepaid(loan)>0) return {v:'ຊຳລະບາງສ່ວນ',col:'amber'}; return {v:'ຄ້າງຢູ່',col:'rose'}; }
+function _ntlOverdue(loan){ return loan.dueDate && _ntlBal(loan)>0.0001 && _ntlISO(new Date())>String(loan.dueDate).slice(0,10); }
+function _ntlBranchName(id){
+    try{ if(typeof branches!=='undefined'&&branches&&branches[id]) return branches[id].name||branches[id].branchName||id; }catch(_){}
+    return id||'—';
+}
+function _ntlBranchList(){
+    var arr=[];
+    try{ if(typeof branches!=='undefined'&&branches) Object.keys(branches).forEach(function(k){ arr.push({id:k,name:branches[k].name||branches[k].branchName||k}); }); }catch(_){}
+    return arr;
+}
+function ntLoanSave(){
+    var ok=(typeof ntSaveColl==='function')?ntSaveColl('nt_loans',nt_loans):(function(){try{localStorage.setItem('nt_loans',JSON.stringify(nt_loans));return true;}catch(_){return false;}})();
+    if(ok===false){ if(typeof showToast==='function') showToast('ພື້ນທີ່ເຕັມ ບັນທຶກບໍ່ໄດ້','error'); return false; }
+    if(typeof triggerCloudBackup==='function') try{ triggerCloudBackup(); }catch(_){}
+    return true;
+}
+
+function ntLoanInit(){ ntLoanRenderControls(); ntLoanRender(); }
+function ntLoanSetView(v){ _ntLoan.view=v; ntLoanRenderControls(); ntLoanRender(); }
+function ntLoanRenderControls(){
+    ['LIST','CARRY','REPORT'].forEach(function(v){ var b=document.getElementById('ntLoanTab-'+v); if(b) b.className='px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 '+(v===_ntLoan.view?'bg-white shadow text-amber-700':'text-slate-500 hover:text-slate-700'); });
+    var bs=document.getElementById('ntLoanFilterBranch'); if(bs){ bs.innerHTML='<option value="ALL">ທຸກສາຂາ</option>'+_ntlBranchList().map(function(b){return '<option value="'+_ntlEsc(b.id)+'"'+(b.id===_ntLoan.filterBranch?' selected':'')+'>'+_ntlEsc(b.name)+'</option>';}).join(''); }
+}
+function ntLoanRender(){
+    var box=document.getElementById('ntLoanBody'); if(!box) return;
+    if(_ntLoan.view==='LIST') box.innerHTML=ntLoanListHTML();
+    else if(_ntLoan.view==='CARRY') box.innerHTML=ntLoanCarryHTML();
+    else box.innerHTML=ntLoanReportHTML();
+}
+function ntLoanFilterChange(){ var b=document.getElementById('ntLoanFilterBranch'); if(b)_ntLoan.filterBranch=b.value; ntLoanRender(); }
+
+// ---------- LIST (detailed tracking per branch) ----------
+function ntLoanFiltered(){ return nt_loans.filter(function(l){ return _ntLoan.filterBranch==='ALL'||l.branchId===_ntLoan.filterBranch; }); }
+function ntLoanListHTML(){
+    var loans=ntLoanFiltered();
+    // group by branch
+    var byB={}; loans.forEach(function(l){ (byB[l.branchId]=byB[l.branchId]||[]).push(l); });
+    var blocks=Object.keys(byB).map(function(bid){
+        var list=byB[bid].slice().sort(function(a,b){ return (b.dateBorrowed||'').localeCompare(a.dateBorrowed||''); });
+        // subtotals by currency
+        var sub={}; list.forEach(function(l){ var c=l.currency||'LAK'; sub[c]=sub[c]||{amt:0,bal:0}; sub[c].amt+=Number(l.amount)||0; sub[c].bal+=_ntlBal(l); });
+        var subHtml=Object.keys(sub).map(function(c){ return '<span class="mr-3">'+c+': ຢືມ '+_ntlFmt(sub[c].amt)+' · ຄ້າງ <b class="text-rose-600">'+_ntlFmt(sub[c].bal)+'</b></span>'; }).join('');
+        var rows=list.map(function(l,i){
+            var st=_ntlStatus(l), od=_ntlOverdue(l);
+            return '<tr class="border-b border-slate-100 '+(od?'bg-rose-50/40':'')+'">'
+              +'<td class="p-2 text-center text-xs">'+(i+1)+'</td>'
+              +'<td class="p-2 text-xs font-bold text-slate-800">'+_ntlEsc(l.borrower||'—')+(l.purpose?'<div class="text-[10px] text-slate-400 font-normal">'+_ntlEsc(l.purpose)+'</div>':'')+'</td>'
+              +'<td class="p-2 text-xs whitespace-nowrap">'+_ntlLao(l.dateBorrowed)+'</td>'
+              +'<td class="p-2 text-xs text-right font-bold">'+_ntlFmt(l.amount)+'</td>'
+              +'<td class="p-2 text-xs text-center">'+_ntlEsc(l.currency||'LAK')+'</td>'
+              +'<td class="p-2 text-xs text-center '+(od?'text-rose-600 font-bold':'')+'">'+_ntlDays(l.dateBorrowed)+' ວັນ</td>'
+              +'<td class="p-2 text-xs whitespace-nowrap text-center '+(od?'text-rose-600 font-bold':'')+'">'+(_ntlLao(l.dueDate)||'—')+'</td>'
+              +'<td class="p-2 text-xs text-right text-teal-700">'+_ntlFmt(_ntlRepaid(l))+'</td>'
+              +'<td class="p-2 text-xs text-right font-bold '+(_ntlBal(l)>0?'text-rose-600':'text-slate-400')+'">'+_ntlFmt(_ntlBal(l))+'</td>'
+              +'<td class="p-2 text-center"><span class="text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-'+st.col+'-100 text-'+st.col+'-700">'+st.v+'</span></td>'
+              +'<td class="p-2 text-center whitespace-nowrap">'
+              +(_ntlBal(l)>0?'<button onclick="ntLoanOpenRepay(\''+l.id+'\')" class="text-teal-600 hover:text-teal-800 mr-1" title="ບັນທຶກຊຳລະ"><i class="fa-solid fa-hand-holding-dollar"></i></button>':'')
+              +'<button onclick="ntLoanOpenAdd(\''+l.id+'\')" class="text-indigo-500 hover:text-indigo-700 mr-1" title="ແກ້ໄຂ"><i class="fa-solid fa-pen"></i></button>'
+              +'<button onclick="ntLoanDelete(\''+l.id+'\')" class="text-rose-400 hover:text-rose-600" title="ລົບ"><i class="fa-solid fa-trash"></i></button></td></tr>';
+        }).join('');
+        return '<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-4"><div class="bg-amber-50 px-4 py-2.5 border-b border-amber-100 flex flex-wrap justify-between items-center gap-2"><h3 class="font-bold text-slate-800 text-sm"><i class="fa-solid fa-building-columns text-amber-600 mr-1"></i>'+_ntlEsc(_ntlBranchName(bid))+'</h3><div class="text-[11px] text-slate-600">'+subHtml+'</div></div>'
+          +'<div class="overflow-x-auto"><table class="w-full text-left border-collapse min-w-[900px]"><thead><tr class="bg-slate-50 text-[11px] text-slate-500 uppercase"><th class="p-2 text-center w-10">ລ/ດ</th><th class="p-2">ຜູ້ຢືມ</th><th class="p-2">ວັນທີຢືມ</th><th class="p-2 text-right">ຈຳນວນ</th><th class="p-2 text-center">ສະກຸນ</th><th class="p-2 text-center">ໄລຍະ</th><th class="p-2 text-center">ກຳນົດຄືນ</th><th class="p-2 text-right">ຊຳລະແລ້ວ</th><th class="p-2 text-right">ຍັງເຫຼືອ</th><th class="p-2 text-center">ສະຖານະ</th><th class="p-2 text-center">ຈັດການ</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+    }).join('');
+    if(!blocks) blocks='<div class="bg-white rounded-2xl p-8 text-center text-slate-400 border border-gray-100">ຍັງບໍ່ມີລາຍການຢືມເງິນ — ກົດ "ບັນທຶກການຢືມ"</div>';
+    return blocks;
+}
+
+// ---------- MONTHLY CARRY-OVER (ຍົກຍອດແຕ່ລະເດືອນ) ----------
+function ntLoanCarryData(ym){
+    // per (branch,currency): opening (bal before month), borrowed (in month), repaid (in month), closing
+    var monthStart=ym+'-01';
+    var p=ym.split('-'); var monthEnd=ym+'-'+_ntlPad(new Date(+p[0],+p[1],0).getDate());
+    var map={};
+    var key=function(b,c){ return b+'||'+c; };
+    ntLoanFiltered().forEach(function(l){
+        var b=l.branchId, c=l.currency||'LAK', db=(l.dateBorrowed||'').slice(0,10);
+        if(!map[key(b,c)]) map[key(b,c)]={branchId:b,ccy:c,opening:0,borrowed:0,repaid:0};
+        var m=map[key(b,c)];
+        // borrowing
+        if(db){ if(db<monthStart) m.opening+=Number(l.amount)||0; else if(db>=monthStart&&db<=monthEnd) m.borrowed+=Number(l.amount)||0; }
+        // repayments
+        (l.repayments||[]).forEach(function(r){ var rd=(r.date||'').slice(0,10); var amt=Number(r.amount)||0; if(rd){ if(rd<monthStart) m.opening-=amt; else if(rd>=monthStart&&rd<=monthEnd) m.repaid+=amt; } });
+    });
+    return Object.keys(map).map(function(k){ var m=map[k]; m.closing=m.opening+m.borrowed-m.repaid; return m; }).filter(function(m){ return Math.abs(m.opening)>0.001||m.borrowed>0||m.repaid>0||Math.abs(m.closing)>0.001; });
+}
+function ntLoanCarryHTML(){
+    var rows=ntLoanCarryData(_ntLoan.month).sort(function(a,b){ return _ntlBranchName(a.branchId).localeCompare(_ntlBranchName(b.branchId))||a.ccy.localeCompare(b.ccy); });
+    var tot={};
+    var body=rows.map(function(m){
+        tot[m.ccy]=tot[m.ccy]||{opening:0,borrowed:0,repaid:0,closing:0};
+        tot[m.ccy].opening+=m.opening; tot[m.ccy].borrowed+=m.borrowed; tot[m.ccy].repaid+=m.repaid; tot[m.ccy].closing+=m.closing;
+        return '<tr class="border-b border-slate-100"><td class="p-2 text-xs font-bold">'+_ntlEsc(_ntlBranchName(m.branchId))+'</td><td class="p-2 text-xs text-center">'+m.ccy+'</td>'
+          +'<td class="p-2 text-xs text-right">'+_ntlFmt(m.opening)+'</td><td class="p-2 text-xs text-right text-amber-700">'+_ntlFmt(m.borrowed)+'</td><td class="p-2 text-xs text-right text-teal-700">'+_ntlFmt(m.repaid)+'</td><td class="p-2 text-xs text-right font-bold '+(m.closing>0?'text-rose-600':'text-slate-400')+'">'+_ntlFmt(m.closing)+'</td></tr>';
+    }).join('');
+    var totHtml=Object.keys(tot).map(function(c){ var t=tot[c]; return '<tr class="bg-slate-100 font-bold border-b border-slate-200"><td class="p-2 text-xs" colspan="2">ລວມ ('+c+')</td><td class="p-2 text-xs text-right">'+_ntlFmt(t.opening)+'</td><td class="p-2 text-xs text-right">'+_ntlFmt(t.borrowed)+'</td><td class="p-2 text-xs text-right">'+_ntlFmt(t.repaid)+'</td><td class="p-2 text-xs text-right text-rose-700">'+_ntlFmt(t.closing)+'</td></tr>'; }).join('');
+    if(!body) body='<tr><td colspan="6" class="p-6 text-center text-slate-400 text-sm">ບໍ່ມີຂໍ້ມູນໃນເດືອນນີ້</td></tr>';
+    return '<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4"><div class="flex flex-wrap items-center justify-between gap-2 mb-3"><div class="flex items-center gap-2"><label class="text-xs font-bold text-slate-600">ເດືອນ:</label><input type="month" value="'+_ntLoan.month+'" onchange="_ntLoan.month=this.value;ntLoanRender()" class="border border-gray-200 rounded-lg px-2 py-1.5 text-sm"></div><button onclick="ntLoanPrint(\'ຍົກຍອດ\')" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>ພິມ</button></div>'
+      +'<p class="text-[11px] text-slate-500 mb-2"><i class="fa-solid fa-circle-info mr-1"></i>ຍอดຍกมา = ໜີ້ຄ້າງກ່ອນເດືອນ · ຢືມใหม่ = ຢືມໃນເດືອນ · ຊຳລະ = ຄືນໃນເດືອນ · ຍอดยกไป = ຍอดຄ້າງທ້າຍເດືອນ (ຍົກໄປເດືອນຕໍ່ໄປ)</p>'
+      +'<div id="ntLoanCarryPrint" class="overflow-x-auto"><table class="w-full text-left border-collapse min-w-[640px]"><thead><tr class="bg-amber-50 text-[11px] text-slate-600 uppercase"><th class="p-2">ສາຂາ</th><th class="p-2 text-center">ສະກຸນ</th><th class="p-2 text-right">ຍอดยกมา</th><th class="p-2 text-right">ຢືมໃໝ່</th><th class="p-2 text-right">ຊຳລະຄືນ</th><th class="p-2 text-right">ຍอดยกไป</th></tr></thead><tbody>'+body+totHtml+'</tbody></table></div></div>';
+}
+
+// ---------- REPORT (printable) ----------
+function ntLoanReportHTML(){
+    var loans=ntLoanFiltered();
+    var byCcy={}; loans.forEach(function(l){ var c=l.currency||'LAK'; byCcy[c]=byCcy[c]||{borrowed:0,repaid:0,bal:0,count:0,overdue:0}; byCcy[c].borrowed+=Number(l.amount)||0; byCcy[c].repaid+=_ntlRepaid(l); byCcy[c].bal+=_ntlBal(l); byCcy[c].count++; if(_ntlOverdue(l)) byCcy[c].overdue++; });
+    var cards=Object.keys(byCcy).map(function(c){ var s=byCcy[c]; return '<div class="bg-white rounded-xl border border-gray-100 p-4"><div class="text-xs font-bold text-slate-400 mb-2">ສະກຸນ '+c+' ('+s.count+' ລາຍການ)</div><div class="grid grid-cols-3 gap-2 text-center"><div><div class="text-lg font-bold text-amber-700">'+_ntlFmt(s.borrowed)+'</div><div class="text-[10px] text-slate-500">ຢືມທັງໝົດ</div></div><div><div class="text-lg font-bold text-teal-700">'+_ntlFmt(s.repaid)+'</div><div class="text-[10px] text-slate-500">ຊຳລະແລ້ວ</div></div><div><div class="text-lg font-bold text-rose-600">'+_ntlFmt(s.bal)+'</div><div class="text-[10px] text-slate-500">ຍັງຄ້າງ</div></div></div>'+(s.overdue?'<div class="mt-2 text-[11px] text-rose-600 font-bold text-center bg-rose-50 rounded py-1">ເກີນກຳນົດ '+s.overdue+' ລາຍການ</div>':'')+'</div>'; }).join('');
+    if(!cards) cards='<div class="col-span-full bg-white rounded-xl p-6 text-center text-slate-400 border border-gray-100">ບໍ່ມີຂໍ້ມູນ</div>';
+    // detail rows for print
+    var rows=loans.slice().sort(function(a,b){ return _ntlBranchName(a.branchId).localeCompare(_ntlBranchName(b.branchId)); }).map(function(l,i){ var st=_ntlStatus(l); return '<tr class="border-b border-slate-100"><td class="p-1.5 text-center text-xs">'+(i+1)+'</td><td class="p-1.5 text-xs">'+_ntlEsc(_ntlBranchName(l.branchId))+'</td><td class="p-1.5 text-xs">'+_ntlEsc(l.borrower||'')+'</td><td class="p-1.5 text-xs">'+_ntlLao(l.dateBorrowed)+'</td><td class="p-1.5 text-xs text-right">'+_ntlFmt(l.amount)+' '+(l.currency||'LAK')+'</td><td class="p-1.5 text-xs text-center">'+_ntlDays(l.dateBorrowed)+'ວ</td><td class="p-1.5 text-xs text-right">'+_ntlFmt(_ntlBal(l))+'</td><td class="p-1.5 text-xs text-center">'+st.v+'</td></tr>'; }).join('');
+    return '<div class="space-y-4"><div class="flex justify-end"><button onclick="ntLoanPrint(\'ບົດລາຍງານ\')" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-print mr-1"></i>ພິມບົດລາຍງານ</button></div>'
+      +'<div id="ntLoanReportPrint">'
+      +'<div class="hidden print:block text-center mb-4"><div class="font-bold">ສາທາລະນະລັດ ປະຊາທິປະໄຕ ປະຊາຊົນລາວ</div><div class="text-base font-bold underline mt-2">ບົດລາຍງານການຢືມເງິນ ຕາມສາຂາ</div></div>'
+      +'<div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">'+cards+'</div>'
+      +'<div class="bg-white rounded-xl border border-gray-100 overflow-x-auto"><table class="w-full text-left border-collapse min-w-[720px]"><thead><tr class="bg-slate-50 text-[11px] text-slate-500 uppercase"><th class="p-1.5 text-center w-8">ລ/ດ</th><th class="p-1.5">ສາຂາ</th><th class="p-1.5">ຜູ້ຢືມ</th><th class="p-1.5">ວັນທີຢືມ</th><th class="p-1.5 text-right">ຈຳນວນ</th><th class="p-1.5 text-center">ໄລຍະ</th><th class="p-1.5 text-right">ຄ້າງ</th><th class="p-1.5 text-center">ສະຖານະ</th></tr></thead><tbody>'+(rows||'<tr><td colspan="8" class="p-4 text-center text-slate-400 text-xs">ບໍ່ມີ</td></tr>')+'</tbody></table></div></div></div>';
+}
+function ntLoanPrint(kind){
+    var el=document.getElementById(kind==='ຍົກຍອດ'?'ntLoanCarryPrint':'ntLoanReportPrint'); if(!el){ if(typeof showToast==='function')showToast('ບໍ່ມີຂໍ້ມູນ','error'); return; }
+    var w=window.open('','_blank'); if(!w){ if(typeof showToast==='function')showToast('ອະນຸຍາດ popup','error'); return; }
+    var title=(kind==='ຍົກຍອດ')?('ຕາຕະລາງຍົກຍອດການຢືມ '+_ntLoan.month):'ບົດລາຍງານການຢືມເງິນ';
+    w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+title+'</title><script src="https://cdn.tailwindcss.com"><\/script><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;600;700&display=swap" rel="stylesheet"><style>body{font-family:\'Noto Sans Lao\',sans-serif;padding:20px}@media print{@page{size:A4 landscape}}</style></head><body><div class="max-w-6xl mx-auto"><div class="text-center mb-4"><div class="font-bold">ສາທາລະນະລັດ ປະຊາທິປະໄຕ ປະຊາຊົນລາວ</div><div class="text-lg font-bold underline mt-1">'+title+'</div></div>'+el.innerHTML.replace(/hidden print:block/g,'block')+'</div></body></html>');
+    w.document.close(); setTimeout(function(){try{w.focus();w.print();}catch(_){}; },700);
+}
+
+// ---------- CRUD ----------
+function ntLoanOpenAdd(id){
+    _ntLoan.editId=id||null;
+    var l=id?nt_loans.find(function(x){return x.id===id;}):null;
+    var today=_ntlISO(new Date());
+    var brOpts=_ntlBranchList().map(function(b){return '<option value="'+_ntlEsc(b.id)+'"'+((l&&l.branchId===b.id)?' selected':'')+'>'+_ntlEsc(b.name)+'</option>';}).join('');
+    if(!brOpts) brOpts='<option value="">(ຍັງບໍ່ມີສາຂາ)</option>';
+    var ccyOpts=NT_LOAN_CCY.map(function(c){return '<option value="'+c+'"'+(((l&&l.currency===c)||(!l&&c==='LAK'))?' selected':'')+'>'+c+'</option>';}).join('');
+    var html='<div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl max-h-[92vh] overflow-y-auto"><div class="bg-amber-600 text-white px-5 py-3 flex justify-between items-center sticky top-0"><h3 class="font-bold">'+(id?'ແກ້ໄຂການຢືມ':'ບັນທຶກການຢືມເງິນ')+'</h3><button onclick="ntLoanCloseModal()" class="text-white/80 hover:text-white"><i class="fa-solid fa-xmark"></i></button></div>'
+      +'<div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">'
+      +'<div><label class="text-[11px] font-bold text-slate-600">ສາຂາ *</label><select id="ntlf_branch" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200">'+brOpts+'</select></div>'
+      +'<div><label class="text-[11px] font-bold text-slate-600">ຜູ້ຢືມ *</label><input id="ntlf_borrower" value="'+_ntlEsc(l?l.borrower:'')+'" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200" placeholder="ຊື່ ຜູ້ຢືມ"></div>'
+      +'<div><label class="text-[11px] font-bold text-slate-600">ຈຳນວນເງິນ *</label><input type="number" id="ntlf_amount" value="'+(l?l.amount:'')+'" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200" placeholder="0"></div>'
+      +'<div><label class="text-[11px] font-bold text-slate-600">ສະກຸນເງິນ</label><select id="ntlf_ccy" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200">'+ccyOpts+'</select></div>'
+      +'<div><label class="text-[11px] font-bold text-slate-600">ວັນທີຢືມ *</label><input type="date" id="ntlf_date" value="'+(l?(l.dateBorrowed||'').slice(0,10):today)+'" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200"></div>'
+      +'<div><label class="text-[11px] font-bold text-slate-600">ກຳນົດຄືນ</label><input type="date" id="ntlf_due" value="'+(l?(l.dueDate||'').slice(0,10):'')+'" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200"></div>'
+      +'<div class="md:col-span-2"><label class="text-[11px] font-bold text-slate-600">ຈຸດປະສົງ / ໝາຍເຫດ</label><input id="ntlf_purpose" value="'+_ntlEsc(l?l.purpose:'')+'" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200"></div>'
+      +'<div class="md:col-span-2 flex justify-end gap-2 pt-3 border-t"><button onclick="ntLoanCloseModal()" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-slate-600 text-sm font-medium">ຍົກເລີກ</button><button onclick="ntLoanSaveLoan()" class="px-5 py-2 bg-amber-600 text-white rounded-lg text-sm font-bold hover:bg-amber-700"><i class="fa-solid fa-floppy-disk mr-1"></i>ບັນທຶກ</button></div>'
+      +'</div></div>';
+    ntLoanShowModal(html);
+}
+function ntLoanSaveLoan(){
+    var g=function(id){var el=document.getElementById(id);return el?el.value:'';};
+    var borrower=g('ntlf_borrower').trim(), amount=Number(g('ntlf_amount'))||0, branchId=g('ntlf_branch');
+    if(!borrower){ if(typeof showToast==='function')showToast('ໃສ່ຊື່ຜູ້ຢືມ','error'); return; }
+    if(!(amount>0)){ if(typeof showToast==='function')showToast('ໃສ່ຈຳນວນເງິນ','error'); return; }
+    var old=_ntLoan.editId?nt_loans.find(function(x){return x.id===_ntLoan.editId;}):null;
+    var rec={ id:_ntLoan.editId||('LN'+Date.now()), branchId:branchId, borrower:borrower, amount:amount, currency:g('ntlf_ccy')||'LAK', dateBorrowed:g('ntlf_date')||_ntlISO(new Date()), dueDate:g('ntlf_due'), purpose:g('ntlf_purpose'), repayments:old?(old.repayments||[]):[], createdAt:old?old.createdAt:(new Date()).toISOString() };
+    if(typeof ntStamp==='function') ntStamp(rec);
+    var idx=nt_loans.findIndex(function(x){return x.id===rec.id;});
+    if(idx>=0) nt_loans[idx]=rec; else nt_loans.push(rec);
+    if(!ntLoanSave()) return;
+    ntLoanCloseModal(); ntLoanRender();
+    if(typeof showToast==='function') showToast(_ntLoan.editId?'ແກ້ໄຂແລ້ວ':'ບັນທຶກການຢືມແລ້ວ','success');
+    _ntLoan.editId=null;
+}
+function ntLoanDelete(id){
+    var go=function(){ nt_loans=nt_loans.filter(function(x){return x.id!==id;}); ntLoanSave(); ntLoanRender(); if(typeof showToast==='function')showToast('ລົບແລ້ວ','success'); };
+    if(typeof showConfirm==='function') showConfirm('ລົບລາຍການຢືມນີ້?',go); else if(confirm('ລົບ?')) go();
+}
+
+// ---------- repayment ----------
+function ntLoanOpenRepay(id){
+    var l=nt_loans.find(function(x){return x.id===id;}); if(!l) return;
+    _ntLoan.repayId=id;
+    var hist=(l.repayments||[]).slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'');}).map(function(r,i){ return '<div class="flex justify-between items-center text-xs border-b border-slate-100 py-1"><span>'+_ntlLao(r.date)+(r.note?' · '+_ntlEsc(r.note):'')+'</span><span class="font-bold text-teal-700">'+_ntlFmt(r.amount)+'</span><button onclick="ntLoanDelRepay(\''+id+'\','+i+')" class="text-rose-300 hover:text-rose-500 ml-2"><i class="fa-solid fa-xmark"></i></button></div>'; }).join('')||'<p class="text-[11px] text-slate-400 py-1">ຍັງບໍ່ມີການຊຳລະ</p>';
+    var html='<div class="bg-white rounded-2xl w-full max-w-md shadow-2xl p-5 max-h-[88vh] overflow-y-auto"><div class="flex justify-between items-center mb-1"><h3 class="font-bold text-slate-800">ບັນທຶກການຊຳລະຄືນ</h3><button onclick="ntLoanCloseModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark"></i></button></div>'
+      +'<p class="text-xs text-slate-500 mb-3">'+_ntlEsc(l.borrower)+' · ຢືມ '+_ntlFmt(l.amount)+' '+(l.currency||'LAK')+' · ຍັງເຫຼືອ <b class="text-rose-600">'+_ntlFmt(_ntlBal(l))+'</b></p>'
+      +'<div class="grid grid-cols-2 gap-2 mb-3"><div><label class="text-[11px] font-bold text-slate-600">ວັນທີຊຳລະ</label><input type="date" id="ntlr_date" value="'+_ntlISO(new Date())+'" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200 text-sm"></div><div><label class="text-[11px] font-bold text-slate-600">ຈຳນວນ</label><input type="number" id="ntlr_amount" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200 text-sm" placeholder="0"></div><div class="col-span-2"><label class="text-[11px] font-bold text-slate-600">ໝາຍເຫດ</label><input id="ntlr_note" class="w-full rounded-lg p-2 bg-gray-50 border border-gray-200 text-sm"></div></div>'
+      +'<button onclick="ntLoanSaveRepay()" class="w-full bg-teal-600 hover:bg-teal-700 text-white py-2 rounded-lg text-sm font-bold mb-3"><i class="fa-solid fa-plus mr-1"></i>ເພີ່ມການຊຳລະ</button>'
+      +'<div class="border-t pt-2"><div class="text-[11px] font-bold text-slate-500 mb-1">ປະຫວັດການຊຳລະ</div>'+hist+'</div></div>';
+    ntLoanShowModal(html);
+}
+function ntLoanSaveRepay(){
+    var l=nt_loans.find(function(x){return x.id===_ntLoan.repayId;}); if(!l) return;
+    var amt=Number((document.getElementById('ntlr_amount')||{}).value)||0;
+    if(!(amt>0)){ if(typeof showToast==='function')showToast('ໃສ່ຈຳນວນຊຳລະ','error'); return; }
+    l.repayments=l.repayments||[];
+    l.repayments.push({ id:'RP'+Date.now(), date:(document.getElementById('ntlr_date')||{}).value||_ntlISO(new Date()), amount:amt, note:(document.getElementById('ntlr_note')||{}).value||'' });
+    if(typeof ntStamp==='function') ntStamp(l);
+    if(!ntLoanSave()) return;
+    ntLoanOpenRepay(_ntLoan.repayId); ntLoanRender();
+    if(typeof showToast==='function') showToast('ບັນທຶກການຊຳລະແລ້ວ','success');
+}
+function ntLoanDelRepay(id, idx){
+    var l=nt_loans.find(function(x){return x.id===id;}); if(!l||!l.repayments) return;
+    l.repayments.splice(idx,1); if(typeof ntStamp==='function') ntStamp(l); ntLoanSave(); ntLoanOpenRepay(id); ntLoanRender();
+}
+
+// ---------- modal infra ----------
+function ntLoanShowModal(html){
+    var m=document.getElementById('ntLoanModal');
+    if(!m){ m=document.createElement('div'); m.id='ntLoanModal'; m.className='fixed inset-0 z-[120] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm'; m.onclick=function(e){ if(e.target===m) ntLoanCloseModal(); }; document.body.appendChild(m); }
+    m.innerHTML=html; m.style.display='flex';
+}
+function ntLoanCloseModal(){ var m=document.getElementById('ntLoanModal'); if(m){ m.style.display='none'; m.innerHTML=''; } }
 
         </script>
 
